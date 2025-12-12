@@ -12,43 +12,7 @@ namespace ThunderPipe.Utils;
 /// Based off <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.net.http/java/net/http/HttpRequest.Builder.html">this</a></remarks>
 internal sealed class RequestBuilder
 {
-	private UriBuilder _uriBuilder = new();
-	private HttpContent? _content;
 	private AuthenticationHeaderValue? _authHeader;
-
-	/// <summary>
-	/// Sets the host of this request
-	/// </summary>
-	public RequestBuilder ToHost(string host)
-	{
-		_uriBuilder.Host = host;
-		return this;
-	}
-
-	/// <summary>
-	/// Sets the endpoint of this request
-	/// </summary>
-	public RequestBuilder ToEndpoint(string endpoint)
-	{
-		_uriBuilder.Path = endpoint;
-		return this;
-	}
-
-	/// <summary>
-	/// Sets the JSON payload of this request
-	/// </summary>
-	public RequestBuilder WithJson(object json)
-	{
-		var serializedJson = JsonConvert.SerializeObject(json);
-
-		_content = new StringContent(
-			serializedJson,
-			Encoding.UTF8,
-			MediaTypeNames.Application.Json
-		);
-
-		return this;
-	}
 
 	/// <summary>
 	/// Sets the authentication token
@@ -73,6 +37,79 @@ internal sealed class RequestBuilder
 	public RequestBuilder Post()
 	{
 		_method = HttpMethod.Post;
+		return this;
+	}
+
+	/// <summary>
+	/// Sets the HTTP method to <see cref="HttpMethod.Put"/>
+	/// </summary>
+	public RequestBuilder Put()
+	{
+		_method = HttpMethod.Put;
+		return this;
+	}
+
+	#endregion
+
+	#region URI
+
+	private UriBuilder _uriBuilder = new();
+
+	/// <summary>
+	/// Sets the host of this request
+	/// </summary>
+	public RequestBuilder ToHost(string host)
+	{
+		_uriBuilder.Host = host;
+		return this;
+	}
+
+	/// <summary>
+	/// Sets the endpoint of this request
+	/// </summary>
+	public RequestBuilder ToEndpoint(string endpoint)
+	{
+		_uriBuilder.Path = endpoint;
+		return this;
+	}
+
+	/// <summary>
+	/// Sets the URL of this request
+	/// </summary>
+	public RequestBuilder ToUrl(string url)
+	{
+		_uriBuilder = new UriBuilder(url);
+		return this;
+	}
+
+	#endregion
+
+	#region Content
+
+	private HttpContent? _content;
+	
+	/// <summary>
+	/// Sets the JSON payload of this request
+	/// </summary>
+	public RequestBuilder WithJson(object json)
+	{
+		var serializedJson = JsonConvert.SerializeObject(json);
+
+		var jsonContent = new StringContent(
+			serializedJson,
+			Encoding.UTF8,
+			MediaTypeNames.Application.Json
+		);
+
+		return WithContent(jsonContent);
+	}
+
+	/// <summary>
+	/// Sets the payload of this request
+	/// </summary>
+	public RequestBuilder WithContent(HttpContent content)
+	{
+		_content = content;
 		return this;
 	}
 
