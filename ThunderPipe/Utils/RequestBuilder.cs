@@ -8,15 +8,21 @@ namespace ThunderPipe.Utils;
 /// <summary>
 /// Class allowing to build <see cref="HttpRequestMessage"/>
 /// </summary>
+/// <remarks>
+/// Based off <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.net.http/java/net/http/HttpRequest.Builder.html">this</a></remarks>
 internal sealed class RequestBuilder
 {
-	private readonly UriBuilder _uriBuilder = new();
+	private UriBuilder _uriBuilder = new();
 	private HttpContent? _content;
 	private AuthenticationHeaderValue? _authHeader;
 
-	public RequestBuilder(string host)
+	/// <summary>
+	/// Sets the host of this request
+	/// </summary>
+	public RequestBuilder ToHost(string host)
 	{
 		_uriBuilder.Host = host;
+		return this;
 	}
 
 	/// <summary>
@@ -29,12 +35,12 @@ internal sealed class RequestBuilder
 	}
 
 	/// <summary>
-	/// Sets the payload of this request
+	/// Sets the JSON payload of this request
 	/// </summary>
 	public RequestBuilder WithJson(object json)
 	{
 		var serializedJson = JsonConvert.SerializeObject(json);
-		
+
 		_content = new StringContent(
 			serializedJson,
 			Encoding.UTF8,
@@ -47,7 +53,7 @@ internal sealed class RequestBuilder
 	/// <summary>
 	/// Sets the authentication token
 	/// </summary>
-	public RequestBuilder WithAuth(string token)
+	public RequestBuilder WithAuth(string? token)
 	{
 		_authHeader = new AuthenticationHeaderValue(
 			"Bearer",
@@ -55,6 +61,30 @@ internal sealed class RequestBuilder
 		);
 
 		return this;
+	}
+
+	/// <summary>
+	/// Copies this builder to a brand-new builder with the same state
+	/// </summary>
+	public RequestBuilder Copy()
+	{
+		var newBuilder = new RequestBuilder
+		{
+			_uriBuilder = new UriBuilder(_uriBuilder.Uri)
+		};
+
+		if (_authHeader != null)
+		{
+			newBuilder._authHeader = new AuthenticationHeaderValue(
+				_authHeader.Scheme,
+				_authHeader.Parameter
+			);
+		}
+
+		if (_content != null)
+			newBuilder._content = new StreamContent(_content.ReadAsStream());
+		
+		return newBuilder;
 	}
 
 	/// <summary>
