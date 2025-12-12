@@ -1,3 +1,5 @@
+using System.Net.Http.Headers;
+
 namespace ThunderPipe.Utils;
 
 /// <summary>
@@ -7,6 +9,10 @@ internal sealed class ThunderstoreClient : HttpClient
 {
 	private ThunderstoreClient()
 	{
+		DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(
+			nameof(ThunderPipe),
+			"1.0.0"
+		));
 		Timeout = TimeSpan.FromMinutes(5);
 	}
 
@@ -18,7 +24,7 @@ internal sealed class ThunderstoreClient : HttpClient
 		using var client = new ThunderstoreClient();
 		
 		var response = await client.SendAsync(request, cancellationToken);
-		//response.EnsureSuccessStatusCode();
+		response.EnsureSuccessStatusCode();
 
 		return response;
 	}
