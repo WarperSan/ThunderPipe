@@ -55,7 +55,7 @@ internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 		}
 		
 		await ThunderstoreApi.SubmitPackage(
-			"root",
+			settings.Team,
 			settings.Community,
 			settings.Categories ?? [],
 			settings.HasNsfw,

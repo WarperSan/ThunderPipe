@@ -16,8 +16,12 @@ public sealed class PublishSettings : CommandSettings
 	[CommandArgument(0, "<file>")]
 	[Description("Path to the package file to publish")]
 	public required string File { get; init; }
+	
+	[CommandArgument(1, "<team>")]
+	[Description("Team to publish the package for")]
+	public required string Team { get; init; }
 
-	[CommandArgument(1, "<community>")]
+	[CommandArgument(2, "<community>")]
 	[Description("Community where to publish the package")]
 	public required string Community { get; init; }
 
@@ -44,6 +48,9 @@ public sealed class PublishSettings : CommandSettings
 	{
 		if (!System.IO.File.Exists(File))
 			return ValidationResult.Error($"No file was found at '{File}'.");
+
+		if (string.IsNullOrWhiteSpace(Team))
+			return ValidationResult.Error("Team cannot be empty.");
 
 		if (string.IsNullOrWhiteSpace(Community))
 			return ValidationResult.Error("Community cannot be empty.");
