@@ -63,6 +63,21 @@ internal sealed class RequestBuilder
 		return this;
 	}
 
+	#region Methods
+
+	private HttpMethod _method = HttpMethod.Get;
+
+	/// <summary>
+	/// Sets the HTTP method to <see cref="HttpMethod.Post"/>
+	/// </summary>
+	public RequestBuilder Post()
+	{
+		_method = HttpMethod.Post;
+		return this;
+	}
+
+	#endregion
+
 	/// <summary>
 	/// Copies this builder to a brand-new builder with the same state
 	/// </summary>
@@ -70,7 +85,8 @@ internal sealed class RequestBuilder
 	{
 		var newBuilder = new RequestBuilder
 		{
-			_uriBuilder = new UriBuilder(_uriBuilder.Uri)
+			_uriBuilder = new UriBuilder(_uriBuilder.Uri),
+			_method = _method
 		};
 
 		if (_authHeader != null)
@@ -94,7 +110,7 @@ internal sealed class RequestBuilder
 	{
 		var request = new HttpRequestMessage();
 
-		request.Method = HttpMethod.Post;
+		request.Method = _method;
 		request.RequestUri = _uriBuilder.Uri;
 		request.Content = _content;
 		request.Headers.Authorization = _authHeader;
