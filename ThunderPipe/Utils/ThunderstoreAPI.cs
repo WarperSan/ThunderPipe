@@ -32,7 +32,6 @@ internal static class ThunderstoreApi
 		};
 		
 		var request = builder
-		              .Copy()
 		              .Post()
 		              .ToEndpoint(API_EXPERIMENTAL + "usermedia/initiate-upload/")
 		              .WithJson(payload) 
@@ -135,7 +134,6 @@ internal static class ThunderstoreApi
 		};
 
 		var request = builder
-		              .Copy()
 		              .Post()
 		              .ToEndpoint(API_EXPERIMENTAL + $"usermedia/{uuid}/finish-upload/")
 		              .WithJson(payload) 
@@ -173,7 +171,6 @@ internal static class ThunderstoreApi
 		};
 		
 		var request = builder
-		              .Copy()
 		              .Post()
 		              .ToEndpoint(API_EXPERIMENTAL + "submission/submit/")
 		              .WithJson(payload) 
