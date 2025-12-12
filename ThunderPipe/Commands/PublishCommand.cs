@@ -12,8 +12,6 @@ internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 	protected override async Task<int> ExecuteAsync(CommandContext context, PublishSettings settings, CancellationToken cancellationToken)
 	{
 		var file = settings.File;
-		var community = settings.Community;
-		var categories = settings.Categories ?? [];
 
 		var builder = new RequestBuilder()
 		              .ToUrl(settings.Repository!)
@@ -55,12 +53,12 @@ internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 			await Console.Error.WriteLineAsync("Failed to finish upload.");
 			return 1;
 		}
-
+		
 		await ThunderstoreApi.SubmitPackage(
 			"root",
-			community,
-			categories,
-			false,
+			settings.Community,
+			settings.Categories ?? [],
+			settings.HasNsfw,
 			uploadData.FileMetadata.UUID,
 			builder.Copy(),
 			cancellationToken

@@ -33,6 +33,11 @@ public sealed class PublishSettings : CommandSettings
 	[CommandOption("--categories <VALUES>")]
 	[Description("Categories used to label this package")]
 	public string[]? Categories { get; init; }
+	
+	[CommandOption("--has-nsfw|--nsfw")]
+	[Description("Determines if this package has NSFW content")]
+	[DefaultValue(false)]
+	public bool HasNsfw { get; init; }
 
 	/// <inheritdoc />
 	public override ValidationResult Validate()
