@@ -1,11 +1,34 @@
 using Newtonsoft.Json;
 
-namespace ThunderPipe.Models.InitiateUpload;
+namespace ThunderPipe.DTOs;
+
+/// <summary>
+/// Model used as the request payload in <see cref="ThunderPipe.Utils.ThunderstoreApi.InitiateMultipartUpload"/>
+/// </summary>
+internal record InitialUploadRequest
+{
+	/// <summary>
+	/// Name of the file uploaded to the Amazon S3 bucket
+	/// </summary>
+	/// <remarks>
+	/// It refers to <a href="http://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html">this</a>
+	/// </remarks>
+	[JsonProperty("filename")]
+	[JsonRequired]
+	public required string File { get; set; }
+
+	/// <summary>
+	/// Size of the file uploaded in bytes
+	/// </summary>
+	[JsonProperty("file_size_bytes")]
+	[JsonRequired]
+	public required long FileSize { get; set; }
+}
 
 /// <summary>
 /// Model used as the response payload in <see cref="ThunderPipe.Utils.ThunderstoreApi.InitiateMultipartUpload"/>
 /// </summary>
-internal record Response
+internal record InitialUploadResponse
 {
 	/// <summary>
 	/// Model used to represent metadata from <see cref="ThunderPipe.Utils.ThunderstoreApi.InitiateMultipartUpload"/>
