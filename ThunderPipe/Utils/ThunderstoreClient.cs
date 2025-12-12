@@ -22,7 +22,7 @@ internal sealed class ThunderstoreClient : HttpClient
 	public static async Task<HttpResponseMessage> SendRequest(HttpRequestMessage request, CancellationToken cancellationToken)
 	{
 		using var client = new ThunderstoreClient();
-		
+
 		var response = await client.SendAsync(request, cancellationToken);
 		response.EnsureSuccessStatusCode();
 

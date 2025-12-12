@@ -16,7 +16,7 @@ internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 		var file = settings.File;
 		var community = settings.Community;
 		var categories = settings.Categories ?? [];
-		
+
 		var builder = new RequestBuilder()
 		              .ToUrl(settings.Repository!)
 		              .WithAuth(settings.Token);

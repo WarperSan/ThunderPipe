@@ -70,11 +70,11 @@ internal sealed class RequestBuilder
 	}
 
 	#endregion
-	
+
 	#region Headers
 
 	private AuthenticationHeaderValue? _authHeader;
-	
+
 	/// <summary>
 	/// Sets the authentication token
 	/// </summary>
@@ -93,14 +93,14 @@ internal sealed class RequestBuilder
 	#region Content
 
 	private HttpContent? _content;
-	
+
 	/// <summary>
 	/// Sets the JSON payload of this request
 	/// </summary>
 	public RequestBuilder WithJson(object json)
 	{
 		var serializedJson = JsonConvert.SerializeObject(json);
-		
+
 		var jsonContent = new StringContent(
 			serializedJson,
 			Encoding.UTF8,
@@ -142,7 +142,7 @@ internal sealed class RequestBuilder
 
 		if (_content != null)
 			newBuilder._content = new StreamContent(_content.ReadAsStream());
-		
+
 		return newBuilder;
 	}
 
