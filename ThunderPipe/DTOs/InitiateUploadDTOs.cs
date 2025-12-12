@@ -1,11 +1,11 @@
 using Newtonsoft.Json;
 
-namespace ThunderPipe.Models;
+namespace ThunderPipe.DTOs;
 
 /// <summary>
 /// Model used as the request payload in <see cref="ThunderPipe.Utils.ThunderstoreApi.InitiateMultipartUpload"/>
 /// </summary>
-internal record InitiateUploadRequestModel
+internal record InitialUploadRequest
 {
 	/// <summary>
 	/// Name of the file uploaded to the Amazon S3 bucket
@@ -28,7 +28,7 @@ internal record InitiateUploadRequestModel
 /// <summary>
 /// Model used as the response payload in <see cref="ThunderPipe.Utils.ThunderstoreApi.InitiateMultipartUpload"/>
 /// </summary>
-internal record InitiateUploadResponseModel
+internal record InitialUploadResponse
 {
 	/// <summary>
 	/// Model used to represent metadata from <see cref="ThunderPipe.Utils.ThunderstoreApi.InitiateMultipartUpload"/>

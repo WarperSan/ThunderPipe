@@ -1,13 +1,13 @@
 using Newtonsoft.Json;
 
-namespace ThunderPipe.Models;
+namespace ThunderPipe.DTOs;
 
 /// <summary>
 /// Model used as the request payload in <see cref="ThunderPipe.Utils.ThunderstoreApi.FinishMultipartUpload"/>
 /// </summary>
-internal record FinishUploadRequestModel
+internal record FinishUploadRequest
 {
 	[JsonProperty("parts")]
 	[JsonRequired]
-	public required UploadPartModel[] Parts { get; set; }
+	public required UploadPartResponse[] Parts { get; set; }
 }

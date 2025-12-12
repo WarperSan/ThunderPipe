@@ -1,6 +1,7 @@
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
+using ThunderPipe.DTOs;
 using ThunderPipe.Models;
 
 namespace ThunderPipe.Utils;
@@ -18,27 +19,67 @@ internal static class ThunderstoreApi
 	/// <remarks>
 	/// Internally, this calls the <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateMultipartUpload.html">Multipart upload initiation</a> step
 	/// </remarks>
-	public static Task<InitiateUploadResponseModel?> InitiateMultipartUpload(
+	public static Task<InitialUploadResponse?> InitiateMultipartUpload(
 		string            path,
 		RequestBuilder    builder,
 		CancellationToken cancellationToken
 	)
 	{
 		var fileInfo = new FileInfo(path);
-		var payload = new InitiateUploadRequestModel
+
+		var payload = new InitialUploadRequest
 		{
 			File = Path.GetFileName(path),
-			FileSize = fileInfo.Length,
+			FileSize = fileInfo.Length
 		};
-		
+
 		var request = builder
-		              .Copy()
 		              .Post()
 		              .ToEndpoint(API_EXPERIMENTAL + "usermedia/initiate-upload/")
-		              .WithJson(payload) 
+		              .WithJson(payload)
 		              .Build();
+
+		return ThunderstoreClient.SendRequest<InitialUploadResponse>(
+			request,
+			cancellationToken
+		);
+	}
+
+	/// <summary>
+	/// Uploads every part of the file
+	/// </summary>
+	/// <remarks>
+	/// This is simply a helper method to simplify using <see cref="ThunderstoreApi.UploadPart"/>
+	/// </remarks>
+	public static async Task<UploadPartResponse[]> UploadParts(
+		string                                  file,
+		InitialUploadResponse.UploadPartModel[] parts,
+		CancellationToken                       cancellationToken
+	)
+	{
+		var uploadTasks = new List<Task<UploadPartResponse?>>();
+
+		await using (var stream = File.OpenRead(file))
+		{
+			foreach (var part in parts)
+			{
+				stream.Seek(part.Offset, SeekOrigin.Begin);
+
+				var task = UploadPart(
+					stream,
+					part.PartNumber,
+					part.Size,
+					part.Url,
+					cancellationToken
+				);
+
+				uploadTasks.Add(task);
+			}
+		}
+
+		var uploadedParts = await Task.WhenAll(uploadTasks).WaitAsync(cancellationToken);
 		
-		return ThunderstoreClient.SendRequest<InitiateUploadResponseModel>(request, cancellationToken);
+		return uploadedParts.OfType<UploadPartResponse>().ToArray();
 	}
 
 	/// <summary>
@@ -47,17 +88,17 @@ internal static class ThunderstoreApi
 	/// <remarks>
 	/// Internally, this calls the <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_UploadPart.html">Upload part</a> step
 	/// </remarks>
-	public static async Task<UploadPartModel?> UploadPart(
-		Stream stream,
-		int id,
-		int size,
-		string url,
+	public static async Task<UploadPartResponse?> UploadPart(
+		Stream            stream,
+		int               id,
+		int               size,
+		string            url,
 		CancellationToken cancellationToken
 	)
 	{
 		const int BLOCK_SIZE = ushort.MaxValue;
 		var chunk = new MemoryStream();
-		
+
 		using var reader = new BinaryReader(stream, Encoding.Default, true);
 		using var md5 = MD5.Create();
 		md5.Initialize();
@@ -69,6 +110,7 @@ internal static class ThunderstoreApi
 			remainingSize -= BLOCK_SIZE;
 
 			var bytes = reader.ReadBytes(BLOCK_SIZE);
+
 			md5.TransformBlock(
 				bytes,
 				0,
@@ -105,11 +147,11 @@ internal static class ThunderstoreApi
 		);
 
 		var etag = response.Headers.ETag?.Tag;
-		
+
 		if (etag == null)
 			throw new NullReferenceException("Expected the header 'ETag' to be set.");
 
-		return new UploadPartModel
+		return new UploadPartResponse
 		{
 			ETag = etag,
 			PartNumber = id
@@ -123,22 +165,21 @@ internal static class ThunderstoreApi
 	/// Internally, this calls the <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CompleteMultipartUpload.html">Multipart upload completion</a> step
 	/// </remarks>
 	public static async Task<bool> FinishMultipartUpload(
-		string            uuid,
-		UploadPartModel[] parts,
-		RequestBuilder    builder,
-		CancellationToken cancellationToken
+		string               uuid,
+		UploadPartResponse[] parts,
+		RequestBuilder       builder,
+		CancellationToken    cancellationToken
 	)
 	{
-		var payload = new FinishUploadRequestModel
+		var payload = new FinishUploadRequest
 		{
 			Parts = parts
 		};
 
 		var request = builder
-		              .Copy()
 		              .Post()
 		              .ToEndpoint(API_EXPERIMENTAL + $"usermedia/{uuid}/finish-upload/")
-		              .WithJson(payload) 
+		              .WithJson(payload)
 		              .Build();
 
 		var response = await ThunderstoreClient.SendRequest(
@@ -150,11 +191,11 @@ internal static class ThunderstoreApi
 	}
 
 	public static async Task SubmitPackage(
-		string author,
-		string community,
-		string[] categories,
-		bool hasNsfw,
-		string uploadUUID,
+		string            author,
+		string            community,
+		string[]          categories,
+		bool              hasNsfw,
+		string            uploadUUID,
 		RequestBuilder    builder,
 		CancellationToken cancellationToken
 	)
@@ -171,19 +212,18 @@ internal static class ThunderstoreApi
 			HasNsfwContent = hasNsfw,
 			UploadUUID = uploadUUID
 		};
-		
+
 		var request = builder
-		              .Copy()
 		              .Post()
 		              .ToEndpoint(API_EXPERIMENTAL + "submission/submit/")
-		              .WithJson(payload) 
+		              .WithJson(payload)
 		              .Build();
 
 		var response = await ThunderstoreClient.SendRequest(
 			request,
 			cancellationToken
 		);
-		
+
 		Console.WriteLine(await response.Content.ReadAsStringAsync(cancellationToken));
 	}
 }

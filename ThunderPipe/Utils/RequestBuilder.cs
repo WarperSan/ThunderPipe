@@ -6,48 +6,35 @@ using Newtonsoft.Json;
 namespace ThunderPipe.Utils;
 
 /// <summary>
-/// Class allowing to build <see cref="HttpRequestMessage"/>
+/// Class allowing to build <see cref="HttpRequestMessage"/> with ease
 /// </summary>
 /// <remarks>
-/// Based off <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.net.http/java/net/http/HttpRequest.Builder.html">this</a></remarks>
+/// Based off <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.net.http/java/net/http/HttpRequest.Builder.html">this</a>
+/// </remarks>
 internal sealed class RequestBuilder
 {
-	private AuthenticationHeaderValue? _authHeader;
-
-	/// <summary>
-	/// Sets the authentication token
-	/// </summary>
-	public RequestBuilder WithAuth(string? token)
-	{
-		_authHeader = new AuthenticationHeaderValue(
-			"Bearer",
-			token
-		);
-
-		return this;
-	}
-
 	#region Methods
 
 	private HttpMethod _method = HttpMethod.Get;
 
 	/// <summary>
-	/// Sets the HTTP method to <see cref="HttpMethod.Post"/>
+	/// Sets the HTTP method
 	/// </summary>
-	public RequestBuilder Post()
+	private RequestBuilder WithMethod(HttpMethod method)
 	{
-		_method = HttpMethod.Post;
+		_method = method;
 		return this;
 	}
 
 	/// <summary>
+	/// Sets the HTTP method to <see cref="HttpMethod.Post"/>
+	/// </summary>
+	public RequestBuilder Post() => WithMethod(HttpMethod.Post);
+
+	/// <summary>
 	/// Sets the HTTP method to <see cref="HttpMethod.Put"/>
 	/// </summary>
-	public RequestBuilder Put()
-	{
-		_method = HttpMethod.Put;
-		return this;
-	}
+	public RequestBuilder Put() => WithMethod(HttpMethod.Put);
 
 	#endregion
 
@@ -84,18 +71,35 @@ internal sealed class RequestBuilder
 
 	#endregion
 
+	#region Headers
+
+	private AuthenticationHeaderValue? _authHeader;
+
+	/// <summary>
+	/// Sets the authentication token
+	/// </summary>
+	public RequestBuilder WithAuth(string? token)
+	{
+		_authHeader = new AuthenticationHeaderValue(
+			"Bearer",
+			token
+		);
+
+		return this;
+	}
+
+	#endregion
+
 	#region Content
 
 	private HttpContent? _content;
-	
+
 	/// <summary>
 	/// Sets the JSON payload of this request
 	/// </summary>
 	public RequestBuilder WithJson(object json)
 	{
 		var serializedJson = JsonConvert.SerializeObject(json);
-		
-		Console.WriteLine(serializedJson);
 
 		var jsonContent = new StringContent(
 			serializedJson,
@@ -138,7 +142,7 @@ internal sealed class RequestBuilder
 
 		if (_content != null)
 			newBuilder._content = new StreamContent(_content.ReadAsStream());
-		
+
 		return newBuilder;
 	}
 
