@@ -49,7 +49,7 @@ internal static class ThunderstoreApi
 	/// <remarks>
 	/// Internally, this calls the <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_UploadPart.html">Upload part</a> step
 	/// </remarks>
-	public static async Task<UploadPartModel?> UploadPart(
+	public static async Task<DTOs.UploadPartResponse?> UploadPart(
 		Stream stream,
 		int id,
 		int size,
@@ -111,7 +111,7 @@ internal static class ThunderstoreApi
 		if (etag == null)
 			throw new NullReferenceException("Expected the header 'ETag' to be set.");
 
-		return new UploadPartModel
+		return new DTOs.UploadPartResponse
 		{
 			ETag = etag,
 			PartNumber = id
