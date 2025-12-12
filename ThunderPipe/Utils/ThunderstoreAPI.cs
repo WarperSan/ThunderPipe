@@ -26,7 +26,7 @@ internal static class ThunderstoreApi
 	)
 	{
 		var fileInfo = new FileInfo(path);
-		var payload = new DTOs.InitialUploadRequest
+		var payload = new InitialUploadRequest
 		{
 			File = Path.GetFileName(path),
 			FileSize = fileInfo.Length,
