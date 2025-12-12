@@ -41,7 +41,7 @@ internal record InitiateUploadResponseModel
 		[JsonProperty("uuid")]
 		[JsonRequired]
 		// ReSharper disable once InconsistentNaming
-		public string? UUID { get; set; }
+		public required string UUID { get; set; }
 
 		// These fields are not used by this tool
 		#if false
@@ -72,28 +72,28 @@ internal record InitiateUploadResponseModel
 	{
 		[JsonProperty("part_number")]
 		[JsonRequired]
-		public int PartNumber { get; set; }
+		public required int PartNumber { get; set; }
 
 		/// <summary>
 		/// URL to send the part to
 		/// </summary>
 		[JsonProperty("url")]
 		[JsonRequired]
-		public string? Url { get; set; }
+		public required string Url { get; set; }
 
 		/// <summary>
 		/// Offset of the part to send from the original file
 		/// </summary>
 		[JsonProperty("offset")]
 		[JsonRequired]
-		public long Offset { get; set; }
+		public required long Offset { get; set; }
 
 		/// <summary>
 		/// Size of the part to send
 		/// </summary>
 		[JsonProperty("length")]
 		[JsonRequired]
-		public int Size { get; set; }
+		public required int Size { get; set; }
 	}
 
 	/// <summary>
