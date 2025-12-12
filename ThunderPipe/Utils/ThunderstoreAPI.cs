@@ -148,4 +148,42 @@ internal static class ThunderstoreApi
 
 		return response.StatusCode == HttpStatusCode.OK;
 	}
+
+	public static async Task SubmitPackage(
+		string author,
+		string community,
+		string[] categories,
+		bool hasNsfw,
+		string uploadUUID,
+		RequestBuilder    builder,
+		CancellationToken cancellationToken
+	)
+	{
+		var payload = new SubmitPackageRequestModel
+		{
+			AuthorName = author,
+			Categories = [],
+			Communities = [community],
+			CommunityCategories = new Dictionary<string, string[]>
+			{
+				[community] = categories
+			},
+			HasNsfwContent = hasNsfw,
+			UploadUUID = uploadUUID
+		};
+		
+		var request = builder
+		              .Copy()
+		              .Post()
+		              .ToEndpoint(API_EXPERIMENTAL + "submission/submit/")
+		              .WithJson(payload) 
+		              .Build();
+
+		var response = await ThunderstoreClient.SendRequest(
+			request,
+			cancellationToken
+		);
+		
+		Console.WriteLine(await response.Content.ReadAsStringAsync(cancellationToken));
+	}
 }

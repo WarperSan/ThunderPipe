@@ -63,17 +63,24 @@ internal sealed class PublishCommand : AsyncCommand<PublishCommand.Settings>
 	/// <inheritdoc />
 	protected override async Task<int> ExecuteAsync(CommandContext context, Settings settings, CancellationToken cancellationToken)
 	{
+		// --- Settings ---
+		var token = settings.Token;
+		var file = settings.File;
+		var community = settings.Community;
+		var categories = settings.Categories ?? [];
 		var repositoryUri = new Uri(settings.Repository!);
+		// ---
+		
 
 		var builder = new RequestBuilder()
 		              .ToHost(repositoryUri.Host)
-		              .WithAuth(settings.Token);
+		              .WithAuth(token);
 
 		// api/experimental/
 		
 		// usermedia/initiate-upload/
 		var uploadData = await ThunderstoreApi.InitiateMultipartUpload(
-			settings.File,
+			file,
 			builder,
 			cancellationToken
 		);
@@ -87,7 +94,7 @@ internal sealed class PublishCommand : AsyncCommand<PublishCommand.Settings>
 		// Upload parts
 		var uploadPartTasks = new List<Task<UploadPartModel?>>();
 
-		await using (var stream = File.OpenRead(settings.File))
+		await using (var stream = File.OpenRead(file))
 		{
 			foreach (var uploadPart in uploadData.UploadParts)
 			{
@@ -130,6 +137,15 @@ internal sealed class PublishCommand : AsyncCommand<PublishCommand.Settings>
 		}
 
 		// submission/submit/
+		await ThunderstoreApi.SubmitPackage(
+			"root",
+			community,
+			categories,
+			false,
+			uploadData.FileMetadata.UUID,
+			builder,
+			cancellationToken
+		);
 
 		return 0;
 	}

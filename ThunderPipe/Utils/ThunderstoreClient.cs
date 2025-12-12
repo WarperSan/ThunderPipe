@@ -18,7 +18,7 @@ internal sealed class ThunderstoreClient : HttpClient
 		using var client = new ThunderstoreClient();
 		
 		var response = await client.SendAsync(request, cancellationToken);
-		response.EnsureSuccessStatusCode();
+		//response.EnsureSuccessStatusCode();
 
 		return response;
 	}

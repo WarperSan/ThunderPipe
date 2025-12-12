@@ -94,6 +94,8 @@ internal sealed class RequestBuilder
 	public RequestBuilder WithJson(object json)
 	{
 		var serializedJson = JsonConvert.SerializeObject(json);
+		
+		Console.WriteLine(serializedJson);
 
 		var jsonContent = new StringContent(
 			serializedJson,
