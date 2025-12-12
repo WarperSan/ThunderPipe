@@ -46,6 +46,43 @@ internal static class ThunderstoreApi
 	}
 
 	/// <summary>
+	/// Uploads every part of the file
+	/// </summary>
+	/// <remarks>
+	/// This is simply a helper method to simplify using <see cref="ThunderstoreApi.UploadPart"/>
+	/// </remarks>
+	public static async Task<UploadPartResponse[]> UploadParts(
+		string                                  file,
+		InitialUploadResponse.UploadPartModel[] parts,
+		CancellationToken                       cancellationToken
+	)
+	{
+		var uploadTasks = new List<Task<UploadPartResponse?>>();
+
+		await using (var stream = File.OpenRead(file))
+		{
+			foreach (var part in parts)
+			{
+				stream.Seek(part.Offset, SeekOrigin.Begin);
+
+				var task = UploadPart(
+					stream,
+					part.PartNumber,
+					part.Size,
+					part.Url,
+					cancellationToken
+				);
+
+				uploadTasks.Add(task);
+			}
+		}
+
+		var uploadedParts = await Task.WhenAll(uploadTasks).WaitAsync(cancellationToken);
+		
+		return uploadedParts.OfType<UploadPartResponse>().ToArray();
+	}
+
+	/// <summary>
 	/// Uploads the single part
 	/// </summary>
 	/// <remarks>
