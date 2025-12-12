@@ -18,14 +18,14 @@ internal static class ThunderstoreApi
 	/// <remarks>
 	/// Internally, this calls the <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateMultipartUpload.html">Multipart upload initiation</a> step
 	/// </remarks>
-	public static Task<InitiateUploadResponseModel?> InitiateMultipartUpload(
+	public static Task<Models.InitiateUpload.Response?> InitiateMultipartUpload(
 		string            path,
 		RequestBuilder    builder,
 		CancellationToken cancellationToken
 	)
 	{
 		var fileInfo = new FileInfo(path);
-		var payload = new InitiateUploadRequestModel
+		var payload = new Models.InitiateUpload.Request
 		{
 			File = Path.GetFileName(path),
 			FileSize = fileInfo.Length,
@@ -37,7 +37,10 @@ internal static class ThunderstoreApi
 		              .WithJson(payload) 
 		              .Build();
 		
-		return ThunderstoreClient.SendRequest<InitiateUploadResponseModel>(request, cancellationToken);
+		return ThunderstoreClient.SendRequest<Models.InitiateUpload.Response>(
+			request,
+			cancellationToken
+		);
 	}
 
 	/// <summary>
