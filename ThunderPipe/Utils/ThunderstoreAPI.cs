@@ -1,6 +1,7 @@
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
+using ThunderPipe.DTOs;
 using ThunderPipe.Models;
 
 namespace ThunderPipe.Utils;
@@ -18,7 +19,7 @@ internal static class ThunderstoreApi
 	/// <remarks>
 	/// Internally, this calls the <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateMultipartUpload.html">Multipart upload initiation</a> step
 	/// </remarks>
-	public static Task<DTOs.InitialUploadResponse?> InitiateMultipartUpload(
+	public static Task<InitialUploadResponse?> InitiateMultipartUpload(
 		string            path,
 		RequestBuilder    builder,
 		CancellationToken cancellationToken
@@ -37,7 +38,7 @@ internal static class ThunderstoreApi
 		              .WithJson(payload) 
 		              .Build();
 		
-		return ThunderstoreClient.SendRequest<DTOs.InitialUploadResponse>(
+		return ThunderstoreClient.SendRequest<InitialUploadResponse>(
 			request,
 			cancellationToken
 		);
@@ -49,7 +50,7 @@ internal static class ThunderstoreApi
 	/// <remarks>
 	/// Internally, this calls the <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_UploadPart.html">Upload part</a> step
 	/// </remarks>
-	public static async Task<DTOs.UploadPartResponse?> UploadPart(
+	public static async Task<UploadPartResponse?> UploadPart(
 		Stream stream,
 		int id,
 		int size,
@@ -111,7 +112,7 @@ internal static class ThunderstoreApi
 		if (etag == null)
 			throw new NullReferenceException("Expected the header 'ETag' to be set.");
 
-		return new DTOs.UploadPartResponse
+		return new UploadPartResponse
 		{
 			ETag = etag,
 			PartNumber = id
@@ -125,13 +126,13 @@ internal static class ThunderstoreApi
 	/// Internally, this calls the <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CompleteMultipartUpload.html">Multipart upload completion</a> step
 	/// </remarks>
 	public static async Task<bool> FinishMultipartUpload(
-		string            uuid,
-		UploadPartModel[] parts,
-		RequestBuilder    builder,
-		CancellationToken cancellationToken
+		string                    uuid,
+		UploadPartResponse[] parts,
+		RequestBuilder            builder,
+		CancellationToken         cancellationToken
 	)
 	{
-		var payload = new FinishUploadRequestModel
+		var payload = new FinishUploadRequest
 		{
 			Parts = parts
 		};
