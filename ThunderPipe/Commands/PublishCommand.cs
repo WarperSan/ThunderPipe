@@ -2,11 +2,13 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using Spectre.Console;
 using Spectre.Console.Cli;
+using ThunderPipe.Models;
+using ThunderPipe.Utils;
 
 namespace ThunderPipe.Commands;
 
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
-internal sealed class PublishCommand : Command<PublishCommand.Settings>
+internal sealed class PublishCommand : AsyncCommand<PublishCommand.Settings>
 {
 	/// <summary>
 	/// Settings used by <see cref="PublishCommand"/>
@@ -59,8 +61,76 @@ internal sealed class PublishCommand : Command<PublishCommand.Settings>
 	}
 
 	/// <inheritdoc />
-	protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
+	protected override async Task<int> ExecuteAsync(CommandContext context, Settings settings, CancellationToken cancellationToken)
 	{
+		var repositoryUri = new Uri(settings.Repository!);
+
+		var builder = new RequestBuilder()
+		              .ToHost(repositoryUri.Host)
+		              .WithAuth(settings.Token);
+
+		// api/experimental/
+		
+		// usermedia/initiate-upload/
+		var uploadData = await ThunderstoreApi.InitiateMultipartUpload(
+			settings.File,
+			builder,
+			cancellationToken
+		);
+
+		if (uploadData == null)
+		{
+			await Console.Error.WriteLineAsync("Failed to initiate upload.");
+			return 1;
+		}
+
+		// Upload parts
+		var uploadPartTasks = new List<Task<UploadPartModel?>>();
+
+		await using (var stream = File.OpenRead(settings.File))
+		{
+			foreach (var uploadPart in uploadData.UploadParts)
+			{
+				stream.Seek(uploadPart.Offset, SeekOrigin.Begin);
+
+				var task = ThunderstoreApi.UploadPart(
+					stream,
+					uploadPart.PartNumber,
+					uploadPart.Size,
+					uploadPart.Url,
+					cancellationToken
+				);
+				
+				uploadPartTasks.Add(task);
+			}
+		}
+
+		var uploadParts = (await Task.WhenAll(uploadPartTasks))
+		                  .OfType<UploadPartModel>()
+		                  .ToArray();
+
+		if (uploadParts.Length != uploadData.UploadParts.Length)
+		{
+			await Console.Error.WriteLineAsync("Failed to upload parts.");
+			return 1;
+		}
+		
+		// usermedia/{uuid}/finish-upload/
+		var finishedUpload = await ThunderstoreApi.FinishMultipartUpload(
+			uploadData.FileMetadata.UUID,
+			uploadParts,
+			builder,
+			cancellationToken
+		);
+
+		if (!finishedUpload)
+		{
+			await Console.Error.WriteLineAsync("Failed to finish upload.");
+			return 1;
+		}
+
+		// submission/submit/
+
 		return 0;
 	}
 }
