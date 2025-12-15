@@ -5,7 +5,6 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
-
     <!-- Packages -->
     <ItemGroup>
         <PackageReference Include="MinVer" Version="6.0.0">
@@ -15,4 +14,21 @@
         <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
         <PackageReference Include="Spectre.Console.Cli" Version="1.0.0-alpha.0.11" />
     </ItemGroup>
+    <Target
+        Name="Husky"
+        BeforeTargets="Restore;CollectPackageReferences"
+        Condition="'$(HUSKY)' != 0"
+    >
+        <Exec
+            Command="dotnet tool restore"
+            StandardOutputImportance="Low"
+            StandardErrorImportance="High"
+        />
+        <Exec
+            Command="dotnet husky install"
+            StandardOutputImportance="Low"
+            StandardErrorImportance="High"
+            WorkingDirectory=".."
+        />
+    </Target>
 </Project>
