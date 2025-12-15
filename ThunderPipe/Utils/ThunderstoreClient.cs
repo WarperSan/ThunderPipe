@@ -35,4 +35,18 @@ internal sealed class ThunderstoreClient : HttpClient
 
 		return response;
 	}
+
+	/// <summary>
+	/// Sends the given request, and returns the JSON response
+	/// </summary>
+	public static async Task<T?> SendRequest<T>(
+		HttpRequestMessage request,
+		CancellationToken cancellationToken
+	)
+	{
+		var response = await SendRequest(request, cancellationToken);
+		var content = await response.Content.ReadAsStringAsync(cancellationToken);
+
+		return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(content);
+	}
 }
