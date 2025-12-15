@@ -49,16 +49,28 @@ internal record SubmitPackageRequest
 /// </summary>
 internal record SubmitPackageResponse
 {
+	/// <summary>
+	/// Model used to represent a package's version in <see cref="ThunderPipe.Utils.ThunderstoreApi.SubmitPackage"/>
+	/// </summary>
 	public record PackageVersionModel
 	{
+		/// <summary>
+		/// Name of the package
+		/// </summary>
 		[JsonProperty("name")]
 		[JsonRequired]
 		public required string Name { get; set; }
 
+		/// <summary>
+		/// Version of the package
+		/// </summary>
 		[JsonProperty("version")]
 		[JsonRequired]
 		public required string Version { get; set; }
 
+		/// <summary>
+		/// URL to download the package
+		/// </summary>
 		[JsonProperty("download_url")]
 		[JsonRequired]
 		// ReSharper disable once InconsistentNaming
@@ -83,6 +95,7 @@ internal record SubmitPackageResponse
 		// ReSharper disable once InconsistentNaming
 		public required string IconURL { get; set; }
 
+		// TODO: Add proper parsing of dependencies
 		[JsonProperty("dependencies")]
 		[JsonRequired]
 		public required object[] Dependencies { get; set; }
@@ -106,7 +119,18 @@ internal record SubmitPackageResponse
 #endif
 	}
 
+	/// <summary>
+	/// Version information about this package
+	/// </summary>
 	[JsonProperty("package_version")]
 	[JsonRequired]
 	public required PackageVersionModel Version { get; set; }
+
+	// These fields are not used by this tool
+#if false
+	// TODO: Add proper parsing of available communities
+	[JsonProperty("available_communities")]
+	[JsonRequired]
+	public required object[] Communities { get; set; }
+#endif
 }
