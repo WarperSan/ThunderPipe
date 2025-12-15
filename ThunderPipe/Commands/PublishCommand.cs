@@ -23,7 +23,7 @@ internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 
 		var uploadData = await ThunderstoreAPI.InitiateMultipartUpload(
 			file,
-			builder.Copy(),
+			builder,
 			cancellationToken
 		);
 
@@ -54,7 +54,7 @@ internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 		var finishedUpload = await ThunderstoreAPI.FinishMultipartUpload(
 			uploadData.FileMetadata.UUID,
 			uploadedParts,
-			builder.Copy(),
+			builder,
 			cancellationToken
 		);
 
@@ -72,7 +72,7 @@ internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 			settings.Categories ?? [],
 			settings.HasNsfw,
 			uploadData.FileMetadata.UUID,
-			builder.Copy(),
+			builder,
 			cancellationToken
 		);
 
