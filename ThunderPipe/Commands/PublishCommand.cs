@@ -82,8 +82,12 @@ internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 			return 1;
 		}
 
-		Log.WriteLine($"[lime]Successfully published '{file}'[/]");
-		Log.WriteLine($"The package is now available at '[cyan][/]'.");
+		Log.WriteLine(
+			$"[lime]Successfully published '{releasedPackage.Version.Name}' v{releasedPackage.Version.Version}[/]"
+		);
+		Log.WriteLine(
+			$"The package is now available at '[link={releasedPackage.Version.DownloadURL}]{releasedPackage.Version.Name}[/]'."
+		);
 
 		return 0;
 	}
