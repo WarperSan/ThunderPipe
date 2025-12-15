@@ -11,8 +11,6 @@ namespace ThunderPipe.Utils;
 /// </summary>
 internal static class ThunderstoreApi
 {
-	private const string API_EXPERIMENTAL = "api/experimental/";
-
 	/// <summary>
 	/// Initiates a multipart upload
 	/// </summary>
@@ -35,7 +33,7 @@ internal static class ThunderstoreApi
 
 		var request = builder
 		              .Post()
-		              .ToEndpoint(API_EXPERIMENTAL + "usermedia/initiate-upload/")
+		              .ToEndpoint(ThunderstoreClient.API_INITIATE_UPLOAD)
 		              .WithJson(payload)
 		              .Build();
 
@@ -178,7 +176,7 @@ internal static class ThunderstoreApi
 
 		var request = builder
 		              .Post()
-		              .ToEndpoint(API_EXPERIMENTAL + $"usermedia/{uuid}/finish-upload/")
+		              .ToEndpoint(ThunderstoreClient.API_FINISH_UPLOAD.Replace("{UUID}", uuid))
 		              .WithJson(payload)
 		              .Build();
 
@@ -215,7 +213,7 @@ internal static class ThunderstoreApi
 
 		var request = builder
 		              .Post()
-		              .ToEndpoint(API_EXPERIMENTAL + "submission/submit/")
+		              .ToEndpoint(ThunderstoreClient.API_SUBMIT_PACKAGE)
 		              .WithJson(payload)
 		              .Build();
 

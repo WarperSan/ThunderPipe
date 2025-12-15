@@ -7,6 +7,11 @@ namespace ThunderPipe.Utils;
 /// </summary>
 internal sealed class ThunderstoreClient : HttpClient
 {
+	private const string API_EXPERIMENTAL = "api/experimental/";
+	public const string API_INITIATE_UPLOAD = API_EXPERIMENTAL + "usermedia/initiate-upload/";
+	public const string API_FINISH_UPLOAD = API_EXPERIMENTAL + "usermedia/{UUID}/finish-upload/";
+	public const string API_SUBMIT_PACKAGE = API_EXPERIMENTAL + "submission/submit/";
+
 	private ThunderstoreClient()
 	{
 		DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(
