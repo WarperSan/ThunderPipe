@@ -9,13 +9,15 @@ namespace ThunderPipe.Commands;
 internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 {
 	/// <inheritdoc />
-	protected override async Task<int> ExecuteAsync(CommandContext context, PublishSettings settings, CancellationToken cancellationToken)
+	protected override async Task<int> ExecuteAsync(
+		CommandContext context,
+		PublishSettings settings,
+		CancellationToken cancellationToken
+	)
 	{
 		var file = settings.File;
 
-		var builder = new RequestBuilder()
-		              .ToUrl(settings.Repository!)
-		              .WithAuth(settings.Token);
+		var builder = new RequestBuilder().ToUrl(settings.Repository!).WithAuth(settings.Token);
 
 		Log.WriteLine($"Publishing '[cyan]{file}[/]'");
 
@@ -33,7 +35,9 @@ internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 
 		var fileSize = uploadData.FileMetadata.Size;
 		var chunkCount = uploadData.UploadParts.Length;
-		Log.WriteLine($"Uploading '[cyan]{file}[/]' ({Log.GetSizeString(fileSize)}) in {chunkCount} chunks.");
+		Log.WriteLine(
+			$"Uploading '[cyan]{file}[/]' ({Log.GetSizeString(fileSize)}) in {chunkCount} chunks."
+		);
 
 		var uploadedParts = await ThunderstoreApi.UploadParts(
 			file,

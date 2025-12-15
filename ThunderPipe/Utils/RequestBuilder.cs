@@ -80,10 +80,7 @@ internal sealed class RequestBuilder
 	/// </summary>
 	public RequestBuilder WithAuth(string? token)
 	{
-		_authHeader = new AuthenticationHeaderValue(
-			"Bearer",
-			token
-		);
+		_authHeader = new AuthenticationHeaderValue("Bearer", token);
 
 		return this;
 	}
@@ -129,7 +126,7 @@ internal sealed class RequestBuilder
 		var newBuilder = new RequestBuilder
 		{
 			_uriBuilder = new UriBuilder(_uriBuilder.Uri),
-			_method = _method
+			_method = _method,
 		};
 
 		if (_authHeader != null)

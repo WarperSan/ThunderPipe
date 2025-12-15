@@ -11,8 +11,9 @@ internal static class Program
 
 		app.Configure(config =>
 		{
-			config.AddCommand<PublishCommand>("publish")
-			      .WithDescription("Publish a package to Thunderstore.");
+			config
+				.AddCommand<PublishCommand>("publish")
+				.WithDescription("Publish a package to Thunderstore.");
 		});
 
 		return app.Run(args);

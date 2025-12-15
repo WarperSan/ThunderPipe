@@ -48,7 +48,7 @@ internal record InitialUploadResponse
 		public required long Size { get; set; }
 
 		// These fields are not used by this tool
-		#if false
+#if false
 		[JsonProperty("filename")]
 		public string? Filename { get; set; }
 
@@ -60,7 +60,7 @@ internal record InitialUploadResponse
 
 		[JsonProperty("status")]
 		public string? Status { get; set; }
-		#endif
+#endif
 	}
 
 	/// <summary>

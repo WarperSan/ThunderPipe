@@ -16,7 +16,7 @@ public sealed class PublishSettings : CommandSettings
 	[CommandArgument(0, "<file>")]
 	[Description("Path to the package file to publish")]
 	public required string File { get; init; }
-	
+
 	[CommandArgument(1, "<team>")]
 	[Description("Team to publish the package for")]
 	public required string Team { get; init; }
@@ -37,7 +37,7 @@ public sealed class PublishSettings : CommandSettings
 	[CommandOption("--categories <VALUES>")]
 	[Description("Categories used to label this package")]
 	public string[]? Categories { get; init; }
-	
+
 	[CommandOption("--has-nsfw|--nsfw")]
 	[Description("Determines if this package has NSFW content")]
 	[DefaultValue(false)]
@@ -58,8 +58,10 @@ public sealed class PublishSettings : CommandSettings
 		if (string.IsNullOrWhiteSpace(Token))
 			return ValidationResult.Error("Token cannot be empty.");
 
-		if (!Uri.TryCreate(Repository, UriKind.Absolute, out var hostUri)
-		    || hostUri.Scheme != Uri.UriSchemeHttp && hostUri.Scheme != Uri.UriSchemeHttps)
+		if (
+			!Uri.TryCreate(Repository, UriKind.Absolute, out var hostUri)
+			|| hostUri.Scheme != Uri.UriSchemeHttp && hostUri.Scheme != Uri.UriSchemeHttps
+		)
 			return ValidationResult.Error($"Repository '{Repository}' is not a valid URL.");
 
 		if (Categories != null && Categories.Any(string.IsNullOrEmpty))
