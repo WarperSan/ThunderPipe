@@ -7,6 +7,8 @@ namespace ThunderPipe.Settings;
 /// <summary>
 /// Settings used by <see cref="ValidateCommand"/>
 /// </summary>
+[SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
+[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 public sealed class ValidateSettings : CommandSettings
 {
 	[CommandOption("--disable-local|--no-local")]
