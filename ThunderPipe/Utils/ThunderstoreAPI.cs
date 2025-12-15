@@ -161,7 +161,10 @@ internal static class ThunderstoreApi
 		return response.StatusCode == HttpStatusCode.OK;
 	}
 
-	public static async Task SubmitPackage(
+	/// <summary>
+	/// Submits the package
+	/// </summary>
+	public static Task<SubmitPackageResponse?> SubmitPackage(
 		string author,
 		string community,
 		string[] categories,
@@ -186,8 +189,6 @@ internal static class ThunderstoreApi
 			.WithJson(payload)
 			.Build();
 
-		var response = await ThunderstoreClient.SendRequest(request, cancellationToken);
-
-		Console.WriteLine(await response.Content.ReadAsStringAsync(cancellationToken));
+		return ThunderstoreClient.SendRequest<SubmitPackageResponse>(request, cancellationToken);
 	}
 }
