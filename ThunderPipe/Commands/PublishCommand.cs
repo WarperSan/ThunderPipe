@@ -76,7 +76,11 @@ internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 			cancellationToken
 		);
 
-		if (releasedPackage == null) { }
+		if (releasedPackage == null)
+		{
+			Log.Error("Failed to submit package.");
+			return 1;
+		}
 
 		Log.WriteLine($"[lime]Successfully published '{file}'[/]");
 		Log.WriteLine($"The package is now available at '[cyan][/]'.");
