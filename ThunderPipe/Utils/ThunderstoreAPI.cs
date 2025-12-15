@@ -19,7 +19,7 @@ internal static class ThunderstoreApi
 	/// <remarks>
 	/// Internally, this calls the <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateMultipartUpload.html">Multipart upload initiation</a> step
 	/// </remarks>
-	public static Task<InitialUploadResponse?> InitiateMultipartUpload(
+	public static async Task<InitialUploadResponse?> InitiateMultipartUpload(
 		string            path,
 		RequestBuilder    builder,
 		CancellationToken cancellationToken
@@ -39,10 +39,10 @@ internal static class ThunderstoreApi
 		              .WithJson(payload)
 		              .Build();
 
-		return ThunderstoreClient.SendRequest<InitialUploadResponse>(
-			request,
-			cancellationToken
-		);
+		var response = await ThunderstoreClient.SendRequest(request, cancellationToken);
+		var content = await response.Content.ReadAsStringAsync(cancellationToken);
+
+		return Newtonsoft.Json.JsonConvert.DeserializeObject<InitialUploadResponse>(content);
 	}
 
 	/// <summary>
