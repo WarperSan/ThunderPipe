@@ -94,7 +94,7 @@ internal sealed class RequestBuilder
 	/// <summary>
 	/// Sets the JSON payload of this request
 	/// </summary>
-	public RequestBuilder WithJson(object json)
+	public RequestBuilder WithJSON(object json)
 	{
 		var serializedJson = JsonConvert.SerializeObject(json);
 

@@ -21,7 +21,7 @@ internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 
 		Log.WriteLine($"Publishing '[cyan]{file}[/]'");
 
-		var uploadData = await ThunderstoreApi.InitiateMultipartUpload(
+		var uploadData = await ThunderstoreAPI.InitiateMultipartUpload(
 			file,
 			builder.Copy(),
 			cancellationToken
@@ -29,7 +29,7 @@ internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 
 		if (uploadData == null)
 		{
-			await Console.Error.WriteLineAsync("Failed to initiate upload.");
+			Log.Error("Failed to initiate upload.");
 			return 1;
 		}
 
@@ -39,7 +39,7 @@ internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 			$"Uploading '[cyan]{file}[/]' ({Log.GetSizeString(fileSize)}) in {chunkCount} chunks."
 		);
 
-		var uploadedParts = await ThunderstoreApi.UploadParts(
+		var uploadedParts = await ThunderstoreAPI.UploadParts(
 			file,
 			uploadData.UploadParts,
 			cancellationToken
@@ -47,11 +47,11 @@ internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 
 		if (uploadedParts.Length != chunkCount)
 		{
-			await Console.Error.WriteLineAsync("Failed to upload parts.");
+			Log.Error("Failed to upload parts.");
 			return 1;
 		}
 
-		var finishedUpload = await ThunderstoreApi.FinishMultipartUpload(
+		var finishedUpload = await ThunderstoreAPI.FinishMultipartUpload(
 			uploadData.FileMetadata.UUID,
 			uploadedParts,
 			builder.Copy(),
@@ -60,13 +60,13 @@ internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 
 		if (!finishedUpload)
 		{
-			await Console.Error.WriteLineAsync("Failed to finish upload.");
+			Log.Error("Failed to finish upload.");
 			return 1;
 		}
 
 		Log.WriteLine("Successfully finalized the upload.");
 
-		await ThunderstoreApi.SubmitPackage(
+		var releasedPackage = await ThunderstoreAPI.SubmitPackage(
 			settings.Team,
 			settings.Community,
 			settings.Categories ?? [],
@@ -76,8 +76,18 @@ internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 			cancellationToken
 		);
 
-		Log.WriteLine($"[lime]Successfully published '{file}'[/]");
-		Log.WriteLine($"The package is now available at '[cyan][/]'.");
+		if (releasedPackage == null)
+		{
+			Log.Error("Failed to submit package.");
+			return 1;
+		}
+
+		Log.WriteLine(
+			$"[lime]Successfully published '{releasedPackage.Version.Name}' v{releasedPackage.Version.Version}[/]"
+		);
+		Log.WriteLine(
+			$"The package is now available at '[link={releasedPackage.Version.DownloadURL}]{releasedPackage.Version.Name}[/]'."
+		);
 
 		return 0;
 	}

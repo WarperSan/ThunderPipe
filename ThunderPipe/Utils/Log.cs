@@ -15,7 +15,15 @@ internal static class Log
 		AnsiConsole.Markup(message);
 		AnsiConsole.WriteLine();
 	}
-	
+
+	/// <summary>
+	/// Writes the given message to the console as an error
+	/// </summary>
+	public static void Error(string message)
+	{
+		WriteLine($"[red]Error[/]: {message}");
+	}
+
 	/// <summary>
 	/// Formats a byte size into readable text
 	/// </summary>
@@ -24,13 +32,13 @@ internal static class Log
 		double finalSize = byteSize;
 		string[] suffixes = ["B", "KB", "MB", "GB", "TB"];
 		var suffixIndex = 0;
-		
+
 		while (finalSize >= 1024 && suffixIndex < suffixes.Length)
 		{
 			finalSize /= 1024;
 			suffixIndex++;
 		}
-		
+
 		return $"{finalSize:F2} {suffixes[suffixIndex]}";
 	}
 }

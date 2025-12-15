@@ -2,14 +2,13 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using ThunderPipe.DTOs;
-using ThunderPipe.Models;
 
 namespace ThunderPipe.Utils;
 
 /// <summary>
 /// Class holding the main API calls to Thunderstore
 /// </summary>
-internal static class ThunderstoreApi
+internal static class ThunderstoreAPI
 {
 	/// <summary>
 	/// Initiates a multipart upload
@@ -17,7 +16,7 @@ internal static class ThunderstoreApi
 	/// <remarks>
 	/// Internally, this calls the <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateMultipartUpload.html">Multipart upload initiation</a> step
 	/// </remarks>
-	public static async Task<InitialUploadResponse?> InitiateMultipartUpload(
+	public static Task<InitialUploadResponse?> InitiateMultipartUpload(
 		string path,
 		RequestBuilder builder,
 		CancellationToken cancellationToken
@@ -34,20 +33,17 @@ internal static class ThunderstoreApi
 		var request = builder
 			.Post()
 			.ToEndpoint(ThunderstoreClient.API_INITIATE_UPLOAD)
-			.WithJson(payload)
+			.WithJSON(payload)
 			.Build();
 
-		var response = await ThunderstoreClient.SendRequest(request, cancellationToken);
-		var content = await response.Content.ReadAsStringAsync(cancellationToken);
-
-		return Newtonsoft.Json.JsonConvert.DeserializeObject<InitialUploadResponse>(content);
+		return ThunderstoreClient.SendRequest<InitialUploadResponse>(request, cancellationToken);
 	}
 
 	/// <summary>
 	/// Uploads every part of the file
 	/// </summary>
 	/// <remarks>
-	/// This is simply a helper method to simplify using <see cref="ThunderstoreApi.UploadPart"/>
+	/// This is simply a helper method to simplify using <see cref="ThunderstoreAPI.UploadPart"/>
 	/// </remarks>
 	public static async Task<UploadPartResponse[]> UploadParts(
 		string file,
@@ -157,7 +153,7 @@ internal static class ThunderstoreApi
 		var request = builder
 			.Post()
 			.ToEndpoint(ThunderstoreClient.API_FINISH_UPLOAD.Replace("{UUID}", uuid))
-			.WithJson(payload)
+			.WithJSON(payload)
 			.Build();
 
 		var response = await ThunderstoreClient.SendRequest(request, cancellationToken);
@@ -165,7 +161,10 @@ internal static class ThunderstoreApi
 		return response.StatusCode == HttpStatusCode.OK;
 	}
 
-	public static async Task SubmitPackage(
+	/// <summary>
+	/// Submits the package
+	/// </summary>
+	public static Task<SubmitPackageResponse?> SubmitPackage(
 		string author,
 		string community,
 		string[] categories,
@@ -175,10 +174,9 @@ internal static class ThunderstoreApi
 		CancellationToken cancellationToken
 	)
 	{
-		var payload = new SubmitPackageRequestModel
+		var payload = new SubmitPackageRequest
 		{
 			AuthorName = author,
-			Categories = [],
 			Communities = [community],
 			CommunityCategories = new Dictionary<string, string[]> { [community] = categories },
 			HasNsfwContent = hasNsfw,
@@ -188,11 +186,9 @@ internal static class ThunderstoreApi
 		var request = builder
 			.Post()
 			.ToEndpoint(ThunderstoreClient.API_SUBMIT_PACKAGE)
-			.WithJson(payload)
+			.WithJSON(payload)
 			.Build();
 
-		var response = await ThunderstoreClient.SendRequest(request, cancellationToken);
-
-		Console.WriteLine(await response.Content.ReadAsStringAsync(cancellationToken));
+		return ThunderstoreClient.SendRequest<SubmitPackageResponse>(request, cancellationToken);
 	}
 }

@@ -1,9 +1,10 @@
 using Newtonsoft.Json;
+using ThunderPipe.Utils;
 
 namespace ThunderPipe.DTOs;
 
 /// <summary>
-/// Model used as the request payload in <see cref="ThunderPipe.Utils.ThunderstoreApi.InitiateMultipartUpload"/>
+/// Model used as the request payload in <see cref="ThunderstoreAPI.InitiateMultipartUpload"/>
 /// </summary>
 internal record InitialUploadRequest
 {
@@ -26,23 +27,25 @@ internal record InitialUploadRequest
 }
 
 /// <summary>
-/// Model used as the response payload in <see cref="ThunderPipe.Utils.ThunderstoreApi.InitiateMultipartUpload"/>
+/// Model used as the response payload in <see cref="ThunderstoreAPI.InitiateMultipartUpload"/>
 /// </summary>
 internal record InitialUploadResponse
 {
 	/// <summary>
-	/// Model used to represent metadata from <see cref="ThunderPipe.Utils.ThunderstoreApi.InitiateMultipartUpload"/>
+	/// Model used to represent metadata from <see cref="ThunderstoreAPI.InitiateMultipartUpload"/>
 	/// </summary>
 	public record FileMetadataModel
 	{
 		/// <summary>
-		/// Unique identifier of the user media
+		/// Unique identifier of the file
 		/// </summary>
 		[JsonProperty("uuid")]
 		[JsonRequired]
-		// ReSharper disable once InconsistentNaming
 		public required string UUID { get; set; }
 
+		/// <summary>
+		/// Total size of the file
+		/// </summary>
 		[JsonProperty("size")]
 		[JsonRequired]
 		public required long Size { get; set; }
@@ -64,13 +67,16 @@ internal record InitialUploadResponse
 	}
 
 	/// <summary>
-	/// Model used to represent multipart upload data from <see cref="ThunderPipe.Utils.ThunderstoreApi.InitiateMultipartUpload"/>
+	/// Model used to represent multipart upload data from <see cref="ThunderstoreAPI.InitiateMultipartUpload"/>
 	/// </summary>
 	/// <remarks>
 	///	This refers to <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_UploadPart.html">this</a>
 	/// </remarks>
 	public record UploadPartModel
 	{
+		/// <summary>
+		/// Identifier of this part
+		/// </summary>
 		[JsonProperty("part_number")]
 		[JsonRequired]
 		public required int PartNumber { get; set; }
