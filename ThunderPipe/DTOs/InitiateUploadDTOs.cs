@@ -43,13 +43,14 @@ internal record InitialUploadResponse
 		// ReSharper disable once InconsistentNaming
 		public required string UUID { get; set; }
 
+		[JsonProperty("size")]
+		[JsonRequired]
+		public required long Size { get; set; }
+
 		// These fields are not used by this tool
 		#if false
 		[JsonProperty("filename")]
 		public string? Filename { get; set; }
-
-		[JsonProperty("size")]
-		public long Size { get; set; }
 
 		[JsonProperty("datetime_created")]
 		public DateTime TimeCreated { get; set; }

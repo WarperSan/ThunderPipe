@@ -17,6 +17,8 @@ internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 		              .ToUrl(settings.Repository!)
 		              .WithAuth(settings.Token);
 
+		Log.WriteLine($"Publishing '[cyan]{file}[/]'");
+
 		var uploadData = await ThunderstoreApi.InitiateMultipartUpload(
 			file,
 			builder.Copy(),
@@ -29,13 +31,17 @@ internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 			return 1;
 		}
 
+		var fileSize = uploadData.FileMetadata.Size;
+		var chunkCount = uploadData.UploadParts.Length;
+		Log.WriteLine($"Uploading '[cyan]{file}[/]' ({Log.GetSizeString(fileSize)}) in {chunkCount} chunks.");
+
 		var uploadedParts = await ThunderstoreApi.UploadParts(
 			file,
 			uploadData.UploadParts,
 			cancellationToken
 		);
 
-		if (uploadedParts.Length != uploadData.UploadParts.Length)
+		if (uploadedParts.Length != chunkCount)
 		{
 			await Console.Error.WriteLineAsync("Failed to upload parts.");
 			return 1;
@@ -53,7 +59,9 @@ internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 			await Console.Error.WriteLineAsync("Failed to finish upload.");
 			return 1;
 		}
-		
+
+		Log.WriteLine("Successfully finalized the upload.");
+
 		await ThunderstoreApi.SubmitPackage(
 			settings.Team,
 			settings.Community,
@@ -63,6 +71,9 @@ internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 			builder.Copy(),
 			cancellationToken
 		);
+
+		Log.WriteLine($"[lime]Successfully published '{file}'[/]");
+		Log.WriteLine($"The package is now available at '[cyan][/]'.");
 
 		return 0;
 	}
