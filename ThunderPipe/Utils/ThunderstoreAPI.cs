@@ -10,6 +10,27 @@ namespace ThunderPipe.Utils;
 /// </summary>
 internal static class ThunderstoreAPI
 {
+	public static async Task ValidateIcon(
+		string path,
+		RequestBuilder builder,
+		CancellationToken cancellationToken
+	)
+	{
+		var data = await File.ReadAllBytesAsync(path, cancellationToken);
+
+		var payload = new { icon_data = Convert.ToBase64String(data) };
+
+		var request = builder
+			.Post()
+			.ToEndpoint(ThunderstoreClient.API_VALIDATE_ICON)
+			.WithJSON(payload)
+			.Build();
+
+		var response = await ThunderstoreClient.SendRequest(request, cancellationToken);
+
+		Console.WriteLine(await response.Content.ReadAsStringAsync(cancellationToken));
+	}
+
 	/// <summary>
 	/// Initiates a multipart upload
 	/// </summary>
