@@ -2,7 +2,6 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using ThunderPipe.DTOs;
-using ThunderPipe.Models;
 
 namespace ThunderPipe.Utils;
 
@@ -175,10 +174,9 @@ internal static class ThunderstoreApi
 		CancellationToken cancellationToken
 	)
 	{
-		var payload = new SubmitPackageRequestModel
+		var payload = new SubmitPackageRequest
 		{
 			AuthorName = author,
-			Categories = [],
 			Communities = [community],
 			CommunityCategories = new Dictionary<string, string[]> { [community] = categories },
 			HasNsfwContent = hasNsfw,
