@@ -182,8 +182,9 @@ internal static class ThunderstoreApi
 			Communities = [community],
 			CommunityCategories = new Dictionary<string, string[]> { [community] = categories },
 			HasNsfwContent = hasNsfw,
-			
 			UploadUUID = uploadUUID,
+			
+			
 		};
 
 		var request = builder
