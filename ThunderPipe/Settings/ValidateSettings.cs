@@ -13,10 +13,6 @@ namespace ThunderPipe.Settings;
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 public sealed class ValidateSettings : CommandSettings
 {
-	[CommandArgument(0, "<directory>")]
-	[Description("Path to the directory containing the package files")]
-	public required string Directory { get; init; }
-
 	[CommandOption("--disable-local|--no-local")]
 	[Description("Determines if local validation will be ignored")]
 	[DefaultValue(false)]
@@ -35,9 +31,6 @@ public sealed class ValidateSettings : CommandSettings
 	/// <inheritdoc />
 	public override ValidationResult Validate()
 	{
-		if (!System.IO.Directory.Exists(Directory))
-			return ValidationResult.Error($"No directory was found at '{Directory}'.");
-
 		if (IgnoreLocalValidation && !UseRemoteValidation)
 			return ValidationResult.Error("At least one validation source must be used.");
 
