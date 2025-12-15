@@ -1,9 +1,10 @@
 using Newtonsoft.Json;
+using ThunderPipe.Utils;
 
 namespace ThunderPipe.DTOs;
 
 /// <summary>
-/// Model used as the request payload in <see cref="ThunderPipe.Utils.ThunderstoreApi.SubmitPackage"/>
+/// Model used as the request payload in <see cref="ThunderstoreAPI.SubmitPackage"/>
 /// </summary>
 internal record SubmitPackageRequest
 {
@@ -40,17 +41,16 @@ internal record SubmitPackageRequest
 	/// </summary>
 	[JsonProperty("upload_uuid")]
 	[JsonRequired]
-	// ReSharper disable once InconsistentNaming
 	public required string UploadUUID { get; set; }
 }
 
 /// <summary>
-/// Model used as the response payload in <see cref="ThunderPipe.Utils.ThunderstoreApi.SubmitPackage"/>
+/// Model used as the response payload in <see cref="ThunderstoreAPI.SubmitPackage"/>
 /// </summary>
 internal record SubmitPackageResponse
 {
 	/// <summary>
-	/// Model used to represent a package's version in <see cref="ThunderPipe.Utils.ThunderstoreApi.SubmitPackage"/>
+	/// Model used to represent a package's version in <see cref="ThunderstoreAPI.SubmitPackage"/>
 	/// </summary>
 	public record PackageVersionModel
 	{
@@ -73,7 +73,6 @@ internal record SubmitPackageResponse
 		/// </summary>
 		[JsonProperty("download_url")]
 		[JsonRequired]
-		// ReSharper disable once InconsistentNaming
 		public required string DownloadURL { get; set; }
 
 		// These fields are not used by this tool
@@ -92,7 +91,6 @@ internal record SubmitPackageResponse
 		
 		[JsonProperty("icon")]
 		[JsonRequired]
-		// ReSharper disable once InconsistentNaming
 		public required string IconURL { get; set; }
 
 		// TODO: Add proper parsing of dependencies
@@ -102,7 +100,6 @@ internal record SubmitPackageResponse
 
 		[JsonProperty("website_url")]
 		[JsonRequired]
-		// ReSharper disable once InconsistentNaming
 		public required string WebsiteURL { get; set; }
 
 		[JsonProperty("is_active")]

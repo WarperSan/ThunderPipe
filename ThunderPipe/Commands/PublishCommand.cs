@@ -21,7 +21,7 @@ internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 
 		Log.WriteLine($"Publishing '[cyan]{file}[/]'");
 
-		var uploadData = await ThunderstoreApi.InitiateMultipartUpload(
+		var uploadData = await ThunderstoreAPI.InitiateMultipartUpload(
 			file,
 			builder.Copy(),
 			cancellationToken
@@ -39,7 +39,7 @@ internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 			$"Uploading '[cyan]{file}[/]' ({Log.GetSizeString(fileSize)}) in {chunkCount} chunks."
 		);
 
-		var uploadedParts = await ThunderstoreApi.UploadParts(
+		var uploadedParts = await ThunderstoreAPI.UploadParts(
 			file,
 			uploadData.UploadParts,
 			cancellationToken
@@ -51,7 +51,7 @@ internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 			return 1;
 		}
 
-		var finishedUpload = await ThunderstoreApi.FinishMultipartUpload(
+		var finishedUpload = await ThunderstoreAPI.FinishMultipartUpload(
 			uploadData.FileMetadata.UUID,
 			uploadedParts,
 			builder.Copy(),
@@ -66,7 +66,7 @@ internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 
 		Log.WriteLine("Successfully finalized the upload.");
 
-		var releasedPackage = await ThunderstoreApi.SubmitPackage(
+		var releasedPackage = await ThunderstoreAPI.SubmitPackage(
 			settings.Team,
 			settings.Community,
 			settings.Categories ?? [],

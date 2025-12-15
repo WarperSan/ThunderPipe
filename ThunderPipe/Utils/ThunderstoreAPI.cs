@@ -8,7 +8,7 @@ namespace ThunderPipe.Utils;
 /// <summary>
 /// Class holding the main API calls to Thunderstore
 /// </summary>
-internal static class ThunderstoreApi
+internal static class ThunderstoreAPI
 {
 	/// <summary>
 	/// Initiates a multipart upload
@@ -33,7 +33,7 @@ internal static class ThunderstoreApi
 		var request = builder
 			.Post()
 			.ToEndpoint(ThunderstoreClient.API_INITIATE_UPLOAD)
-			.WithJson(payload)
+			.WithJSON(payload)
 			.Build();
 
 		return ThunderstoreClient.SendRequest<InitialUploadResponse>(request, cancellationToken);
@@ -43,7 +43,7 @@ internal static class ThunderstoreApi
 	/// Uploads every part of the file
 	/// </summary>
 	/// <remarks>
-	/// This is simply a helper method to simplify using <see cref="ThunderstoreApi.UploadPart"/>
+	/// This is simply a helper method to simplify using <see cref="ThunderstoreAPI.UploadPart"/>
 	/// </remarks>
 	public static async Task<UploadPartResponse[]> UploadParts(
 		string file,
@@ -153,7 +153,7 @@ internal static class ThunderstoreApi
 		var request = builder
 			.Post()
 			.ToEndpoint(ThunderstoreClient.API_FINISH_UPLOAD.Replace("{UUID}", uuid))
-			.WithJson(payload)
+			.WithJSON(payload)
 			.Build();
 
 		var response = await ThunderstoreClient.SendRequest(request, cancellationToken);
@@ -186,7 +186,7 @@ internal static class ThunderstoreApi
 		var request = builder
 			.Post()
 			.ToEndpoint(ThunderstoreClient.API_SUBMIT_PACKAGE)
-			.WithJson(payload)
+			.WithJSON(payload)
 			.Build();
 
 		return ThunderstoreClient.SendRequest<SubmitPackageResponse>(request, cancellationToken);
