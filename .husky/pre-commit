@@ -1,0 +1,15 @@
+#!/bin/sh
+
+## run all tasks
+#dotnet husky run
+
+### run all tasks with group: 'group-name'
+dotnet husky run --group pre-commit
+
+## run task with name: 'task-name'
+#dotnet husky run --name task-name
+
+## pass hook arguments to task
+#dotnet husky run --args "$1" "$2"
+
+echo "Huskey.net finished!"
