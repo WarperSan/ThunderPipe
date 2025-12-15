@@ -7,6 +7,9 @@ namespace ThunderPipe.DTOs;
 /// </summary>
 internal record FinishUploadRequest
 {
+	/// <summary>
+	/// Every part of the upload
+	/// </summary>
 	[JsonProperty("parts")]
 	[JsonRequired]
 	public required UploadPartResponse[] Parts { get; set; }
