@@ -64,7 +64,7 @@ internal record SubmitPackageResponse
 		/// <summary>
 		/// Version of the package
 		/// </summary>
-		[JsonProperty("version")]
+		[JsonProperty("version_number")]
 		[JsonRequired]
 		public required string Version { get; set; }
 
