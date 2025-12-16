@@ -6,7 +6,7 @@ using ThunderPipe.DTOs;
 namespace ThunderPipe.Utils;
 
 /// <summary>
-/// Class holding the main API calls to Thunderstore
+/// Class holding the API calls to Thunderstore
 /// </summary>
 internal static class ThunderstoreAPI
 {
