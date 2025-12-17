@@ -61,5 +61,12 @@ internal sealed class ThunderstoreClient : HttpClient
 			);
 			return default;
 		}
+		catch (JsonReaderException e)
+		{
+			Log.Error(
+				$"Failed to read response:\n{e.Message.EscapeMarkup()}\n\n[gray]{content.EscapeMarkup()}[/]"
+			);
+			return default;
+		}
 	}
 }
