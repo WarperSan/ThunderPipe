@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using Spectre.Console;
 using Spectre.Console.Cli;
 using ThunderPipe.Settings;
 using ThunderPipe.Utils;
@@ -30,6 +29,12 @@ internal sealed class ValidateCommand : AsyncCommand<ValidateSettings>
 		{
 			validations.Add(new RemoteIconValidationRule(iconPath));
 			validations.Add(new RemoteManifestValidationRule(manifestPath, "root"));
+		}
+
+		if (validations.Count == 0)
+		{
+			Log.Error("No validation rule was applied.");
+			return 1;
 		}
 
 		foreach (var validation in validations)
