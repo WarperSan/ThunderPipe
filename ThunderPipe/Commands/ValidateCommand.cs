@@ -3,6 +3,7 @@ using Spectre.Console;
 using Spectre.Console.Cli;
 using ThunderPipe.Settings;
 using ThunderPipe.Utils;
+using ThunderPipe.Validations;
 
 namespace ThunderPipe.Commands;
 
@@ -21,30 +22,27 @@ internal sealed class ValidateCommand : AsyncCommand<ValidateSettings>
 		var iconPath = Path.GetFullPath(settings.IconPath!, settings.PackageFolder);
 		var manifestPath = Path.GetFullPath(settings.ManifestPath!, settings.PackageFolder);
 
-		var iconErrors = await ThunderstoreAPI.ValidateIcon(iconPath, builder, cancellationToken);
+		var validations = new List<BaseValidationRule>();
 
-		if (iconErrors == null)
+		if (!settings.IgnoreLocalValidation) { }
+
+		if (settings.UseRemoteValidation)
 		{
-			Log.Error("Failed to validate the icon remotely.");
+			validations.Add(new RemoteIconValidationRule(iconPath));
+		}
+
+		foreach (var validation in validations)
+		{
+			var error = await validation.Validate(builder, cancellationToken);
+
+			if (error == null)
+				continue;
+
+			Log.Error(error);
 			return 1;
 		}
 
-		if (iconErrors.DataErrors != null || iconErrors.ValidationErrors != null)
-		{
-			var errors = new List<string>();
-
-			if (iconErrors.DataErrors != null)
-				errors.AddRange(iconErrors.DataErrors);
-
-			if (iconErrors.ValidationErrors != null)
-				errors.AddRange(iconErrors.ValidationErrors);
-
-			Log.Error(
-				$"File at '{iconPath}' has resulted in these errors:\n\n- {string.Join("\n- ", errors).EscapeMarkup()}"
-			);
-			return 1;
-		}
-
+		return 0;
 		var manifestErrors = await ThunderstoreAPI.ValidateManifest(
 			manifestPath,
 			"root",
