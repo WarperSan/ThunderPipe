@@ -15,7 +15,7 @@ internal sealed class ValidateCommand : AsyncCommand<ValidateSettings>
 		CancellationToken cancellationToken
 	)
 	{
-		var builder = new RequestBuilder().ToUrl(settings.Repository!).WithAuth(settings.Token);
+		var builder = RequestBuilder.Create(settings.Token, settings.Repository!);
 
 		await ThunderstoreAPI.ValidateIcon(
 			"/home/warpersan/Projects/TypeScript/action-thunderstore-check/__tests__/assets/icons/wrong-type.png",
