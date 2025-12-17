@@ -21,6 +21,11 @@ public sealed class ValidateSettings : CommandSettings
 	[Description("Authentication token used to publish the package")]
 	public required string Token { get; init; }
 
+	[CommandOption("--icon")]
+	[Description("Path from the package folder to the icon file")]
+	[DefaultValue("./icon.png")]
+	public string? IconPath { get; init; }
+
 	[CommandOption("--disable-local|--no-local")]
 	[Description("Determines if local validation will be ignored")]
 	[DefaultValue(false)]
@@ -45,15 +50,29 @@ public sealed class ValidateSettings : CommandSettings
 		if (IgnoreLocalValidation && !UseRemoteValidation)
 			return ValidationResult.Error("At least one validation source must be used.");
 
-		if (UseRemoteValidation && string.IsNullOrWhiteSpace(Repository))
-			return ValidationResult.Error(
-				"If remote validation is used, a repository must be specified."
-			);
+		if (!IgnoreLocalValidation)
+		{
+			if (string.IsNullOrWhiteSpace(IconPath))
+				return ValidationResult.Error("Icon path must be specified.");
 
-		if (UseRemoteValidation && string.IsNullOrWhiteSpace(Token))
-			return ValidationResult.Error(
-				"If remote validation is used, a token must be specified."
-			);
+			var iconPath = Path.GetFullPath(IconPath, PackageFolder);
+
+			if (!File.Exists(iconPath))
+				return ValidationResult.Error($"No file was found at '{iconPath}'.");
+		}
+
+		if (UseRemoteValidation)
+		{
+			if (string.IsNullOrWhiteSpace(Repository))
+				return ValidationResult.Error(
+					"If remote validation is used, a repository must be specified."
+				);
+
+			if (string.IsNullOrWhiteSpace(Token))
+				return ValidationResult.Error(
+					"If remote validation is used, a token must be specified."
+				);
+		}
 
 		return base.Validate();
 	}
