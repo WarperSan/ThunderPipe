@@ -1,4 +1,6 @@
 using System.Net.Http.Headers;
+using Newtonsoft.Json;
+using Spectre.Console;
 
 namespace ThunderPipe.Utils;
 
@@ -48,6 +50,16 @@ internal sealed class ThunderstoreClient : HttpClient
 		var response = await SendRequest(request, cancellationToken);
 		var content = await response.Content.ReadAsStringAsync(cancellationToken);
 
-		return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(content);
+		try
+		{
+			return JsonConvert.DeserializeObject<T>(content);
+		}
+		catch (JsonSerializationException e)
+		{
+			Log.Error(
+				$"Failed to deserialize response:\n{e.Message.EscapeMarkup()}\n\n[gray]{content.EscapeMarkup()}[/]"
+			);
+			return default;
+		}
 	}
 }
