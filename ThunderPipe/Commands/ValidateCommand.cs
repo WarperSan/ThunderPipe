@@ -29,7 +29,7 @@ internal sealed class ValidateCommand : AsyncCommand<ValidateSettings>
 		if (settings.UseRemoteValidation)
 		{
 			validations.Add(new RemoteIconValidationRule(iconPath));
-			validations.Add(new RemoteManifestValidationRule(manifestPath, "root"));
+			validations.Add(new RemoteManifestValidationRule(manifestPath, settings.Author!));
 			//validations.Add(new RemoteReadmeValidationRule(readmePath));
 		}
 

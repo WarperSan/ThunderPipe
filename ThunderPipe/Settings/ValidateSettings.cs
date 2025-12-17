@@ -31,6 +31,10 @@ public sealed class ValidateSettings : CommandSettings
 	[DefaultValue("./manifest.json")]
 	public string? ManifestPath { get; init; }
 
+	[CommandOption("--author")]
+	[Description("Name of the author that would publish the package")]
+	public string? Author { get; init; }
+
 	[CommandOption("--readme")]
 	[Description("Path from the package folder to the README file")]
 	[DefaultValue("./README.md")]
@@ -77,6 +81,9 @@ public sealed class ValidateSettings : CommandSettings
 
 			if (!File.Exists(manifestPath))
 				return ValidationResult.Error($"No file was found at '{manifestPath}'.");
+
+			if (string.IsNullOrWhiteSpace(Author))
+				return ValidationResult.Error("Author must be specified.");
 
 			if (string.IsNullOrWhiteSpace(ReadmePath))
 				return ValidationResult.Error("README path must be specified.");
