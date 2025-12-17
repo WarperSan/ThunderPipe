@@ -11,6 +11,89 @@ namespace ThunderPipe.Utils;
 internal static class ThunderstoreAPI
 {
 	/// <summary>
+	/// Validates the icon
+	/// </summary>
+	public static async Task<ValidateIconResponse?> ValidateIcon(
+		string path,
+		RequestBuilder builder,
+		CancellationToken cancellationToken
+	)
+	{
+		var data = await File.ReadAllBytesAsync(path, cancellationToken);
+
+		var payload = new ValidateIconRequest { Data = Convert.ToBase64String(data) };
+
+		var request = builder
+			.Copy()
+			.Post()
+			.ToEndpoint(ThunderstoreClient.API_VALIDATE_ICON)
+			.WithJSON(payload)
+			.Build();
+
+		return await ThunderstoreClient.SendRequest<ValidateIconResponse>(
+			request,
+			cancellationToken
+		);
+	}
+
+	/// <summary>
+	/// Validates the manifest
+	/// </summary>
+	public static async Task<ValidateManifestResponse?> ValidateManifest(
+		string path,
+		string author,
+		RequestBuilder builder,
+		CancellationToken cancellationToken
+	)
+	{
+		var data = await File.ReadAllBytesAsync(path, cancellationToken);
+
+		var payload = new ValidateManifestRequest
+		{
+			AuthorName = author,
+			Data = Convert.ToBase64String(data),
+		};
+
+		var request = builder
+			.Copy()
+			.Post()
+			.ToEndpoint(ThunderstoreClient.API_VALIDATE_MANIFEST)
+			.WithJSON(payload)
+			.Build();
+
+		return await ThunderstoreClient.SendRequest<ValidateManifestResponse>(
+			request,
+			cancellationToken
+		);
+	}
+
+	/// <summary>
+	/// Validates the README
+	/// </summary>
+	public static async Task<ValidateReadmeResponse?> ValidateReadme(
+		string path,
+		RequestBuilder builder,
+		CancellationToken cancellationToken
+	)
+	{
+		var data = await File.ReadAllBytesAsync(path, cancellationToken);
+
+		var payload = new ValidateReadmeRequest { Data = Convert.ToBase64String(data) };
+
+		var request = builder
+			.Copy()
+			.Post()
+			.ToEndpoint(ThunderstoreClient.API_VALIDATE_README)
+			.WithJSON(payload)
+			.Build();
+
+		return await ThunderstoreClient.SendRequest<ValidateReadmeResponse>(
+			request,
+			cancellationToken
+		);
+	}
+
+	/// <summary>
 	/// Initiates a multipart upload
 	/// </summary>
 	/// <remarks>

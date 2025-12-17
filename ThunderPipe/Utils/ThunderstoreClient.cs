@@ -1,4 +1,6 @@
 using System.Net.Http.Headers;
+using Newtonsoft.Json;
+using Spectre.Console;
 
 namespace ThunderPipe.Utils;
 
@@ -8,6 +10,10 @@ namespace ThunderPipe.Utils;
 internal sealed class ThunderstoreClient : HttpClient
 {
 	private const string API_EXPERIMENTAL = "api/experimental/";
+	public const string API_VALIDATE_ICON = API_EXPERIMENTAL + "submission/validate/icon/";
+	public const string API_VALIDATE_MANIFEST =
+		API_EXPERIMENTAL + "submission/validate/manifest-v1/";
+	public const string API_VALIDATE_README = API_EXPERIMENTAL + "submission/validate/readme/";
 	public const string API_INITIATE_UPLOAD = API_EXPERIMENTAL + "usermedia/initiate-upload/";
 	public const string API_FINISH_UPLOAD = API_EXPERIMENTAL + "usermedia/{UUID}/finish-upload/";
 	public const string API_SUBMIT_PACKAGE = API_EXPERIMENTAL + "submission/submit/";
@@ -31,7 +37,7 @@ internal sealed class ThunderstoreClient : HttpClient
 		using var client = new ThunderstoreClient();
 
 		var response = await client.SendAsync(request, cancellationToken);
-		response.EnsureSuccessStatusCode();
+		//response.EnsureSuccessStatusCode();
 
 		return response;
 	}
@@ -47,6 +53,23 @@ internal sealed class ThunderstoreClient : HttpClient
 		var response = await SendRequest(request, cancellationToken);
 		var content = await response.Content.ReadAsStringAsync(cancellationToken);
 
-		return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(content);
+		try
+		{
+			return JsonConvert.DeserializeObject<T>(content);
+		}
+		catch (JsonSerializationException e)
+		{
+			Log.Error(
+				$"Failed to deserialize response:\n{e.Message.EscapeMarkup()}\n\n[gray]{content.EscapeMarkup()}[/]"
+			);
+			return default;
+		}
+		catch (JsonReaderException e)
+		{
+			Log.Error(
+				$"Failed to read response:\n{e.Message.EscapeMarkup()}\n\n[gray]{content.EscapeMarkup()}[/]"
+			);
+			return default;
+		}
 	}
 }
