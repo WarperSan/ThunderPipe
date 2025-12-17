@@ -37,6 +37,37 @@ internal static class ThunderstoreAPI
 	}
 
 	/// <summary>
+	/// Validates the manifest
+	/// </summary>
+	public static async Task<ValidateManifestResponse?> ValidateManifest(
+		string path,
+		string author,
+		RequestBuilder builder,
+		CancellationToken cancellationToken
+	)
+	{
+		var data = await File.ReadAllBytesAsync(path, cancellationToken);
+
+		var payload = new ValidateManifestRequest
+		{
+			AuthorName = author,
+			Data = Convert.ToBase64String(data),
+		};
+
+		var request = builder
+			.Copy()
+			.Post()
+			.ToEndpoint(ThunderstoreClient.API_VALIDATE_MANIFEST)
+			.WithJSON(payload)
+			.Build();
+
+		return await ThunderstoreClient.SendRequest<ValidateManifestResponse>(
+			request,
+			cancellationToken
+		);
+	}
+
+	/// <summary>
 	/// Initiates a multipart upload
 	/// </summary>
 	/// <remarks>
