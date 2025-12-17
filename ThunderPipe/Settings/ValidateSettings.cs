@@ -26,6 +26,11 @@ public sealed class ValidateSettings : CommandSettings
 	[DefaultValue("./icon.png")]
 	public string? IconPath { get; init; }
 
+	[CommandOption("--manifest")]
+	[Description("Path from the package folder to the manifest file")]
+	[DefaultValue("./manifest.json")]
+	public string? ManifestPath { get; init; }
+
 	[CommandOption("--disable-local|--no-local")]
 	[Description("Determines if local validation will be ignored")]
 	[DefaultValue(false)]
@@ -59,6 +64,14 @@ public sealed class ValidateSettings : CommandSettings
 
 			if (!File.Exists(iconPath))
 				return ValidationResult.Error($"No file was found at '{iconPath}'.");
+
+			if (string.IsNullOrWhiteSpace(ManifestPath))
+				return ValidationResult.Error("Manifest path must be specified.");
+
+			var manifestPath = Path.GetFullPath(ManifestPath, PackageFolder);
+
+			if (!File.Exists(manifestPath))
+				return ValidationResult.Error($"No file was found at '{manifestPath}'.");
 		}
 
 		if (UseRemoteValidation)
