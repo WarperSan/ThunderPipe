@@ -64,35 +64,29 @@ public sealed class ValidateSettings : CommandSettings
 		if (IgnoreLocalValidation && !UseRemoteValidation)
 			return ValidationResult.Error("At least one validation source must be used.");
 
-		if (!IgnoreLocalValidation)
-		{
-			if (string.IsNullOrWhiteSpace(IconPath))
-				return ValidationResult.Error("Icon path must be specified.");
+		if (string.IsNullOrWhiteSpace(IconPath))
+			return ValidationResult.Error("Icon path must be specified.");
 
-			var iconPath = Path.GetFullPath(IconPath, PackageFolder);
+		var iconPath = Path.GetFullPath(IconPath, PackageFolder);
 
-			if (!File.Exists(iconPath))
-				return ValidationResult.Error($"No file was found at '{iconPath}'.");
+		if (!File.Exists(iconPath))
+			return ValidationResult.Error($"No file was found at '{iconPath}'.");
 
-			if (string.IsNullOrWhiteSpace(ManifestPath))
-				return ValidationResult.Error("Manifest path must be specified.");
+		if (string.IsNullOrWhiteSpace(ManifestPath))
+			return ValidationResult.Error("Manifest path must be specified.");
 
-			var manifestPath = Path.GetFullPath(ManifestPath, PackageFolder);
+		var manifestPath = Path.GetFullPath(ManifestPath, PackageFolder);
 
-			if (!File.Exists(manifestPath))
-				return ValidationResult.Error($"No file was found at '{manifestPath}'.");
+		if (!File.Exists(manifestPath))
+			return ValidationResult.Error($"No file was found at '{manifestPath}'.");
 
-			if (string.IsNullOrWhiteSpace(Author))
-				return ValidationResult.Error("Author must be specified.");
+		if (string.IsNullOrWhiteSpace(ReadmePath))
+			return ValidationResult.Error("README path must be specified.");
 
-			if (string.IsNullOrWhiteSpace(ReadmePath))
-				return ValidationResult.Error("README path must be specified.");
+		var readmePath = Path.GetFullPath(ReadmePath, PackageFolder);
 
-			var readmePath = Path.GetFullPath(ReadmePath, PackageFolder);
-
-			if (!File.Exists(readmePath))
-				return ValidationResult.Error($"No file was found at '{readmePath}'.");
-		}
+		if (!File.Exists(readmePath))
+			return ValidationResult.Error($"No file was found at '{readmePath}'.");
 
 		if (UseRemoteValidation)
 		{
@@ -104,6 +98,11 @@ public sealed class ValidateSettings : CommandSettings
 			if (string.IsNullOrWhiteSpace(Token))
 				return ValidationResult.Error(
 					"If remote validation is used, a token must be specified."
+				);
+
+			if (string.IsNullOrWhiteSpace(Author))
+				return ValidationResult.Error(
+					"If remote validation is used, an author must be specified."
 				);
 		}
 
