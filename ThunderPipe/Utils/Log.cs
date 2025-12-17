@@ -10,11 +10,7 @@ internal static class Log
 	/// <summary>
 	/// Writes the given message to the console
 	/// </summary>
-	public static void WriteLine(string message)
-	{
-		AnsiConsole.Markup(message);
-		AnsiConsole.WriteLine();
-	}
+	public static void WriteLine(string message) => AnsiConsole.MarkupLine(message);
 
 	/// <summary>
 	/// Writes the given message to the console as an error
@@ -22,6 +18,14 @@ internal static class Log
 	public static void Error(string message)
 	{
 		WriteLine($"[red]Error[/]: {message}");
+	}
+
+	/// <summary>
+	/// Writes the given message to the console as a success
+	/// </summary>
+	public static void Success(string message)
+	{
+		WriteLine($"[lime]Success[/]: {message}");
 	}
 
 	/// <summary>

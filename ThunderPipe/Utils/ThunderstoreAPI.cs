@@ -6,7 +6,7 @@ using ThunderPipe.DTOs;
 namespace ThunderPipe.Utils;
 
 /// <summary>
-/// Class holding the main API calls to Thunderstore
+/// Class holding the API calls to Thunderstore
 /// </summary>
 internal static class ThunderstoreAPI
 {
@@ -31,6 +31,7 @@ internal static class ThunderstoreAPI
 		};
 
 		var request = builder
+			.Copy()
 			.Post()
 			.ToEndpoint(ThunderstoreClient.API_INITIATE_UPLOAD)
 			.WithJSON(payload)
@@ -151,6 +152,7 @@ internal static class ThunderstoreAPI
 		var payload = new FinishUploadRequest { Parts = parts };
 
 		var request = builder
+			.Copy()
 			.Post()
 			.ToEndpoint(ThunderstoreClient.API_FINISH_UPLOAD.Replace("{UUID}", uuid))
 			.WithJSON(payload)
@@ -184,6 +186,7 @@ internal static class ThunderstoreAPI
 		};
 
 		var request = builder
+			.Copy()
 			.Post()
 			.ToEndpoint(ThunderstoreClient.API_SUBMIT_PACKAGE)
 			.WithJSON(payload)

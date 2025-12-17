@@ -17,13 +17,13 @@ internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 	{
 		var file = settings.File;
 
-		var builder = new RequestBuilder().ToUrl(settings.Repository!).WithAuth(settings.Token);
+		var builder = RequestBuilder.Create(settings.Token, settings.Repository!);
 
 		Log.WriteLine($"Publishing '[cyan]{file}[/]'");
 
 		var uploadData = await ThunderstoreAPI.InitiateMultipartUpload(
 			file,
-			builder.Copy(),
+			builder,
 			cancellationToken
 		);
 
@@ -54,7 +54,7 @@ internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 		var finishedUpload = await ThunderstoreAPI.FinishMultipartUpload(
 			uploadData.FileMetadata.UUID,
 			uploadedParts,
-			builder.Copy(),
+			builder,
 			cancellationToken
 		);
 
@@ -72,7 +72,7 @@ internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 			settings.Categories ?? [],
 			settings.HasNsfw,
 			uploadData.FileMetadata.UUID,
-			builder.Copy(),
+			builder,
 			cancellationToken
 		);
 
@@ -82,8 +82,8 @@ internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 			return 1;
 		}
 
-		Log.WriteLine(
-			$"[lime]Successfully published '{releasedPackage.Version.Name}' v{releasedPackage.Version.Version}[/]"
+		Log.Success(
+			$"Successfully published '{releasedPackage.Version.Name}' v{releasedPackage.Version.Version}"
 		);
 		Log.WriteLine(
 			$"The package is now available at '[link={releasedPackage.Version.DownloadURL}]{releasedPackage.Version.Name}[/]'."

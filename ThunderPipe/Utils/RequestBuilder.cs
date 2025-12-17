@@ -157,4 +157,12 @@ internal sealed class RequestBuilder
 
 		return request;
 	}
+
+	/// <summary>
+	/// Creates a <see cref="RequestBuilder"/> from the given arguments
+	/// </summary>
+	public static RequestBuilder Create(string token, string repository)
+	{
+		return new RequestBuilder().ToUrl(repository).WithAuth(token);
+	}
 }
