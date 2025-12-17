@@ -20,6 +20,7 @@ internal sealed class ValidateCommand : AsyncCommand<ValidateSettings>
 
 		var iconPath = Path.GetFullPath(settings.IconPath!, settings.PackageFolder);
 		var manifestPath = Path.GetFullPath(settings.ManifestPath!, settings.PackageFolder);
+		var readmePath = Path.GetFullPath(settings.ReadmePath!, settings.PackageFolder);
 
 		var validations = new List<BaseValidationRule>();
 
@@ -29,6 +30,7 @@ internal sealed class ValidateCommand : AsyncCommand<ValidateSettings>
 		{
 			validations.Add(new RemoteIconValidationRule(iconPath));
 			validations.Add(new RemoteManifestValidationRule(manifestPath, "root"));
+			//validations.Add(new RemoteReadmeValidationRule(readmePath));
 		}
 
 		if (validations.Count == 0)

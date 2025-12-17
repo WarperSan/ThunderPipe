@@ -31,6 +31,11 @@ public sealed class ValidateSettings : CommandSettings
 	[DefaultValue("./manifest.json")]
 	public string? ManifestPath { get; init; }
 
+	[CommandOption("--readme")]
+	[Description("Path from the package folder to the README file")]
+	[DefaultValue("./README.md")]
+	public string? ReadmePath { get; init; }
+
 	[CommandOption("--disable-local|--no-local")]
 	[Description("Determines if local validation will be ignored")]
 	[DefaultValue(false)]
@@ -72,6 +77,14 @@ public sealed class ValidateSettings : CommandSettings
 
 			if (!File.Exists(manifestPath))
 				return ValidationResult.Error($"No file was found at '{manifestPath}'.");
+
+			if (string.IsNullOrWhiteSpace(ReadmePath))
+				return ValidationResult.Error("README path must be specified.");
+
+			var readmePath = Path.GetFullPath(ReadmePath, PackageFolder);
+
+			if (!File.Exists(readmePath))
+				return ValidationResult.Error($"No file was found at '{readmePath}'.");
 		}
 
 		if (UseRemoteValidation)

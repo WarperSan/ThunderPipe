@@ -68,6 +68,32 @@ internal static class ThunderstoreAPI
 	}
 
 	/// <summary>
+	/// Validates the README
+	/// </summary>
+	public static async Task<ValidateReadmeResponse?> ValidateReadme(
+		string path,
+		RequestBuilder builder,
+		CancellationToken cancellationToken
+	)
+	{
+		var data = await File.ReadAllBytesAsync(path, cancellationToken);
+
+		var payload = new ValidateReadmeRequest { Data = Convert.ToBase64String(data) };
+
+		var request = builder
+			.Copy()
+			.Post()
+			.ToEndpoint(ThunderstoreClient.API_VALIDATE_README)
+			.WithJSON(payload)
+			.Build();
+
+		return await ThunderstoreClient.SendRequest<ValidateReadmeResponse>(
+			request,
+			cancellationToken
+		);
+	}
+
+	/// <summary>
 	/// Initiates a multipart upload
 	/// </summary>
 	/// <remarks>
