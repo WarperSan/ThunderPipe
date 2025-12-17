@@ -61,9 +61,6 @@ public sealed class ValidateSettings : CommandSettings
 		if (!Directory.Exists(PackageFolder))
 			return ValidationResult.Error($"No folder was found at '{PackageFolder}'.");
 
-		if (IgnoreLocalValidation && !UseRemoteValidation)
-			return ValidationResult.Error("At least one validation source must be used.");
-
 		if (string.IsNullOrWhiteSpace(IconPath))
 			return ValidationResult.Error("Icon path must be specified.");
 
@@ -87,6 +84,9 @@ public sealed class ValidateSettings : CommandSettings
 
 		if (!File.Exists(readmePath))
 			return ValidationResult.Error($"No file was found at '{readmePath}'.");
+
+		if (IgnoreLocalValidation && !UseRemoteValidation)
+			return ValidationResult.Error("At least one validation source must be used.");
 
 		if (UseRemoteValidation)
 		{
