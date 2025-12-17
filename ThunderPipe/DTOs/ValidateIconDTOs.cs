@@ -22,16 +22,16 @@ internal record ValidateIconRequest
 internal record ValidateIconResponse
 {
 	/// <summary>
-	/// Errors concerning the field
+	/// Errors related to the data transferred
 	/// </summary>
 	[JsonProperty("icon_data")]
-	public string[]? FieldErrors { get; init; }
+	public string[]? DataErrors { get; init; }
 
 	/// <summary>
-	/// Errors concerning the data
+	/// Errors related to the data validity
 	/// </summary>
 	[JsonProperty("non_field_errors")]
-	public string[]? NonFieldErrors { get; init; }
+	public string[]? ValidationErrors { get; init; }
 
 	/// <summary>
 	/// Validity of the data
