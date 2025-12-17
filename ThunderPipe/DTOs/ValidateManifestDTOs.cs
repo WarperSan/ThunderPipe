@@ -32,7 +32,7 @@ internal record ValidateManifestResponse
 	/// Errors related to the data transferred
 	/// </summary>
 	[JsonProperty("manifest_data")]
-	public string[]? FieldErrors { get; init; }
+	public string[]? DataErrors { get; init; }
 
 	/// <summary>
 	/// Errors related to the namespace
