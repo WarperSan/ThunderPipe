@@ -21,3 +21,13 @@ ThunderPipe is a command-line tool for building, validating and publishing mod p
         I am aware that this is a gripe. The wiki even mentions that they do not have any official workflow that developers can use. However, this tool tries to offer an easy-to-use tool and workflow so people can automatically or manually upload mods without much issue.
     </p>
 </details>
+
+## Installation
+
+You can install this tool using:
+
+```bash
+dotnet tool install ThunderPipe
+```
+
+This will allow you to run it with `dotnet tool run ThunderPipe`.
