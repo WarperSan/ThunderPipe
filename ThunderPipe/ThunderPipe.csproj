@@ -4,8 +4,29 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <PackAsTool>true</PackAsTool>
     </PropertyGroup>
+    <!-- Nuget Properties -->
+    <PropertyGroup>
+        <PackAsTool>true</PackAsTool>
+        <PackageId>WarperSan.ThunderPipe</PackageId>
+        <PackageTags>Modding;CD</PackageTags>
+
+        <Title>ThunderPipe</Title>
+        <Description>A CLI tool for building and publishing Thunderstore packages</Description>
+        <Authors>WarperSan</Authors>
+
+        <PackageIcon>../icon.png</PackageIcon>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <PackageReadmeFile>../README.md</PackageReadmeFile>
+
+        <RepositoryUrl>https://github.com/WarperSan/ThunderPipe</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+    </PropertyGroup>
+    <ItemGroup>
+        <None Include="../LICENSE" Pack="true" PackagePath="" />
+        <None Include="../README.md" Pack="true" PackagePath="" />
+        <None Include="../icon.png" Pack="true" PackagePath="" />
+    </ItemGroup>
     <!-- Packages -->
     <ItemGroup>
         <PackageReference Include="MinVer" Version="6.0.0">
