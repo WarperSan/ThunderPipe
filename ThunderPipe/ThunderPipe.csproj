@@ -18,7 +18,7 @@
 
 		<PackageIcon>icon.png</PackageIcon>
 		<PackageLicenseFile>LICENSE</PackageLicenseFile>
-		<PackageReadmeFile>../README.md</PackageReadmeFile>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 
 		<RepositoryUrl>https://github.com/WarperSan/ThunderPipe</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
