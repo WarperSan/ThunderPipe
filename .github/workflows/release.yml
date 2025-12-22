@@ -1,0 +1,83 @@
+name: Release
+
+env:
+    DOTNET_CONFIGURATION: 'Release'
+
+on:
+    push:
+        tags:
+            - "[0-9]+.[0-9]+.[0-9]+"
+
+permissions:
+    contents: write
+
+jobs:
+    build-and-pack:
+        runs-on: ubuntu-latest
+        outputs: 
+            artifact: 'package'
+        steps:
+            - name: Update repository
+              uses: actions/checkout@v4
+              with:
+                fetch-depth: 0
+                filter: tree:0
+
+            - name: Setup .NET
+              uses: actions/setup-dotnet@v4
+
+            - name: Pack Tool
+              run: dotnet pack --configuration "$CONFIGURATION" --output "nupkg/"
+              env:
+                  CONFIGURATION: ${{ env.DOTNET_CONFIGURATION }}
+
+            - name: Upload Build
+              uses: actions/upload-artifact@v4
+              with:
+                  name: 'package'
+                  path: 'nupkg/*.nupkg'
+                  if-no-files-found: 'error'
+    
+    deploy-to-nuget:
+        needs: build-and-pack
+        runs-on: ubuntu-latest
+        steps:
+            - name: Update repository
+              uses: actions/checkout@v4
+
+            - name: Download Build
+              uses: actions/download-artifact@v5
+              with:
+                  name: ${{ needs.build-and-pack.outputs.artifact }}
+                  path: ./build
+
+            - name: Setup .NET
+              uses: actions/setup-dotnet@v4
+
+            - name: Deploy to NuGet
+              run: |
+                echo "$(which dotnet)"
+                dotnet nuget push ./build/*.nupkg \
+                  --api-key "$API_KEY" \
+                  --source https://api.nuget.org/v3/index.json \
+                  --skip-duplicate
+              env:
+                  API_KEY: ${{ secrets.NUGET_API_KEY }}
+
+    deploy-to-github:
+        needs: build-and-pack
+        runs-on: ubuntu-latest
+        steps:
+            - name: Download build
+              uses: actions/download-artifact@v5
+              with:
+                  name: ${{ needs.build-and-pack.outputs.artifact }}
+                  path: ./build
+
+            - name: Release
+              uses: softprops/action-gh-release@v2
+              with:
+                  name: v${{ github.ref_name }}
+                  
+                  files: |
+                      ./build/*.nupkg
