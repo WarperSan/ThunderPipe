@@ -10,5 +10,8 @@ internal abstract class BaseValidationRule
 	/// <summary>
 	/// Checks if this rule is valid
 	/// </summary>
-	public abstract Task<string?> Validate(RequestBuilder builder, CancellationToken cancellationToken);
+	public abstract Task<string?> Validate(
+		RequestBuilder builder,
+		CancellationToken cancellationToken
+	);
 }
