@@ -220,6 +220,24 @@ internal static class ThunderstoreAPI
 	}
 
 	/// <summary>
+	/// Aborts the multipart upload
+	/// </summary>
+	public static async Task AbortMultipartUpload(
+		string uuid,
+		RequestBuilder builder,
+		CancellationToken cancellationToken
+	)
+	{
+		var request = builder
+			.Copy()
+			.Post()
+			.ToEndpoint(ThunderstoreClient.API_ABORT_UPLOAD.Replace("{UUID}", uuid))
+			.Build();
+
+		await ThunderstoreClient.SendRequest(request, cancellationToken);
+	}
+
+	/// <summary>
 	/// Finishes the multipart upload
 	/// </summary>
 	/// <remarks>
