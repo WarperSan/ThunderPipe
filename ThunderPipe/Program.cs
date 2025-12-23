@@ -12,6 +12,7 @@ internal static class Program
 		app.Configure(config =>
 		{
 			config.AddCommand<ValidateCommand>("validate").WithDescription("Validates a package");
+
 			config
 				.AddCommand<PublishCommand>("publish")
 				.WithDescription("Publish a package to Thunderstore.");

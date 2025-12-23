@@ -15,18 +15,12 @@ internal static class Log
 	/// <summary>
 	/// Writes the given message to the console as an error
 	/// </summary>
-	public static void Error(string message)
-	{
-		WriteLine($"[red]Error[/]: {message}");
-	}
+	public static void Error(string message) => WriteLine($"[red]Error[/]: {message}");
 
 	/// <summary>
 	/// Writes the given message to the console as a success
 	/// </summary>
-	public static void Success(string message)
-	{
-		WriteLine($"[lime]Success[/]: {message}");
-	}
+	public static void Success(string message) => WriteLine($"[lime]Success[/]: {message}");
 
 	/// <summary>
 	/// Formats a byte size into readable text
@@ -34,6 +28,7 @@ internal static class Log
 	public static string GetSizeString(long byteSize)
 	{
 		double finalSize = byteSize;
+
 		string[] suffixes = ["B", "KB", "MB", "GB", "TB"];
 		var suffixIndex = 0;
 

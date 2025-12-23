@@ -11,8 +11,10 @@ internal sealed class ThunderstoreClient : HttpClient
 {
 	private const string API_EXPERIMENTAL = "api/experimental/";
 	public const string API_VALIDATE_ICON = API_EXPERIMENTAL + "submission/validate/icon/";
+
 	public const string API_VALIDATE_MANIFEST =
 		API_EXPERIMENTAL + "submission/validate/manifest-v1/";
+
 	public const string API_VALIDATE_README = API_EXPERIMENTAL + "submission/validate/readme/";
 	public const string API_INITIATE_UPLOAD = API_EXPERIMENTAL + "usermedia/initiate-upload/";
 	public const string API_FINISH_UPLOAD = API_EXPERIMENTAL + "usermedia/{UUID}/finish-upload/";

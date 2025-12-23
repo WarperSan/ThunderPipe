@@ -35,6 +35,7 @@ internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 
 		var fileSize = uploadData.FileMetadata.Size;
 		var chunkCount = uploadData.UploadParts.Length;
+
 		Log.WriteLine(
 			$"Uploading '[cyan]{file}[/]' ({Log.GetSizeString(fileSize)}) in {chunkCount} chunks."
 		);
@@ -85,6 +86,7 @@ internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 		Log.Success(
 			$"Successfully published '{releasedPackage.Version.Name}' v{releasedPackage.Version.Version}"
 		);
+
 		Log.WriteLine(
 			$"The package is now available at '[link={releasedPackage.Version.DownloadURL}]{releasedPackage.Version.Name}[/]'."
 		);

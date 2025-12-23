@@ -91,19 +91,25 @@ public sealed class ValidateSettings : CommandSettings
 		if (UseRemoteValidation)
 		{
 			if (string.IsNullOrWhiteSpace(Repository))
+			{
 				return ValidationResult.Error(
 					"If remote validation is used, a repository must be specified."
 				);
+			}
 
 			if (string.IsNullOrWhiteSpace(Token))
+			{
 				return ValidationResult.Error(
 					"If remote validation is used, a token must be specified."
 				);
+			}
 
 			if (string.IsNullOrWhiteSpace(Author))
+			{
 				return ValidationResult.Error(
 					"If remote validation is used, an author must be specified."
 				);
+			}
 		}
 
 		return base.Validate();
