@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using Spectre.Console.Cli;
+using ThunderPipe.DTOs;
 using ThunderPipe.Settings;
 using ThunderPipe.Utils;
 
@@ -40,11 +41,27 @@ internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 			$"Uploading '[cyan]{file}[/]' ({Log.GetSizeString(fileSize)}) in {chunkCount} chunks."
 		);
 
-		var uploadedParts = await ThunderstoreAPI.UploadParts(
-			file,
-			uploadData.UploadParts,
-			cancellationToken
-		);
+		UploadPartResponse[] uploadedParts;
+
+		try
+		{
+			uploadedParts = await ThunderstoreAPI.UploadParts(
+				file,
+				uploadData.UploadParts,
+				cancellationToken
+			);
+		}
+		catch (Exception e)
+		{
+			Log.Error(e.Message);
+
+			await ThunderstoreAPI.AbortMultipartUpload(
+				uploadData.FileMetadata.UUID,
+				builder,
+				cancellationToken
+			);
+			return 1;
+		}
 
 		if (uploadedParts.Length != chunkCount)
 		{
