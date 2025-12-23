@@ -53,7 +53,7 @@ ARGUMENTS:
 OPTIONS:
                            DEFAULT                                                                      
     -h, --help                                        Prints help information                           
-        --token                                       Authentication token used to publish the package  
+        --token                                       Authentication token used to publish the package. Required
         --icon             ./icon.png                 Path from the package folder to the icon file     
         --manifest         ./manifest.json            Path from the package folder to the manifest file 
         --author                                      Name of the author that would publish the package 
