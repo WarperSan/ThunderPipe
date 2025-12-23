@@ -10,7 +10,7 @@ namespace ThunderPipe.Commands;
 internal sealed class ValidateCommand : AsyncCommand<ValidateSettings>
 {
 	/// <inheritdoc />
-	protected override async Task<int> ExecuteAsync(
+	public override async Task<int> ExecuteAsync(
 		CommandContext context,
 		ValidateSettings settings,
 		CancellationToken cancellationToken

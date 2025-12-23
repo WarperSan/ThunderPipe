@@ -10,7 +10,7 @@ namespace ThunderPipe.Commands;
 internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 {
 	/// <inheritdoc />
-	protected override async Task<int> ExecuteAsync(
+	public override async Task<int> ExecuteAsync(
 		CommandContext context,
 		PublishSettings settings,
 		CancellationToken cancellationToken
