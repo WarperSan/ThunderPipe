@@ -40,7 +40,7 @@ You can find all the commands using `ThunderPipe --help`.
 
 Using the command `validate`, you are able to validate if your package will be allowed on the Thunderstore servers, even before publishing it:
 
-```bash
+```
 DESCRIPTION:
 Validates a package
 
@@ -67,7 +67,7 @@ OPTIONS:
 
 Using the command `publish`, you are able to publish your package to the Thunderstore server:
 
-```bash
+```
 DESCRIPTION:
 Publish a package to Thunderstore
 
