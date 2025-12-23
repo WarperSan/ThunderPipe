@@ -31,3 +31,59 @@ dotnet tool install ThunderPipe
 ```
 
 This will allow you to run it with `dotnet tool run ThunderPipe`.
+
+## Usage
+
+You can find all the commands using `ThunderPipe --help`.
+
+### Validating
+
+Using the command `validate`, you are able to validate if your package will be allowed on the Thunderstore servers, even before publishing it:
+
+```bash
+DESCRIPTION:
+Validates a package
+
+USAGE:
+    ThunderPipe validate <package-folder> [OPTIONS]
+
+ARGUMENTS:
+    <package-folder>    Folder containg the package's files
+
+OPTIONS:
+                           DEFAULT                                                                      
+    -h, --help                                        Prints help information                           
+        --token                                       Authentication token used to publish the package  
+        --icon             ./icon.png                 Path from the package folder to the icon file     
+        --manifest         ./manifest.json            Path from the package folder to the manifest file 
+        --author                                      Name of the author that would publish the package 
+        --readme           ./README.md                Path from the package folder to the README file   
+        --disable-local                               Determines if local validation will be ignored    
+        --enable-remote                               Determines if remote validation rules will be used
+        --repository       https://thunderstore.io    URL of the server hosting the package 
+```
+
+### Publishing
+
+Using the command `publish`, you are able to publish your package to the Thunderstore server:
+
+```bash
+DESCRIPTION:
+Publish a package to Thunderstore
+
+USAGE:
+    ThunderPipe publish <file> <team> <community> [OPTIONS]
+
+ARGUMENTS:
+    <file>         Path to the package file to publish   
+    <team>         Team to publish the package for       
+    <community>    Community where to publish the package
+
+OPTIONS:
+                                 DEFAULT                                                                              
+    -h, --help                                              Prints help information                                   
+        --token                                             Authentication token used to publish the package. Required
+        --repository             https://thunderstore.io    URL of the server hosting the package                     
+        --categories <VALUES>                               Categories used to label this package                     
+        --has-nsfw                                          Determines if this package has NSFW content
+```
