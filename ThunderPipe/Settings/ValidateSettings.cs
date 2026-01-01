@@ -17,10 +17,6 @@ public sealed class ValidateSettings : CommandSettings
 	[Description("Folder containg the package's files")]
 	public required string PackageFolder { get; init; }
 
-	[CommandOption("--token")]
-	[Description("Authentication token used to publish the package")]
-	public required string Token { get; init; }
-
 	[CommandOption("--icon")]
 	[Description("Path from the package folder to the icon file")]
 	[DefaultValue("./icon.png")]
@@ -30,10 +26,6 @@ public sealed class ValidateSettings : CommandSettings
 	[Description("Path from the package folder to the manifest file")]
 	[DefaultValue("./manifest.json")]
 	public string? ManifestPath { get; init; }
-
-	[CommandOption("--author")]
-	[Description("Name of the author that would publish the package")]
-	public string? Author { get; init; }
 
 	[CommandOption("--readme")]
 	[Description("Path from the package folder to the README file")]
@@ -50,10 +42,18 @@ public sealed class ValidateSettings : CommandSettings
 	[DefaultValue(false)]
 	public bool UseRemoteValidation { get; init; }
 
+	[CommandOption("--token")]
+	[Description("Authentication token used to publish the package")]
+	public required string Token { get; init; }
+
 	[CommandOption("--repository")]
 	[Description("URL of the server hosting the package")]
 	[DefaultValue("https://thunderstore.io")]
 	public string? Repository { get; init; }
+
+	[CommandOption("--author")]
+	[Description("Name of the author that would publish the package")]
+	public string? Author { get; init; }
 
 	/// <inheritdoc />
 	public override ValidationResult Validate()
