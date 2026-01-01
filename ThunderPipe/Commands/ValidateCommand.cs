@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Extensions.Logging;
 using Spectre.Console.Cli;
 using ThunderPipe.Settings;
 using ThunderPipe.Utils;
@@ -9,6 +10,13 @@ namespace ThunderPipe.Commands;
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 internal sealed class ValidateCommand : AsyncCommand<ValidateSettings>
 {
+	private readonly ILogger<ValidateCommand> _logger;
+
+	public ValidateCommand(ILogger<ValidateCommand> logger)
+	{
+		_logger = logger;
+	}
+
 	/// <inheritdoc />
 	public override async Task<int> ExecuteAsync(
 		CommandContext context,
@@ -16,6 +24,11 @@ internal sealed class ValidateCommand : AsyncCommand<ValidateSettings>
 		CancellationToken cancellationToken
 	)
 	{
+		_logger.LogInformation(
+			"Starting to validate '{SettingsPackageFolder}'",
+			settings.PackageFolder
+		);
+
 		var builder = RequestBuilder.Create(settings.Token, settings.Repository!);
 
 		var iconPath = Path.GetFullPath(settings.IconPath!, settings.PackageFolder);
@@ -35,7 +48,7 @@ internal sealed class ValidateCommand : AsyncCommand<ValidateSettings>
 
 		if (validations.Count == 0)
 		{
-			Log.Error("No validation rule was applied.");
+			_logger.LogError("No validation rule was applied.");
 			return 1;
 		}
 
@@ -46,11 +59,11 @@ internal sealed class ValidateCommand : AsyncCommand<ValidateSettings>
 			if (error == null)
 				continue;
 
-			Log.Error(error);
+			_logger.LogError(error);
 			return 1;
 		}
 
-		Log.Success("All files are valid!");
+		_logger.LogInformation("[green]All files are valid![/]");
 		return 0;
 	}
 }
