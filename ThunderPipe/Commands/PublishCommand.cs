@@ -30,7 +30,7 @@ internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 
 		var builder = RequestBuilder.Create(settings.Token, settings.Repository!);
 
-		_logger.LogInformation("Publishing '[cyan]{File}[/]'", file);
+		_logger.LogInformation("Publishing '{File}'", file);
 
 		var uploadData = await ThunderstoreAPI.InitiateMultipartUpload(
 			file,
@@ -48,7 +48,7 @@ internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 		var chunkCount = uploadData.UploadParts.Length;
 
 		_logger.LogInformation(
-			"Uploading '[cyan]{File}[/]' ({GetSizeString}) in {ChunkCount} chunks.",
+			"Uploading '{File}' ({GetSizeString}) in {ChunkCount} chunks.",
 			file,
 			GetSizeString(fileSize),
 			chunkCount
@@ -114,15 +114,14 @@ internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 		}
 
 		_logger.LogInformation(
-			"[green]Successfully published '{VersionName}' v{VersionVersion}[/]",
+			"Successfully published '{VersionName}' v{VersionVersion}",
 			releasedPackage.Version.Name,
 			releasedPackage.Version.Version
 		);
 
 		_logger.LogInformation(
-			"The package is now available at '[link={VersionDownloadURL}]{VersionName}[/]'.",
-			releasedPackage.Version.DownloadURL,
-			releasedPackage.Version.Name
+			"The package is now available at '{VersionDownloadURL}'.",
+			releasedPackage.Version.DownloadURL
 		);
 
 		return 0;

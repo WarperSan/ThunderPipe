@@ -63,7 +63,7 @@ internal sealed class ValidateCommand : AsyncCommand<ValidateSettings>
 			return 1;
 		}
 
-		_logger.LogInformation("[green]All files are valid![/]");
+		_logger.LogInformation("All files are valid!");
 		return 0;
 	}
 }
