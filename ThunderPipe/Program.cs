@@ -38,6 +38,16 @@ internal static class Program
 
 		app.Configure(config =>
 		{
+			config.SetApplicationName(nameof(ThunderPipe));
+
+			config.Settings.CaseSensitivity = CaseSensitivity.None;
+			config.Settings.StrictParsing = false;
+
+#if DEBUG
+			config.PropagateExceptions();
+			config.ValidateExamples();
+#endif
+
 			config.AddCommand<ValidateCommand>("validate").WithDescription("Validates a package");
 
 			config
