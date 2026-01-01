@@ -7,8 +7,18 @@ namespace ThunderPipe;
 
 internal static class Program
 {
-	public static int Main(string[] args)
+	public static async Task<int> Main(string[] args)
 	{
+		var cancellationTokenSource = new CancellationTokenSource();
+
+		Console.CancelKeyPress += (_, e) =>
+		{
+			e.Cancel = true;
+			cancellationTokenSource.Cancel();
+			Console.WriteLine();
+			Console.WriteLine("Cancellation requested...");
+		};
+
 		var services = new ServiceCollection();
 
 		services.AddLogging(builder =>
@@ -35,6 +45,6 @@ internal static class Program
 				.WithDescription("Publish a package to Thunderstore.");
 		});
 
-		return app.Run(args);
+		return await app.RunAsync(args, cancellationTokenSource.Token);
 	}
 }
