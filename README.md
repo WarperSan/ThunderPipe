@@ -13,80 +13,72 @@ ThunderPipe is a command-line tool for building, validating and publishing mod p
 
 ## Why this instead of TCLI?
 
-[Thunderstore CLI](https://github.com/thunderstore-io/thunderstore-cli) has the advantages that it is made and maintained by the organization handling Thunderstore. However, I've found that it has issues that this tool tries to fix:
-
-> [!WARNING]
-> I am **not blaming nor shaming** the developers of TCLI. I believe both have pros and cons, and if you are using this tool as a way to "flex" on other devs, **be ashamed of yourself**.
+While the official [Thunderstore CLI (TCLI)](https://github.com/thunderstore-io/thunderstore-cli) is excellent for general users, **ThunderPipe** is built for developers who prefer a "do one thing and do it well" philosophy.
 
 <details>
-    <summary>TCLI is not <i>for</i> CLI only</summary>
-    <p>
-        As of v0.2.4, TCLI tries to be a mod installer, manager and publisher. It is useful <b>if</b> you want all of these features. However, most people use mod managers like <i>Gale</i>. Personally, I never found an use to have a lot of features that are not used.
-    </p>
+    <summary><b>Leaner Tooling</b></summary>
+	<p>
+		TCLI is a mod installer, mod manager and mod publisher. If you already use applications like <a href="https://galemodmanager.com/"><i>Gale</i></a> or <a href="https://r2modman.com"><i>r2modman</i></a>, ThunderPipe provides a lighter footprint for your development environment.
+	</p>
 </details>
+
 <details>
-    <summary>TCLI offers no easy workflow</summary>
-    <p>
-        I am aware that this is a gripe. The wiki even mentions that they do not have any official workflow that developers can use. However, this tool tries to offer an easy-to-use tool and workflow so people can automatically or manually upload mods without much issue.
-    </p>
+    <summary><b>Structured Workflow</b></summary>
+	<p>
+    	ThunderPipe is built to solve the lack of a standardized automation workflow. It provides clear exit codes and validation steps ideal for automated CI/CD pipelines.
+	</p>
 </details>
 
 ## Installation
 
-You can install this tool using:
+Install ThunderPipe globally via NuGet:
 
 ```bash
-dotnet tool install ThunderPipe
+dotnet tool install --global ThunderPipe
 ```
 
-This will allow you to run it with `dotnet tool run ThunderPipe`.
+Once installed, you can run the tool using:
+
+```bash
+ThunderPipe --help
+```
 
 ## Usage
 
-You can find all the commands using `ThunderPipe --help`.
+### Validating a Package
 
-### Validating
+Check if your package meets [Thunderstore's requirements](https://thunderstore.io/package/create/docs/) before you attempt to publish.
 
-Using the command `validate`, you are able to validate if your package will be allowed on the Thunderstore servers, even before publishing it:
-
-```
-USAGE:
-    ThunderPipe validate <package-folder> [OPTIONS]
-
-ARGUMENTS:
-    <package-folder>    Folder containg the package's files
-
-OPTIONS:
-                           DEFAULT
-    -h, --help                                        Prints help information
-        --token                                       Authentication token used to publish the package.
-        --icon             ./icon.png                 Path from the package folder to the icon file
-        --manifest         ./manifest.json            Path from the package folder to the manifest file
-        --author                                      Name of the author that would publish the package
-        --readme           ./README.md                Path from the package folder to the README file
-        --disable-local                               Determines if local validation will be ignored
-        --enable-remote                               Determines if remote validation rules will be used
-        --repository       https://thunderstore.io    URL of the server hosting the package
+```bash
+ThunderPipe validate <package-folder>
 ```
 
-### Publishing
+| Argument           | Description                                       |
+|--------------------|---------------------------------------------------|
+| `<package-folder>` | Path to the folder containing the package's files |
 
-Using the command `publish`, you are able to publish your package to the Thunderstore server:
+### Publishing a Package
 
+Upload your `.zip` package directly to Thunderstore for a specific team in a specific community.
+
+```bash
+ThunderPipe publish <file> <team> <community> --token <your-token>
 ```
-USAGE:
-    ThunderPipe publish <file> <team> <community> [OPTIONS]
 
-ARGUMENTS:
-    <file>         Path to the package file to publish
-    <team>         Team to publish the package for
-    <community>    Community where to publish the package
+| Argument       | Description                             |
+|----------------|-----------------------------------------|
+| `<file>`       | Path to the file to publish             |
+| `<team>`       | The team name on Thunderstore           |
+| `<community>`  | The communiy slug                       |
+| `<your-token>` | API token of the service account to use |
 
-OPTIONS:
-                                 DEFAULT
-    -h, --help                                              Prints help information
-        --token                                             Authentication token used to publish the package. Required
-        --repository             https://thunderstore.io    URL of the server hosting the package
-        --categories <VALUES>                               Categories used to label this package
-        --has-nsfw                                          Determines if this package has NSFW content
-```
+## Contributing
+
+Contributions are welcome! If you encounter a bug or have a feature request, please [open an issue](https://github.com/WarperSan/ThunderPipe/issues/new).
+
+<div align="center">
+    <sub>
+        <hr>
+		Made with ❤️ for the modding community
+    </sub>
+</div>
