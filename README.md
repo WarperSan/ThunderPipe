@@ -15,7 +15,7 @@ ThunderPipe is a command-line tool for building, validating and publishing mod p
 
 [Thunderstore CLI](https://github.com/thunderstore-io/thunderstore-cli) has the advantages that it is made and maintained by the organization handling Thunderstore. However, I've found that it has issues that this tool tries to fix:
 
-> [!WARNING]  
+> [!WARNING]
 > I am **not blaming nor shaming** the developers of TCLI. I believe both have pros and cons, and if you are using this tool as a way to "flex" on other devs, **be ashamed of yourself**.
 
 <details>
@@ -50,9 +50,6 @@ You can find all the commands using `ThunderPipe --help`.
 Using the command `validate`, you are able to validate if your package will be allowed on the Thunderstore servers, even before publishing it:
 
 ```
-DESCRIPTION:
-Validates a package
-
 USAGE:
     ThunderPipe validate <package-folder> [OPTIONS]
 
@@ -60,16 +57,16 @@ ARGUMENTS:
     <package-folder>    Folder containg the package's files
 
 OPTIONS:
-                           DEFAULT                                                                      
-    -h, --help                                        Prints help information                           
-        --token                                       Authentication token used to publish the package. Required
-        --icon             ./icon.png                 Path from the package folder to the icon file     
-        --manifest         ./manifest.json            Path from the package folder to the manifest file 
-        --author                                      Name of the author that would publish the package 
-        --readme           ./README.md                Path from the package folder to the README file   
-        --disable-local                               Determines if local validation will be ignored    
+                           DEFAULT
+    -h, --help                                        Prints help information
+        --token                                       Authentication token used to publish the package.
+        --icon             ./icon.png                 Path from the package folder to the icon file
+        --manifest         ./manifest.json            Path from the package folder to the manifest file
+        --author                                      Name of the author that would publish the package
+        --readme           ./README.md                Path from the package folder to the README file
+        --disable-local                               Determines if local validation will be ignored
         --enable-remote                               Determines if remote validation rules will be used
-        --repository       https://thunderstore.io    URL of the server hosting the package 
+        --repository       https://thunderstore.io    URL of the server hosting the package
 ```
 
 ### Publishing
@@ -77,22 +74,19 @@ OPTIONS:
 Using the command `publish`, you are able to publish your package to the Thunderstore server:
 
 ```
-DESCRIPTION:
-Publish a package to Thunderstore
-
 USAGE:
     ThunderPipe publish <file> <team> <community> [OPTIONS]
 
 ARGUMENTS:
-    <file>         Path to the package file to publish   
-    <team>         Team to publish the package for       
+    <file>         Path to the package file to publish
+    <team>         Team to publish the package for
     <community>    Community where to publish the package
 
 OPTIONS:
-                                 DEFAULT                                                                              
-    -h, --help                                              Prints help information                                   
+                                 DEFAULT
+    -h, --help                                              Prints help information
         --token                                             Authentication token used to publish the package. Required
-        --repository             https://thunderstore.io    URL of the server hosting the package                     
-        --categories <VALUES>                               Categories used to label this package                     
+        --repository             https://thunderstore.io    URL of the server hosting the package
+        --categories <VALUES>                               Categories used to label this package
         --has-nsfw                                          Determines if this package has NSFW content
 ```
