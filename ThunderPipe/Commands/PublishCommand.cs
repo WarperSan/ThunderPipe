@@ -26,6 +26,8 @@ internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 	{
 		var file = settings.File;
 
+		_logger.LogInformation("Starting to publish '{File}'.", file);
+
 		var builder = RequestBuilder.Create(settings.Token, settings.Repository!);
 
 		_logger.LogInformation("Publishing '[cyan]{File}[/]'", file);
