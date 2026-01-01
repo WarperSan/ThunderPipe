@@ -1,6 +1,6 @@
 <br>
 <div align="center">
-    <img alt="Logo" src="https://raw.githubusercontent.com/WarperSan/ThunderPipe/master/icon.png" height="128"/>
+    <img src="https://raw.githubusercontent.com/WarperSan/ThunderPipe/refs/heads/master/icon.png" alt="Logo" height="128"/>
     <h1>ThunderPipe</h1>
     <div>
         <a href="https://www.nuget.org/packages/WarperSan.ThunderPipe"><img alt="NuGet Badge" src="https://img.shields.io/nuget/v/WarperSan.ThunderPipe.svg"></a>
