@@ -17,7 +17,7 @@ public sealed class ValidateSettings : CommandSettings
 	[Description("Folder containg the package's files")]
 	public required string PackageFolder { get; init; }
 
-	[CommandOption("--token", true)]
+	[CommandOption("--token")]
 	[Description("Authentication token used to publish the package")]
 	public required string Token { get; init; }
 
