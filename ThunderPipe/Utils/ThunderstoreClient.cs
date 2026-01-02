@@ -39,10 +39,8 @@ internal sealed class ThunderstoreClient : HttpClient
 	{
 		using var client = new ThunderstoreClient();
 
-		var response = await client.SendAsync(request, cancellationToken);
-		//response.EnsureSuccessStatusCode();
-
-		return response;
+		return await client.SendAsync(request, cancellationToken);
+		;
 	}
 
 	/// <summary>
@@ -62,14 +60,14 @@ internal sealed class ThunderstoreClient : HttpClient
 		}
 		catch (JsonSerializationException e)
 		{
-			Log.Error(
+			AnsiConsole.MarkupLine(
 				$"Failed to deserialize response:\n{e.Message.EscapeMarkup()}\n\n[gray]{content.EscapeMarkup()}[/]"
 			);
 			return default;
 		}
 		catch (JsonReaderException e)
 		{
-			Log.Error(
+			AnsiConsole.MarkupLine(
 				$"Failed to read response:\n{e.Message.EscapeMarkup()}\n\n[gray]{content.EscapeMarkup()}[/]"
 			);
 			return default;
