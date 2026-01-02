@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Extensions.Logging;
 using Spectre.Console.Cli;
 using ThunderPipe.DTOs;
 using ThunderPipe.Settings;
@@ -9,6 +10,13 @@ namespace ThunderPipe.Commands;
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 {
+	private readonly ILogger<PublishCommand> _logger;
+
+	public PublishCommand(ILogger<PublishCommand> logger)
+	{
+		_logger = logger;
+	}
+
 	/// <inheritdoc />
 	public override async Task<int> ExecuteAsync(
 		CommandContext context,
@@ -18,9 +26,11 @@ internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 	{
 		var file = settings.File;
 
-		var builder = RequestBuilder.Create(settings.Token, settings.Repository!);
+		_logger.LogInformation("Starting to publish '{File}'.", file);
 
-		Log.WriteLine($"Publishing '[cyan]{file}[/]'");
+		var builder = new RequestBuilder().ToUri(settings.Repository!).WithAuth(settings.Token);
+
+		_logger.LogInformation("Publishing '{File}'", file);
 
 		var uploadData = await ThunderstoreAPI.InitiateMultipartUpload(
 			file,
@@ -30,15 +40,18 @@ internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 
 		if (uploadData == null)
 		{
-			Log.Error("Failed to initiate upload.");
+			_logger.LogError("Failed to initiate upload.");
 			return 1;
 		}
 
 		var fileSize = uploadData.FileMetadata.Size;
 		var chunkCount = uploadData.UploadParts.Length;
 
-		Log.WriteLine(
-			$"Uploading '[cyan]{file}[/]' ({Log.GetSizeString(fileSize)}) in {chunkCount} chunks."
+		_logger.LogInformation(
+			"Uploading '{File}' ({GetSizeString}) in {ChunkCount} chunks.",
+			file,
+			GetSizeString(fileSize),
+			chunkCount
 		);
 
 		UploadPartResponse[] uploadedParts;
@@ -53,7 +66,7 @@ internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 		}
 		catch (Exception e)
 		{
-			Log.Error(e.Message);
+			_logger.LogError(e.Message);
 
 			await ThunderstoreAPI.AbortMultipartUpload(
 				uploadData.FileMetadata.UUID,
@@ -65,7 +78,7 @@ internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 
 		if (uploadedParts.Length != chunkCount)
 		{
-			Log.Error("Failed to upload parts.");
+			_logger.LogError("Failed to upload parts.");
 			return 1;
 		}
 
@@ -78,11 +91,11 @@ internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 
 		if (!finishedUpload)
 		{
-			Log.Error("Failed to finish upload.");
+			_logger.LogError("Failed to finish upload.");
 			return 1;
 		}
 
-		Log.WriteLine("Successfully finalized the upload.");
+		_logger.LogInformation("Successfully finalized the upload.");
 
 		var releasedPackage = await ThunderstoreAPI.SubmitPackage(
 			settings.Team,
@@ -96,18 +109,40 @@ internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 
 		if (releasedPackage == null)
 		{
-			Log.Error("Failed to submit package.");
+			_logger.LogError("Failed to submit package.");
 			return 1;
 		}
 
-		Log.Success(
-			$"Successfully published '{releasedPackage.Version.Name}' v{releasedPackage.Version.Version}"
+		_logger.LogInformation(
+			"Successfully published '{VersionName}' v{VersionVersion}",
+			releasedPackage.Version.Name,
+			releasedPackage.Version.Version
 		);
 
-		Log.WriteLine(
-			$"The package is now available at '[link={releasedPackage.Version.DownloadURL}]{releasedPackage.Version.Name}[/]'."
+		_logger.LogInformation(
+			"The package is now available at '{VersionDownloadURL}'.",
+			releasedPackage.Version.DownloadURL
 		);
 
 		return 0;
+	}
+
+	/// <summary>
+	/// Formats a byte size into readable text
+	/// </summary>
+	private static string GetSizeString(long byteSize)
+	{
+		double finalSize = byteSize;
+
+		string[] suffixes = ["B", "KB", "MB", "GB", "TB"];
+		var suffixIndex = 0;
+
+		while (finalSize >= 1024 && suffixIndex < suffixes.Length)
+		{
+			finalSize /= 1024;
+			suffixIndex++;
+		}
+
+		return $"{finalSize:F2} {suffixes[suffixIndex]}";
 	}
 }

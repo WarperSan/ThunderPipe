@@ -43,15 +43,6 @@ internal sealed class RequestBuilder
 	private UriBuilder _uriBuilder = new();
 
 	/// <summary>
-	/// Sets the host of this request
-	/// </summary>
-	public RequestBuilder ToHost(string host)
-	{
-		_uriBuilder.Host = host;
-		return this;
-	}
-
-	/// <summary>
 	/// Sets the endpoint of this request
 	/// </summary>
 	public RequestBuilder ToEndpoint(string endpoint)
@@ -66,6 +57,15 @@ internal sealed class RequestBuilder
 	public RequestBuilder ToUrl(string url)
 	{
 		_uriBuilder = new UriBuilder(url);
+		return this;
+	}
+
+	/// <summary>
+	/// Sets the URL of this request
+	/// </summary>
+	public RequestBuilder ToUri(Uri uri)
+	{
+		_uriBuilder = new UriBuilder(uri);
 		return this;
 	}
 
@@ -157,10 +157,4 @@ internal sealed class RequestBuilder
 
 		return request;
 	}
-
-	/// <summary>
-	/// Creates a <see cref="RequestBuilder"/> from the given arguments
-	/// </summary>
-	public static RequestBuilder Create(string token, string repository) =>
-		new RequestBuilder().ToUrl(repository).WithAuth(token);
 }
