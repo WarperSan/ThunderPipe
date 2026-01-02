@@ -28,7 +28,7 @@ internal sealed class PublishCommand : AsyncCommand<PublishSettings>
 
 		_logger.LogInformation("Starting to publish '{File}'.", file);
 
-		var builder = RequestBuilder.Create(settings.Token, settings.Repository!);
+		var builder = new RequestBuilder().ToUri(settings.Repository!).WithAuth(settings.Token);
 
 		_logger.LogInformation("Publishing '{File}'", file);
 

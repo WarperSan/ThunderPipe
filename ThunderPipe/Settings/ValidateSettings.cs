@@ -49,7 +49,8 @@ public sealed class ValidateSettings : CommandSettings
 	[CommandOption("--repository")]
 	[Description("URL of the server hosting the package")]
 	[DefaultValue("https://thunderstore.io")]
-	public string? Repository { get; init; }
+	[TypeConverter(typeof(UriTypeConverter))]
+	public Uri? Repository { get; init; }
 
 	[CommandOption("--author")]
 	[Description("Name of the author that would publish the package")]
@@ -90,7 +91,7 @@ public sealed class ValidateSettings : CommandSettings
 
 		if (UseRemoteValidation)
 		{
-			if (string.IsNullOrWhiteSpace(Repository))
+			if (Repository == null)
 			{
 				return ValidationResult.Error(
 					"If remote validation is used, a repository must be specified."

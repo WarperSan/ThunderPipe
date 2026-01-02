@@ -29,7 +29,7 @@ internal sealed class ValidateCommand : AsyncCommand<ValidateSettings>
 			settings.PackageFolder
 		);
 
-		var builder = RequestBuilder.Create(settings.Token, settings.Repository!);
+		var builder = new RequestBuilder().ToUri(settings.Repository!).WithAuth(settings.Token);
 
 		var iconPath = Path.GetFullPath(settings.IconPath!, settings.PackageFolder);
 		var manifestPath = Path.GetFullPath(settings.ManifestPath!, settings.PackageFolder);
