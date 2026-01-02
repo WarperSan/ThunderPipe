@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Microsoft.Extensions.Logging;
+using Spectre.Console;
 using Spectre.Console.Cli;
 using ThunderPipe.Settings;
 using ThunderPipe.Utils;
@@ -29,22 +30,23 @@ internal sealed class ValidateCommand : AsyncCommand<ValidateSettings>
 			settings.PackageFolder
 		);
 
+		var builder = new RequestBuilder().ToUri(settings.Repository!).WithAuth(settings.Token);
+
 		var iconPath = Path.GetFullPath(settings.IconPath!, settings.PackageFolder);
 		var manifestPath = Path.GetFullPath(settings.ManifestPath!, settings.PackageFolder);
 		var readmePath = Path.GetFullPath(settings.ReadmePath!, settings.PackageFolder);
 
-		var validations =
-			new List<Func<RequestBuilder, CancellationToken, Task<ValidationResult>>>();
+		var validations = new List<Func<Task<ValidationResult>>>();
 
 		if (!settings.IgnoreLocalValidation) { }
 
 		if (settings.UseRemoteValidation)
 		{
-			validations.Add((builder, ct) => ValidateIconRemote(iconPath, builder, ct));
-			validations.Add(
-				(builder, ct) => ValidateManifestRemote(manifestPath, settings.Author!, builder, ct)
+			validations.Add(() => ValidateIconRemote(iconPath, builder, cancellationToken));
+			validations.Add(() =>
+				ValidateManifestRemote(manifestPath, settings.Author!, builder, cancellationToken)
 			);
-			validations.Add((builder, ct) => ValidateReadmeRemote(readmePath, builder, ct));
+			validations.Add(() => ValidateReadmeRemote(readmePath, builder, cancellationToken));
 		}
 
 		if (validations.Count == 0)
@@ -53,18 +55,9 @@ internal sealed class ValidateCommand : AsyncCommand<ValidateSettings>
 			return 1;
 		}
 
-		var builder = new RequestBuilder().ToUri(settings.Repository!).WithAuth(settings.Token);
-		var errors = new List<string>();
-
-		foreach (var validation in validations)
-		{
-			var result = await validation.Invoke(builder, cancellationToken);
-
-			if (result.IsValid)
-				continue;
-
-			errors.AddRange(result.Errors);
-		}
+		var errors = await AnsiConsole
+			.Progress()
+			.StartAsync(ctx => RunValidations(validations, ctx));
 
 		if (errors.Count > 0)
 		{
@@ -86,6 +79,32 @@ internal sealed class ValidateCommand : AsyncCommand<ValidateSettings>
 	// ReSharper disable ConvertIfStatementToReturnStatement
 
 	private sealed record ValidationResult(bool IsValid, IReadOnlyList<string> Errors);
+
+	private static async Task<List<string>> RunValidations(
+		List<Func<Task<ValidationResult>>> validations,
+		ProgressContext ctx
+	)
+	{
+		var errors = new List<string>();
+
+		var validationProgress = ctx.AddTask("Run validations", maxValue: validations.Count);
+
+		foreach (var validation in validations)
+		{
+			var result = await validation.Invoke();
+
+			validationProgress.Increment(1);
+
+			Thread.Sleep(20);
+
+			if (result.IsValid)
+				continue;
+
+			errors.AddRange(result.Errors);
+		}
+
+		return errors;
+	}
 
 	private static async Task<ValidationResult> ValidateIconRemote(
 		string path,
