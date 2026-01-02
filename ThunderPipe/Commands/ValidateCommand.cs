@@ -46,7 +46,7 @@ internal sealed class ValidateCommand : AsyncCommand<ValidateSettings>
 			validations.Add(() =>
 				ValidateManifestRemote(manifestPath, settings.Author!, builder, cancellationToken)
 			);
-			validations.Add(() => ValidateReadmeRemote(readmePath, builder, cancellationToken));
+			//validations.Add(() => ValidateReadmeRemote(readmePath, builder, cancellationToken));
 		}
 
 		if (validations.Count == 0)
