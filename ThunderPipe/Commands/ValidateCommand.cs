@@ -44,7 +44,7 @@ internal sealed class ValidateCommand : AsyncCommand<ValidateSettings>
 		{
 			validations.Add(() => ValidateIconRemote(iconPath, builder, cancellationToken));
 			validations.Add(() =>
-				ValidateManifestRemote(manifestPath, settings.Author!, builder, cancellationToken)
+				ValidateManifestRemote(manifestPath, settings.Team!, builder, cancellationToken)
 			);
 			//validations.Add(() => ValidateReadmeRemote(readmePath, builder, cancellationToken));
 		}
@@ -131,14 +131,14 @@ internal sealed class ValidateCommand : AsyncCommand<ValidateSettings>
 
 	private static async Task<ValidationResult> ValidateManifestRemote(
 		string path,
-		string author,
+		string team,
 		RequestBuilder builder,
 		CancellationToken cancellationToken
 	)
 	{
 		var response = await ThunderstoreAPI.ValidateManifest(
 			path,
-			author,
+			team,
 			builder,
 			cancellationToken
 		);

@@ -52,9 +52,9 @@ public sealed class ValidateSettings : CommandSettings
 	[TypeConverter(typeof(UriTypeConverter))]
 	public Uri? Repository { get; init; }
 
-	[CommandOption("--author")]
-	[Description("Name of the author that would publish the package")]
-	public string? Author { get; init; }
+	[CommandOption("--team")]
+	[Description("Team that will publish the package")]
+	public string? Team { get; init; }
 
 	/// <inheritdoc />
 	public override ValidationResult Validate()
@@ -105,10 +105,10 @@ public sealed class ValidateSettings : CommandSettings
 				);
 			}
 
-			if (string.IsNullOrWhiteSpace(Author))
+			if (string.IsNullOrWhiteSpace(Team))
 			{
 				return ValidationResult.Error(
-					"If remote validation is used, an author must be specified."
+					"If remote validation is used, a team must be specified."
 				);
 			}
 		}

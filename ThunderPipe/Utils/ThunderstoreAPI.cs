@@ -41,7 +41,7 @@ internal static class ThunderstoreAPI
 	/// </summary>
 	public static async Task<ValidateManifestResponse?> ValidateManifest(
 		string path,
-		string author,
+		string team,
 		RequestBuilder builder,
 		CancellationToken cancellationToken
 	)
@@ -50,7 +50,7 @@ internal static class ThunderstoreAPI
 
 		var payload = new ValidateManifestRequest
 		{
-			AuthorName = author,
+			AuthorName = team,
 			Data = Convert.ToBase64String(data),
 		};
 
