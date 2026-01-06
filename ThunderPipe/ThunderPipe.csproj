@@ -9,7 +9,7 @@
 	<!-- Nuget Properties -->
 	<PropertyGroup>
 		<PackAsTool>true</PackAsTool>
-		<PackageId>WarperSan.ThunderPipe</PackageId>
+		<PackageId>ThunderPipe</PackageId>
 		<PackageTags>Modding;CD</PackageTags>
 
 		<Title>ThunderPipe</Title>
