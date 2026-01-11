@@ -9,6 +9,8 @@
     </div>
 </div>
 
+## Overview
+
 ThunderPipe is a command-line tool for building, validating and publishing mod packages to [Thunderstore](https://thunderstore.io/).
 
 ## Why this instead of TCLI?
