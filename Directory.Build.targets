@@ -1,0 +1,40 @@
+<Project>
+	<Target Name="GenerateMetadata" BeforeTargets="BeforeCompile" AfterTargets="MinVer">
+		<PropertyGroup>
+			<GUID>dev.$([System.String]::Copy('$(Authors)').ToLower()).$([System.String]::Copy('$(AssemblyName)').ToLower())</GUID>
+
+			<Version Condition="'$(Version)' == ''">0.0.0</Version>
+			<Version Condition="'$(Version)' != ''"
+				>$([System.Text.RegularExpressions.Regex]::Match($(Version), `\d+\.\d+\.\d+`))</Version
+			>
+
+			<FileContent>
+				<![CDATA[
+#pragma warning disable CS1591
+
+namespace $(RootNamespace)
+{
+    public static class Metadata
+    {
+    	public const string GUID = "$(GUID)"%3B
+    	public const string VERSION = "$(Version)"%3B
+    }
+}
+]]>
+			</FileContent>
+			<FilePath>$(IntermediateOutputPath)Metadata.cs</FilePath>
+		</PropertyGroup>
+
+		<ItemGroup>
+			<Compile Include="$(FilePath)" />
+			<FileWrites Include="$(FilePath)" />
+		</ItemGroup>
+
+		<WriteLinesToFile
+			Lines="$(FileContent)"
+			File="$(FilePath)"
+			WriteOnlyWhenDifferent="true"
+			Overwrite="true"
+		/>
+	</Target>
+</Project>

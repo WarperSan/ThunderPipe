@@ -28,7 +28,7 @@ internal sealed class ThunderstoreClient : HttpClient
 	private ThunderstoreClient()
 	{
 		DefaultRequestHeaders.UserAgent.Add(
-			new ProductInfoHeaderValue(nameof(ThunderPipe), "1.0.0")
+			new ProductInfoHeaderValue(Metadata.GUID, Metadata.VERSION)
 		);
 		Timeout = TimeSpan.FromMinutes(5);
 	}
