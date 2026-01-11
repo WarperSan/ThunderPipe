@@ -9,20 +9,20 @@ using ThunderPipe.Utils;
 namespace ThunderPipe.Commands;
 
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
-internal sealed class ValidateCommand : AsyncCommand<ValidateSettings>
+internal sealed class ValidatePackageCommand : AsyncCommand<ValidatePackageSettings>
 {
-	private readonly ILogger<ValidateCommand> _logger;
+	private readonly ILogger<ValidatePackageCommand> _logger;
 
-	public ValidateCommand(ILogger<ValidateCommand> logger)
+	public ValidatePackageCommand(ILogger<ValidatePackageCommand> logger)
 	{
 		_logger = logger;
 	}
 
 	/// <inheritdoc />
 	public override async Task<int> ExecuteAsync(
-		CommandContext context,
-		ValidateSettings settings,
-		CancellationToken cancellationToken
+		CommandContext          context,
+		ValidatePackageSettings settings,
+		CancellationToken       cancellationToken
 	)
 	{
 		_logger.LogInformation(
@@ -38,16 +38,11 @@ internal sealed class ValidateCommand : AsyncCommand<ValidateSettings>
 
 		var validations = new List<Func<Task<ValidationResult>>>();
 
-		if (!settings.IgnoreLocalValidation) { }
-
-		if (settings.UseRemoteValidation)
-		{
-			validations.Add(() => ValidateIconRemote(iconPath, builder, cancellationToken));
-			validations.Add(() =>
-				ValidateManifestRemote(manifestPath, settings.Team!, builder, cancellationToken)
-			);
-			//validations.Add(() => ValidateReadmeRemote(readmePath, builder, cancellationToken));
-		}
+		validations.Add(() => ValidateIconRemote(iconPath, builder, cancellationToken));
+		validations.Add(() =>
+			ValidateManifestRemote(manifestPath, settings.Team!, builder, cancellationToken)
+		);
+		//validations.Add(() => ValidateReadmeRemote(readmePath, builder, cancellationToken));
 
 		if (validations.Count == 0)
 		{
