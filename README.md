@@ -45,18 +45,6 @@ ThunderPipe --help
 
 ## Usage
 
-### Validating a Package
-
-Check if your package meets [Thunderstore's requirements](https://thunderstore.io/package/create/docs/) before you attempt to publish.
-
-```bash
-ThunderPipe validate <package-folder>
-```
-
-| Argument           | Description                                       |
-|--------------------|---------------------------------------------------|
-| `<package-folder>` | Path to the folder containing the package's files |
-
 ### Publishing a Package
 
 Upload your `.zip` package directly to Thunderstore for a specific team in a specific community.
@@ -71,6 +59,57 @@ ThunderPipe publish <file> <team> <community> --token <your-token>
 | `<team>`       | The team name on Thunderstore           |
 | `<community>`  | The communiy slug                       |
 | `<your-token>` | API token of the service account to use |
+
+### Validating a Community
+
+Check if your target community exists.
+
+```bash
+ThunderPipe validate community <community>
+```
+
+| Argument      | Description           |
+|---------------|-----------------------|
+| `<community>` | Slug of the community |
+
+### Validating Categories
+
+Check if your categories exist.
+
+```bash
+ThunderPipe validate categories <community> --categories <categories>
+```
+
+| Argument       | Description             |
+|----------------|-------------------------|
+| `<community>`  | Slug of the community   |
+| `<categories>` | Slugs for each category |
+
+### Validating Dependencies
+
+Check if your target dependencies exist.
+
+```bash
+ThunderPipe validate dependencies <dependencies>
+```
+
+| Argument         | Description                            |
+|------------------|----------------------------------------|
+| `<dependencies>` | Dependency strings for each dependency |
+
+
+### Validating a Package
+
+Check if your package meets [Thunderstore's requirements](https://thunderstore.io/package/create/docs/) before you attempt to publish.
+
+```bash
+ThunderPipe validate package <package-folder>
+```
+
+| Argument           | Description                                       |
+|--------------------|---------------------------------------------------|
+| `<package-folder>` | Path to the folder containing the package's files |
+
 
 ## Contributing
 
