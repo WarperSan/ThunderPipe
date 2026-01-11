@@ -20,6 +20,10 @@ internal sealed class ThunderstoreClient : HttpClient
 	public const string API_ABORT_UPLOAD = API_EXPERIMENTAL + "usermedia/{UUID}/abort-upload/";
 	public const string API_FINISH_UPLOAD = API_EXPERIMENTAL + "usermedia/{UUID}/finish-upload/";
 	public const string API_SUBMIT_PACKAGE = API_EXPERIMENTAL + "submission/submit/";
+	public const string API_COMMUNITY_PAGE = API_EXPERIMENTAL + "community/";
+	public const string API_CATEGORIES_PAGE = API_EXPERIMENTAL + "community/{COMMUNITY}/category/";
+	public const string API_DEPENDENCY_VERSION =
+		API_EXPERIMENTAL + "package/{NAMESPACE}/{NAME}/{VERSION}/";
 
 	private ThunderstoreClient()
 	{

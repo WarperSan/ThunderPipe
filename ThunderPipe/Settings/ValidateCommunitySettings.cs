@@ -2,27 +2,26 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using Spectre.Console;
 using Spectre.Console.Cli;
+using ThunderPipe.Commands;
 
 namespace ThunderPipe.Settings;
 
 /// <summary>
-/// Settings used by any validation command
+/// Settings used by <see cref="ValidateCommunityCommand"/>
 /// </summary>
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
-public abstract class ValidateSettings : CommandSettings
+public sealed class ValidateCommunitySettings : ValidateSettings
 {
-	[CommandOption("--repository")]
-	[Description("URL of the server hosting the package")]
-	[DefaultValue("https://thunderstore.io")]
-	[TypeConverter(typeof(UriTypeConverter))]
-	public Uri? Repository { get; init; }
+	[CommandArgument(0, "<community>")]
+	[Description("Community where the package will be published")]
+	public required string Community { get; init; }
 
 	/// <inheritdoc />
 	public override ValidationResult Validate()
 	{
-		if (Repository == null)
-			return ValidationResult.Error("Repository cannot be empty.");
+		if (string.IsNullOrEmpty(Community))
+			return ValidationResult.Error("Community cannot be empty.");
 
 		return base.Validate();
 	}

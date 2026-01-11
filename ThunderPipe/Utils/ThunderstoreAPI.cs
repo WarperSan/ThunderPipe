@@ -1,6 +1,8 @@
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Web;
 using ThunderPipe.DTOs;
 
 namespace ThunderPipe.Utils;
@@ -294,5 +296,172 @@ internal static class ThunderstoreAPI
 			.Build();
 
 		return ThunderstoreClient.SendRequest<SubmitPackageResponse>(request, cancellationToken);
+	}
+
+	/// <summary>
+	/// Finds the community with the slug
+	/// </summary>
+	public static async Task<FindCommunityResponse.PageItemModel?> FindCommunity(
+		string slug,
+		RequestBuilder builder,
+		CancellationToken cancellationToken
+	)
+	{
+		var tempBuilder = builder.Copy().Get().ToEndpoint(ThunderstoreClient.API_COMMUNITY_PAGE);
+
+		string? currentCursor = null;
+
+		do
+		{
+			var request = tempBuilder.Copy().AddParameter("cursor", currentCursor).Build();
+
+			var response = await ThunderstoreClient.SendRequest<FindCommunityResponse>(
+				request,
+				cancellationToken
+			);
+
+			if (response == null)
+				break;
+
+			var community = response.Items.FirstOrDefault(i => i.Slug == slug);
+
+			if (community != null)
+				return community;
+
+			// Can't continue to crawl
+			if (response.Pagination.NextPage == null)
+				break;
+
+			var uri = new Uri(response.Pagination.NextPage);
+			var query = HttpUtility.ParseQueryString(uri.Query);
+			var nextCursor = query.Get("cursor");
+
+			// Prevent looping
+			if (currentCursor == nextCursor)
+				break;
+
+			currentCursor = nextCursor;
+		} while (currentCursor != null);
+
+		return null;
+	}
+
+	/// <summary>
+	/// Finds the categories with the slugs in the community
+	/// </summary>
+	public static async Task<
+		Dictionary<string, FindCategoriesResponse.PageItemModel>
+	> FindCategories(
+		string[] slugs,
+		string community,
+		RequestBuilder builder,
+		CancellationToken cancellationToken
+	)
+	{
+		var tempBuilder = builder
+			.Copy()
+			.Get()
+			.ToEndpoint(ThunderstoreClient.API_CATEGORIES_PAGE.Replace("{COMMUNITY}", community));
+
+		var slugsHash = new HashSet<string>(slugs);
+		var categories = new Dictionary<string, FindCategoriesResponse.PageItemModel>();
+		string? currentCursor = null;
+
+		do
+		{
+			var request = tempBuilder.Copy().AddParameter("cursor", currentCursor).Build();
+
+			var response = await ThunderstoreClient.SendRequest<FindCategoriesResponse>(
+				request,
+				cancellationToken
+			);
+
+			if (response == null)
+				break;
+
+			foreach (var category in response.Items)
+			{
+				if (!slugsHash.Contains(category.Slug))
+					continue;
+
+				categories[category.Slug] = category;
+			}
+
+			// Can't continue to crawl
+			if (response.Pagination.NextPage == null)
+				break;
+
+			var uri = new Uri(response.Pagination.NextPage);
+			var query = HttpUtility.ParseQueryString(uri.Query);
+			var nextCursor = query.Get("cursor");
+
+			// Prevent looping
+			if (currentCursor == nextCursor)
+				break;
+
+			currentCursor = nextCursor;
+		} while (categories.Count < slugs.Length && currentCursor != null);
+
+		return categories;
+	}
+
+	/// <summary>
+	/// Finds the dependencies
+	/// </summary>
+	public static async Task<Dictionary<string, FindDependenciesResponse>> FindDependencies(
+		string[] dependencies,
+		RequestBuilder builder,
+		CancellationToken cancellationToken
+	)
+	{
+		var tempBuilder = builder.Copy().Get();
+		var foundDependencies = new Dictionary<string, FindDependenciesResponse>();
+
+		// TODO: Convert this to a proper Regex
+		var regex = new Regex("^(?<namespace>.+)-(?<name>.+)-(?<version>\\d+\\.\\d+\\.\\d+)$");
+
+		foreach (var dependency in dependencies)
+		{
+			var match = regex.Match(dependency);
+
+			string? @namespace = null;
+			string? name = null;
+			string? version = null;
+
+			if (match.Groups.TryGetValue("namespace", out var namespaceGroup))
+				@namespace = namespaceGroup.Value;
+
+			if (match.Groups.TryGetValue("name", out var nameGroup))
+				name = nameGroup.Value;
+
+			if (match.Groups.TryGetValue("version", out var versionGroup))
+				version = versionGroup.Value;
+
+			if (@namespace == null || name == null || version == null)
+				continue;
+
+			var url = ThunderstoreClient
+				.API_DEPENDENCY_VERSION.Replace("{NAMESPACE}", @namespace)
+				.Replace("{NAME}", name)
+				.Replace("{VERSION}", version);
+
+			Console.WriteLine(url);
+			var request = tempBuilder.Copy().ToEndpoint(url).Build();
+
+			var response = await ThunderstoreClient.SendRequest<FindDependenciesResponse>(
+				request,
+				cancellationToken
+			);
+
+			if (response == null)
+				continue;
+
+			if (!response.IsActive)
+				continue;
+
+			foundDependencies[dependency] = response;
+		}
+
+		return foundDependencies;
 	}
 }
