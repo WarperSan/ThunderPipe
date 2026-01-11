@@ -417,8 +417,11 @@ internal static class ThunderstoreAPI
 		var tempBuilder = builder.Copy().Get();
 		var foundDependencies = new Dictionary<string, FindDependenciesResponse>();
 
-		// TODO: Convert this to a proper Regex
-		var regex = new Regex("^(?<namespace>.+)-(?<name>.+)-(?<version>\\d+\\.\\d+\\.\\d+)$");
+#pragma warning disable SYSLIB1045
+		var regex = new Regex(
+			$@"^(?<namespace>{ThunderstoreClient.REGEX_NAMESPACE})-(?<name>{ThunderstoreClient.REGEX_NAME})-(?<version>{ThunderstoreClient.REGEX_VERSION})$"
+		);
+#pragma warning restore SYSLIB1045
 
 		foreach (var dependency in dependencies)
 		{

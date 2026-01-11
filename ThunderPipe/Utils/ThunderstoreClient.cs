@@ -1,4 +1,5 @@
 using System.Net.Http.Headers;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Spectre.Console;
 
@@ -24,6 +25,10 @@ internal sealed class ThunderstoreClient : HttpClient
 	public const string API_CATEGORIES_PAGE = API_EXPERIMENTAL + "community/{COMMUNITY}/category/";
 	public const string API_DEPENDENCY_VERSION =
 		API_EXPERIMENTAL + "package/{NAMESPACE}/{NAME}/{VERSION}/";
+
+	public const string REGEX_NAMESPACE = "(?!_)[a-zA-Z0-9_]+(?<!_)";
+	public const string REGEX_NAME = "[a-zA-Z 0-9_]+";
+	public const string REGEX_VERSION = "[0-9]+.[0-9]+.[0-9]+";
 
 	private ThunderstoreClient()
 	{
