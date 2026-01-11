@@ -448,7 +448,6 @@ internal static class ThunderstoreAPI
 				.Replace("{NAME}", name)
 				.Replace("{VERSION}", version);
 
-			Console.WriteLine(url);
 			var request = tempBuilder.Copy().ToEndpoint(url).Build();
 
 			var response = await ThunderstoreClient.SendRequest<FindDependenciesResponse>(
