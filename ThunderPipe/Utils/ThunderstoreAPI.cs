@@ -313,7 +313,7 @@ internal static class ThunderstoreAPI
 
 		do
 		{
-			var request = tempBuilder.Copy().AddParameter("cursor", currentCursor).Build();
+			var request = tempBuilder.Copy().SetParameter("cursor", currentCursor).Build();
 
 			var response = await ThunderstoreClient.SendRequest<FindCommunityResponse>(
 				request,
@@ -369,7 +369,7 @@ internal static class ThunderstoreAPI
 
 		do
 		{
-			var request = tempBuilder.Copy().AddParameter("cursor", currentCursor).Build();
+			var request = tempBuilder.Copy().SetParameter("cursor", currentCursor).Build();
 
 			var response = await ThunderstoreClient.SendRequest<FindCategoriesResponse>(
 				request,

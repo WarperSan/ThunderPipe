@@ -130,9 +130,9 @@ internal sealed class RequestBuilder
 	private readonly NameValueCollection _queryParams = HttpUtility.ParseQueryString(string.Empty);
 
 	/// <summary>
-	/// Adds a query parameter at the given key with the given value
+	/// Sets the query parameter with the given key to the given value
 	/// </summary>
-	public RequestBuilder AddParameter(string key, string? value)
+	public RequestBuilder SetParameter(string key, string? value)
 	{
 		_queryParams.Set(key, value);
 
