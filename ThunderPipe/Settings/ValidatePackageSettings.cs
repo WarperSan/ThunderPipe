@@ -32,6 +32,10 @@ public sealed class ValidatePackageSettings : ValidateSettings
 	[DefaultValue("./README.md")]
 	public string? ReadmePath { get; init; }
 
+	[CommandOption("--token")]
+	[Description("Authentication token used to publish the package")]
+	public required string Token { get; init; }
+
 	[CommandOption("--team")]
 	[Description("Team that will publish the package")]
 	public string? Team { get; init; }
@@ -68,6 +72,9 @@ public sealed class ValidatePackageSettings : ValidateSettings
 
 		if (string.IsNullOrWhiteSpace(Team))
 			return ValidationResult.Error("Team must be specified.");
+
+		if (string.IsNullOrWhiteSpace(Token))
+			return ValidationResult.Error("Token cannot be empty.");
 
 		return base.Validate();
 	}

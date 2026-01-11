@@ -12,10 +12,6 @@ namespace ThunderPipe.Settings;
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 public abstract class ValidateSettings : CommandSettings
 {
-	[CommandOption("--token")]
-	[Description("Authentication token used to publish the package")]
-	public required string Token { get; init; }
-
 	[CommandOption("--repository")]
 	[Description("URL of the server hosting the package")]
 	[DefaultValue("https://thunderstore.io")]
@@ -25,9 +21,6 @@ public abstract class ValidateSettings : CommandSettings
 	/// <inheritdoc />
 	public override ValidationResult Validate()
 	{
-		if (string.IsNullOrWhiteSpace(Token))
-			return ValidationResult.Error("Token cannot be empty.");
-
 		if (Repository == null)
 			return ValidationResult.Error("Repository cannot be empty.");
 
