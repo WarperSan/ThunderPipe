@@ -344,4 +344,63 @@ internal static class ThunderstoreAPI
 
 		return null;
 	}
+
+	/// <summary>
+	/// Finds the categories with the slugs in the community
+	/// </summary>
+	public static async Task<
+		Dictionary<string, FindCategoriesResponse.PageItemModel>
+	> FindCategories(
+		string[] slugs,
+		string community,
+		RequestBuilder builder,
+		CancellationToken cancellationToken
+	)
+	{
+		var tempBuilder = builder
+			.Copy()
+			.Get()
+			.ToEndpoint(ThunderstoreClient.API_CATEGORIES_PAGE.Replace("{COMMUNITY}", community));
+
+		var slugsHash = new HashSet<string>(slugs);
+		var categories = new Dictionary<string, FindCategoriesResponse.PageItemModel>();
+		string? currentCursor = null;
+
+		do
+		{
+			var request = tempBuilder.Copy().AddParameter("cursor", currentCursor).Build();
+
+			var response = await ThunderstoreClient.SendRequest<FindCategoriesResponse>(
+				request,
+				cancellationToken
+			);
+
+			if (response == null)
+				break;
+
+			foreach (var category in response.Items)
+			{
+				if (!slugsHash.Contains(category.Slug))
+					continue;
+
+				categories[category.Slug] = category;
+			}
+
+			// Can't continue to crawl
+			if (response.Pagination.NextPage == null)
+				break;
+
+			var uri = new Uri(response.Pagination.NextPage);
+			var query = HttpUtility.ParseQueryString(uri.Query);
+			var nextCursor = query.Get("cursor");
+
+			// Prevent looping
+			if (currentCursor == nextCursor)
+				break;
+
+			currentCursor = nextCursor;
+		} while (categories.Count < slugs.Length && currentCursor != null);
+
+		return categories;
+	}
 }
