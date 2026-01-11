@@ -4,9 +4,9 @@ using ThunderPipe.Utils;
 namespace ThunderPipe.DTOs;
 
 /// <summary>
-/// Model used as the response payload in <see cref="ThunderstoreAPI.GetCommunityPage"/>
+/// Model used as the response payload in <see cref="ThunderstoreAPI.FindCommunity"/>
 /// </summary>
-internal record GetCommunityPageResponse
+internal record FindCommunityResponse
 {
 	public record PaginationModel
 	{

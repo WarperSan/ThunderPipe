@@ -300,15 +300,14 @@ internal static class ThunderstoreAPI
 	/// <summary>
 	/// Finds the community with the slug
 	/// </summary>
-	/// <remarks>
-	/// This is simply a helper method to simplify using <see cref="ThunderstoreAPI.GetCommunityPage"/>
-	/// </remarks>
-	public static async Task<GetCommunityPageResponse.PageItemModel?> FindCommunity(
+	public static async Task<FindCommunityResponse.PageItemModel?> FindCommunity(
 		string slug,
 		RequestBuilder builder,
 		CancellationToken cancellationToken
 	)
 	{
+		var tempBuilder = builder.Copy().Get().ToEndpoint(ThunderstoreClient.API_COMMUNITY_PAGE);
+
 		string? currentCursor = null;
 
 		do
@@ -339,24 +338,5 @@ internal static class ThunderstoreAPI
 		} while (currentCursor != null);
 
 		return null;
-	}
-
-	/// <summary>
-	/// Gets the page of communities
-	/// </summary>
-	private static Task<GetCommunityPageResponse?> GetCommunityPage(
-		string? cursor,
-		RequestBuilder builder,
-		CancellationToken cancellationToken
-	)
-	{
-		var request = builder
-			.Copy()
-			.Get()
-			.AddParameter("cursor", cursor)
-			.ToEndpoint(ThunderstoreClient.API_COMMUNITY_PAGE)
-			.Build();
-
-		return ThunderstoreClient.SendRequest<GetCommunityPageResponse>(request, cancellationToken);
 	}
 }
