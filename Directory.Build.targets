@@ -4,9 +4,6 @@
 			<GUID>dev.$([System.String]::Copy('$(Authors)').ToLower()).$([System.String]::Copy('$(AssemblyName)').ToLower())</GUID>
 
 			<Version Condition="'$(Version)' == ''">0.0.0</Version>
-			<Version Condition="'$(Version)' != ''"
-				>$([System.Text.RegularExpressions.Regex]::Match($(Version), `\d+\.\d+\.\d+`))</Version
-			>
 
 			<FileContent>
 				<![CDATA[
