@@ -233,7 +233,8 @@ internal static class ThunderstoreAPI
 		var request = builder
 			.Copy()
 			.Post()
-			.ToEndpoint(ThunderstoreClient.API_ABORT_UPLOAD.Replace("{UUID}", uuid))
+			.ToEndpoint(ThunderstoreClient.API_ABORT_UPLOAD)
+			.SetPathParameter("UUID", uuid)
 			.Build();
 
 		await ThunderstoreClient.SendRequest(request, cancellationToken);
@@ -257,7 +258,8 @@ internal static class ThunderstoreAPI
 		var request = builder
 			.Copy()
 			.Post()
-			.ToEndpoint(ThunderstoreClient.API_FINISH_UPLOAD.Replace("{UUID}", uuid))
+			.ToEndpoint(ThunderstoreClient.API_FINISH_UPLOAD)
+			.SetPathParameter("UUID", uuid)
 			.WithJSON(payload)
 			.Build();
 
@@ -361,7 +363,8 @@ internal static class ThunderstoreAPI
 		var tempBuilder = builder
 			.Copy()
 			.Get()
-			.ToEndpoint(ThunderstoreClient.API_CATEGORIES_PAGE.Replace("{COMMUNITY}", community));
+			.ToEndpoint(ThunderstoreClient.API_CATEGORIES_PAGE)
+			.SetPathParameter("COMMUNITY", community);
 
 		var slugsHash = new HashSet<string>(slugs);
 		var categories = new Dictionary<string, FindCategoriesResponse.PageItemModel>();
@@ -443,12 +446,13 @@ internal static class ThunderstoreAPI
 			if (@namespace == null || name == null || version == null)
 				continue;
 
-			var url = ThunderstoreClient
-				.API_DEPENDENCY_VERSION.Replace("{NAMESPACE}", @namespace)
-				.Replace("{NAME}", name)
-				.Replace("{VERSION}", version);
-
-			var request = tempBuilder.Copy().ToEndpoint(url).Build();
+			var request = tempBuilder
+				.Copy()
+				.ToEndpoint(ThunderstoreClient.API_DEPENDENCY_VERSION)
+				.SetPathParameter("NAMESPACE", @namespace)
+				.SetPathParameter("NAME", name)
+				.SetPathParameter("VERSION", version)
+				.Build();
 
 			var response = await ThunderstoreClient.SendRequest<FindDependenciesResponse>(
 				request,

@@ -125,9 +125,10 @@ internal sealed class RequestBuilder
 
 	#endregion
 
-	#region Query
+	#region Parameters
 
 	private readonly NameValueCollection _queryParams = HttpUtility.ParseQueryString(string.Empty);
+	private readonly Dictionary<string, string?> _pathParams = new();
 
 	/// <summary>
 	/// Sets the query parameter with the given key to the given value
@@ -135,6 +136,16 @@ internal sealed class RequestBuilder
 	public RequestBuilder SetParameter(string key, string? value)
 	{
 		_queryParams.Set(key, value);
+
+		return this;
+	}
+
+	/// <summary>
+	/// Sets the path parameter with the given key to the given value
+	/// </summary>
+	public RequestBuilder SetPathParameter(string key, string? value)
+	{
+		_pathParams.TryAdd(key, value);
 
 		return this;
 	}
@@ -170,8 +181,13 @@ internal sealed class RequestBuilder
 			if (paramKey == null)
 				continue;
 
-			newBuilder.AddParameter(paramKey, _queryParams.Get(paramKey));
+			newBuilder.SetParameter(paramKey, _queryParams.Get(paramKey));
 		}
+
+		newBuilder._pathParams.Clear();
+
+		foreach ((var key, var value) in _pathParams)
+			newBuilder.SetPathParameter(key, value);
 
 		return newBuilder;
 	}
@@ -183,11 +199,23 @@ internal sealed class RequestBuilder
 	{
 		var request = new HttpRequestMessage();
 
+		var tempBuilder = new UriBuilder(_uriBuilder.Uri);
+
 		if (_queryParams.HasKeys())
-			_uriBuilder.Query = _queryParams.ToString();
+			tempBuilder.Query = _queryParams.ToString();
+
+		if (_pathParams.Count > 0)
+		{
+			var path = tempBuilder.Path;
+
+			foreach ((var key, var value) in _pathParams)
+				path = path.Replace($"%7B{key}%7D", value ?? string.Empty);
+
+			tempBuilder.Path = path;
+		}
 
 		request.Method = _method;
-		request.RequestUri = _uriBuilder.Uri;
+		request.RequestUri = tempBuilder.Uri;
 		request.Content = _content;
 		request.Headers.Authorization = _authHeader;
 
