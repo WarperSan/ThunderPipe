@@ -25,7 +25,7 @@ internal record FindCategoriesResponse
 
 	public record PageItemModel
 	{
-		[JsonProperty("identifier")]
+		[JsonProperty("slug")]
 		[JsonRequired]
 		public required string Slug { get; set; }
 
