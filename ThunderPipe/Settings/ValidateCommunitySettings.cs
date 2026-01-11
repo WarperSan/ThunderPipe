@@ -7,7 +7,7 @@ using ThunderPipe.Commands;
 namespace ThunderPipe.Settings;
 
 /// <summary>
-/// Settings used by <see cref="ValidatePackageCommand"/>
+/// Settings used by <see cref="ValidateCommunityCommand"/>
 /// </summary>
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
