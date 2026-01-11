@@ -1,6 +1,7 @@
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
+using System.Web;
 using ThunderPipe.DTOs;
 
 namespace ThunderPipe.Utils;
@@ -294,5 +295,68 @@ internal static class ThunderstoreAPI
 			.Build();
 
 		return ThunderstoreClient.SendRequest<SubmitPackageResponse>(request, cancellationToken);
+	}
+
+	/// <summary>
+	/// Finds the community with the slug
+	/// </summary>
+	/// <remarks>
+	/// This is simply a helper method to simplify using <see cref="ThunderstoreAPI.GetCommunityPage"/>
+	/// </remarks>
+	public static async Task<GetCommunityPageResponse.PageItemModel?> FindCommunity(
+		string slug,
+		RequestBuilder builder,
+		CancellationToken cancellationToken
+	)
+	{
+		string? currentCursor = null;
+
+		do
+		{
+			var response = await GetCommunityPage(currentCursor, builder, cancellationToken);
+
+			if (response == null)
+				break;
+
+			var community = response.Items.FirstOrDefault(i => i.Slug == slug);
+
+			if (community != null)
+				return community;
+
+			// Can't continue to crawl
+			if (response.Pagination.NextPage == null)
+				break;
+
+			var uri = new Uri(response.Pagination.NextPage);
+			var query = HttpUtility.ParseQueryString(uri.Query);
+			var nextCursor = query.Get("cursor");
+
+			// Prevent looping
+			if (currentCursor == nextCursor)
+				break;
+
+			currentCursor = nextCursor;
+		} while (currentCursor != null);
+
+		return null;
+	}
+
+	/// <summary>
+	/// Gets the page of communities
+	/// </summary>
+	private static Task<GetCommunityPageResponse?> GetCommunityPage(
+		string? cursor,
+		RequestBuilder builder,
+		CancellationToken cancellationToken
+	)
+	{
+		var request = builder
+			.Copy()
+			.Get()
+			.AddParameter("cursor", cursor)
+			.ToEndpoint(ThunderstoreClient.API_COMMUNITY_PAGE)
+			.Build();
+
+		return ThunderstoreClient.SendRequest<GetCommunityPageResponse>(request, cancellationToken);
 	}
 }
