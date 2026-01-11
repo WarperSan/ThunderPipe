@@ -31,7 +31,7 @@ public sealed class ValidateCategoriesSettings : ValidateSettings
 			return ValidationResult.Error("At least one category must be specified.");
 
 		if (Categories.Any(string.IsNullOrEmpty))
-			return ValidationResult.Error("Categories contains an empty item.");
+			return ValidationResult.Error("Categories contain an empty item.");
 
 		return base.Validate();
 	}
