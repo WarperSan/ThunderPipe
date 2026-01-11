@@ -32,13 +32,13 @@ public sealed class ValidatePackageSettings : ValidateSettings
 	[DefaultValue("./README.md")]
 	public string? ReadmePath { get; init; }
 
-	[CommandOption("--token")]
+	[CommandOption("--token", true)]
 	[Description("Authentication token used to publish the package")]
 	public required string Token { get; init; }
 
-	[CommandOption("--team")]
+	[CommandOption("--team", true)]
 	[Description("Team that will publish the package")]
-	public string? Team { get; init; }
+	public required string Team { get; init; }
 
 	/// <inheritdoc />
 	public override ValidationResult Validate()
