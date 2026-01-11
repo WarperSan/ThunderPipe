@@ -65,5 +65,8 @@ internal static class Program
 		config
 			.AddCommand<ValidateCommunityCommand>("community")
 			.WithDescription("Validates if a community slug exists");
+		config
+			.AddCommand<ValidateCategoriesCommand>("categories")
+			.WithDescription("Validates if every category slug exists");
 	}
 }
