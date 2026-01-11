@@ -312,7 +312,12 @@ internal static class ThunderstoreAPI
 
 		do
 		{
-			var response = await GetCommunityPage(currentCursor, builder, cancellationToken);
+			var request = tempBuilder.Copy().AddParameter("cursor", currentCursor).Build();
+
+			var response = await ThunderstoreClient.SendRequest<FindCommunityResponse>(
+				request,
+				cancellationToken
+			);
 
 			if (response == null)
 				break;
