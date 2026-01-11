@@ -27,6 +27,11 @@ internal sealed class RequestBuilder
 	}
 
 	/// <summary>
+	/// Sets the HTTP method to <see cref="HttpMethod.Get"/>
+	/// </summary>
+	public RequestBuilder Get() => WithMethod(HttpMethod.Get);
+
+	/// <summary>
 	/// Sets the HTTP method to <see cref="HttpMethod.Post"/>
 	/// </summary>
 	public RequestBuilder Post() => WithMethod(HttpMethod.Post);
