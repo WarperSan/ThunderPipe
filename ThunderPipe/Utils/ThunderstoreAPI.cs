@@ -1,6 +1,7 @@
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Web;
 using ThunderPipe.DTOs;
 
@@ -402,5 +403,65 @@ internal static class ThunderstoreAPI
 		} while (categories.Count < slugs.Length && currentCursor != null);
 
 		return categories;
+	}
+
+	/// <summary>
+	/// Finds the dependencies
+	/// </summary>
+	public static async Task<Dictionary<string, FindDependenciesResponse>> FindDependencies(
+		string[] dependencies,
+		RequestBuilder builder,
+		CancellationToken cancellationToken
+	)
+	{
+		var tempBuilder = builder.Copy().Get();
+		var foundDependencies = new Dictionary<string, FindDependenciesResponse>();
+
+		// TODO: Convert this to a proper Regex
+		var regex = new Regex("^(?<namespace>.+)-(?<name>.+)-(?<version>\\d+\\.\\d+\\.\\d+)$");
+
+		foreach (var dependency in dependencies)
+		{
+			var match = regex.Match(dependency);
+
+			string? @namespace = null;
+			string? name = null;
+			string? version = null;
+
+			if (match.Groups.TryGetValue("namespace", out var namespaceGroup))
+				@namespace = namespaceGroup.Value;
+
+			if (match.Groups.TryGetValue("name", out var nameGroup))
+				name = nameGroup.Value;
+
+			if (match.Groups.TryGetValue("version", out var versionGroup))
+				version = versionGroup.Value;
+
+			if (@namespace == null || name == null || version == null)
+				continue;
+
+			var url = ThunderstoreClient
+				.API_DEPENDENCY_VERSION.Replace("{NAMESPACE}", @namespace)
+				.Replace("{NAME}", name)
+				.Replace("{VERSION}", version);
+
+			Console.WriteLine(url);
+			var request = tempBuilder.Copy().ToEndpoint(url).Build();
+
+			var response = await ThunderstoreClient.SendRequest<FindDependenciesResponse>(
+				request,
+				cancellationToken
+			);
+
+			if (response == null)
+				continue;
+
+			if (!response.IsActive)
+				continue;
+
+			foundDependencies[dependency] = response;
+		}
+
+		return foundDependencies;
 	}
 }
