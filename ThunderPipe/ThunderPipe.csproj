@@ -22,6 +22,9 @@
 
 		<RepositoryUrl>https://github.com/WarperSan/ThunderPipe</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
+
+		<MinVerDefaultPreReleaseIdentifiers>beta</MinVerDefaultPreReleaseIdentifiers>
+		<MinVerIgnoreHeight>true</MinVerIgnoreHeight>
 	</PropertyGroup>
 
 	<ItemGroup>
