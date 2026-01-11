@@ -417,7 +417,10 @@ internal static class ThunderstoreAPI
 		CancellationToken cancellationToken
 	)
 	{
-		var tempBuilder = builder.Copy().Get();
+		var tempBuilder = builder
+			.Copy()
+			.Get()
+			.ToEndpoint(ThunderstoreClient.API_DEPENDENCY_VERSION);
 		var foundDependencies = new Dictionary<string, FindDependenciesResponse>();
 
 #pragma warning disable SYSLIB1045
@@ -448,7 +451,6 @@ internal static class ThunderstoreAPI
 
 			var request = tempBuilder
 				.Copy()
-				.ToEndpoint(ThunderstoreClient.API_DEPENDENCY_VERSION)
 				.SetPathParameter("NAMESPACE", @namespace)
 				.SetPathParameter("NAME", name)
 				.SetPathParameter("VERSION", version)
