@@ -419,7 +419,7 @@ internal static class ThunderstoreAPI
 
 #pragma warning disable SYSLIB1045
 		var regex = new Regex(
-			$@"^(?<namespace>{ThunderstoreClient.REGEX_NAMESPACE})-(?<name>{ThunderstoreClient.REGEX_NAME})-(?<version>{ThunderstoreClient.REGEX_VERSION})$"
+			$"^(?<namespace>{ThunderstoreClient.REGEX_NAMESPACE})-(?<name>{ThunderstoreClient.REGEX_NAME})-(?<version>{ThunderstoreClient.REGEX_VERSION})$"
 		);
 #pragma warning restore SYSLIB1045
 
