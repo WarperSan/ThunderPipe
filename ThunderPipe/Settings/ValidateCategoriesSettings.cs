@@ -13,13 +13,20 @@ namespace ThunderPipe.Settings;
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 public sealed class ValidateCategoriesSettings : ValidateSettings
 {
-	[CommandArgument(0, "<categories>")]
-	[Description("Categories that will be used to label this package")]
+	[CommandArgument(0, "<community>")]
+	[Description("Community where the package will be published")]
+	public required string Community { get; init; }
+
+	[CommandOption("--categories <CATEGORY>")]
+	[Description("Categories that will be used to label the package")]
 	public required string[] Categories { get; init; }
 
 	/// <inheritdoc />
 	public override ValidationResult Validate()
 	{
+		if (string.IsNullOrWhiteSpace(Community))
+			return ValidationResult.Error("Community cannot be empty.");
+
 		if (Categories.Length == 0)
 			return ValidationResult.Error("At least one category must be specified.");
 
