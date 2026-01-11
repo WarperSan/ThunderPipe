@@ -62,11 +62,17 @@ internal static class Program
 	private static void ValidateBranch(IConfigurator<ValidateSettings> config)
 	{
 		config.AddCommand<ValidatePackageCommand>("package").WithDescription("Validates a package");
+
 		config
 			.AddCommand<ValidateCommunityCommand>("community")
-			.WithDescription("Validates if a community slug exists");
+			.WithDescription("Checks if a community slug exists");
+
 		config
 			.AddCommand<ValidateCategoriesCommand>("categories")
-			.WithDescription("Validates if every category slug exists");
+			.WithDescription("Checks if every category slug exists");
+
+		config
+			.AddCommand<ValidateDependenciesCommand>("dependencies")
+			.WithDescription("Checks if every dependency exists");
 	}
 }
