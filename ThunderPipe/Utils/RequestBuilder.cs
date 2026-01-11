@@ -1,6 +1,8 @@
+using System.Collections.Specialized;
 using System.Net.Http.Headers;
 using System.Net.Mime;
 using System.Text;
+using System.Web;
 using Newtonsoft.Json;
 
 namespace ThunderPipe.Utils;
@@ -123,6 +125,22 @@ internal sealed class RequestBuilder
 
 	#endregion
 
+	#region Query
+
+	private readonly NameValueCollection _queryParams = HttpUtility.ParseQueryString(string.Empty);
+
+	/// <summary>
+	/// Adds a query parameter at the given key with the given value
+	/// </summary>
+	public RequestBuilder AddParameter(string key, string? value)
+	{
+		_queryParams.Set(key, value);
+
+		return this;
+	}
+
+	#endregion
+
 	/// <summary>
 	/// Copies this builder to a brand-new builder with the same state
 	/// </summary>
@@ -145,6 +163,16 @@ internal sealed class RequestBuilder
 		if (_content != null)
 			newBuilder._content = new StreamContent(_content.ReadAsStream());
 
+		newBuilder._queryParams.Clear();
+
+		foreach (var paramKey in _queryParams.AllKeys)
+		{
+			if (paramKey == null)
+				continue;
+
+			newBuilder.AddParameter(paramKey, _queryParams.Get(paramKey));
+		}
+
 		return newBuilder;
 	}
 
@@ -154,6 +182,9 @@ internal sealed class RequestBuilder
 	public HttpRequestMessage Build()
 	{
 		var request = new HttpRequestMessage();
+
+		if (_queryParams.HasKeys())
+			_uriBuilder.Query = _queryParams.ToString();
 
 		request.Method = _method;
 		request.RequestUri = _uriBuilder.Uri;
