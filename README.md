@@ -22,9 +22,9 @@ dotnet tool install ThunderPipe
 ```
 
 > [!NOTE]
-> As this package is in beta, you will need to add the flag `--prerelease`
+> As this package is in beta, you will need to add the flag `--prerelease`.
 
-Alternatively, you can install it by downloading the package from [NuGet]() or [GitHub Releases]() directly:
+Alternatively, you can install it by downloading the package from [NuGet](https://www.nuget.org/packages/ThunderPipe/latest) or [GitHub Releases](https://github.com/WarperSan/ThunderPipe/releases/latest) directly:
 
 ```bash
 dotnet tool install ThunderPipe --add-source <path-to-download>
