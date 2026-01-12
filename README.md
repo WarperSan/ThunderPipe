@@ -13,37 +13,25 @@
 
 ThunderPipe is a command-line tool for building, validating and publishing mod packages to [Thunderstore](https://thunderstore.io/).
 
-## Why this instead of TCLI?
-
-While the official [Thunderstore CLI (TCLI)](https://github.com/thunderstore-io/thunderstore-cli) is excellent for general users, **ThunderPipe** is built for developers who prefer a "do one thing and do it well" philosophy.
-
-<details>
-    <summary><b>Leaner Tooling</b></summary>
-	<p>
-		TCLI is a mod installer, mod manager and mod publisher. If you already use applications like <a href="https://galemodmanager.com/"><i>Gale</i></a> or <a href="https://r2modman.com"><i>r2modman</i></a>, ThunderPipe provides a lighter footprint for your development environment.
-	</p>
-</details>
-
-<details>
-    <summary><b>Structured Workflow</b></summary>
-	<p>
-    	ThunderPipe is built to solve the lack of a standardized automation workflow. It provides clear exit codes and validation steps ideal for automated CI/CD pipelines.
-	</p>
-</details>
-
 ## Installation
 
-Install ThunderPipe globally via NuGet:
+You can install ThunderPipe from NuGet by running the following command:
 
 ```bash
-dotnet tool install --global ThunderPipe
+dotnet tool install ThunderPipe
 ```
 
-Once installed, you can run the tool using:
+> [!NOTE]
+> As this package is in beta, you will need to add the flag `--prerelease`
+
+Alternatively, you can install it by downloading the package from [NuGet]() or [GitHub Releases]() directly:
 
 ```bash
-ThunderPipe --help
+dotnet tool install ThunderPipe --add-source <path-to-download>
 ```
+
+> [!IMPORTANT]
+> The commands shown in further sections will omit the `dotnet tool run` part, due to being installed globally. This can be achieved by adding the `--global` flag in the installation command.
 
 ## Usage
 
@@ -99,7 +87,6 @@ ThunderPipe validate dependencies <dependencies>
 |------------------|----------------------------------------|
 | `<dependencies>` | Dependency strings for each dependency |
 
-
 ### Validating a Package
 
 Check if your package meets [Thunderstore's requirements](https://thunderstore.io/package/create/docs/) before you attempt to publish.
@@ -112,6 +99,23 @@ ThunderPipe validate package <package-folder>
 |--------------------|---------------------------------------------------|
 | `<package-folder>` | Path to the folder containing the package's files |
 
+## Why ThunderPipe instead of TCLI?
+
+While the official [Thunderstore CLI (TCLI)](https://github.com/thunderstore-io/thunderstore-cli) is excellent for general users, ThunderPipe is built **by modders for modders**. who prefer a "do one thing and do it well" philosophy.
+
+<details>
+    <summary><b>Leaner Tooling</b></summary>
+	<p>
+		TCLI is a mod installer, mod manager and mod publisher. If you already use applications like <a href="https://galemodmanager.com/"><i>Gale</i></a> or <a href="https://r2modman.com"><i>r2modman</i></a>, ThunderPipe provides a lighter footprint for your development environment.
+	</p>
+</details>
+
+<details>
+    <summary><b>Structured Workflow</b></summary>
+	<p>
+    	ThunderPipe is built to solve the lack of a standardized automation workflow. It provides clear exit codes and validation steps ideal for automated CI/CD pipelines.
+	</p>
+</details>
 
 ## Contributing
 
