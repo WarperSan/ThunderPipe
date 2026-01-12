@@ -103,7 +103,7 @@ ThunderPipe validate dependencies <dependencies>
 
 ### Validating a Package
 
-Check if your package meets [Thunderstore's requirements](https://thunderstore.io/package/create/docs/) before you attempt to publish.
+Checks if your package meets [Thunderstore's requirements](https://thunderstore.io/package/create/docs/) before you attempt to publish it.
 
 ```bash
 ThunderPipe validate package <package-folder>
