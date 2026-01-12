@@ -67,20 +67,27 @@ ThunderPipe validate community <community>
 |---------------|-----------------------|
 | `<community>` | Slug of the community |
 
-Generally, modding communities often provide a template that you can use that includes this value. However, if you need to find it yourself, you can look at this [API endpoint](https://thunderstore.io/api/experimental/community/) for the `identifier` you are looking for.
+Modding communities often provide a template that you can use that includes this value. However, if you need to find it yourself, you can look at this [API endpoint](https://thunderstore.io/api/experimental/community/) for the `identifier` you are looking for.
 
 ### Validating Categories
 
-Check if your categories exist.
+Checks if your categories' slugs match existing categories in your community.
 
 ```bash
-ThunderPipe validate categories <community> --categories <categories>
+ThunderPipe validate categories <community> \
+	--categories <category1> \
+	--categories <category2>
 ```
 
 | Argument       | Description             |
 |----------------|-------------------------|
 | `<community>`  | Slug of the community   |
 | `<categories>` | Slugs for each category |
+
+Modding communities often provide a lookup table to see the slug of every category. However, if you need to find it yourself, you can look at this [API endpoint](https://thunderstore.io/api/experimental/community/<COMMUNITY>/category/) for the `slug` you are looking for.
+
+> [!NOTE]
+> If you use the endpoint, make sure to replace `<COMMUNITY>` with the slug of the community you are within.
 
 ### Validating Dependencies
 
