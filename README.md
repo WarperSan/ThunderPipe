@@ -57,7 +57,7 @@ ThundePipe publish --help
 
 ### Validating a Community
 
-Check if your target community exists.
+Checks if your community slug matches with an existing community.
 
 ```bash
 ThunderPipe validate community <community>
@@ -66,6 +66,8 @@ ThunderPipe validate community <community>
 | Argument      | Description           |
 |---------------|-----------------------|
 | `<community>` | Slug of the community |
+
+Generally, modding communities often provide a template that you can use that includes this value. However, if you need to find it yourself, you can look at this [API endpoint](https://thunderstore.io/api/experimental/community/) for the `identifier` you are looking for.
 
 ### Validating Categories
 
