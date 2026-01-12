@@ -11,11 +11,106 @@
 
 ## Overview
 
-ThunderPipe is a command-line tool for building, validating and publishing mod packages to [Thunderstore](https://thunderstore.io/).
+ThunderPipe is a command-line tool for validating and publishing mod packages to [Thunderstore](https://thunderstore.io/).
 
-## Why this instead of TCLI?
+## Installation
 
-While the official [Thunderstore CLI (TCLI)](https://github.com/thunderstore-io/thunderstore-cli) is excellent for general users, **ThunderPipe** is built for developers who prefer a "do one thing and do it well" philosophy.
+You can install ThunderPipe from NuGet by running the following command:
+
+```bash
+dotnet tool install ThunderPipe
+```
+
+> [!NOTE]
+> As this package is in beta, you will need to add the flag `--prerelease`.
+
+Alternatively, you can install it by downloading the package from [NuGet](https://www.nuget.org/packages/ThunderPipe/latest) or [GitHub Releases](https://github.com/WarperSan/ThunderPipe/releases/latest) directly, and installing the local file:
+
+```bash
+dotnet tool install ThunderPipe --add-source <path-to-download>
+```
+
+> [!IMPORTANT]
+> The commands shown in further sections will omit the `dotnet tool run` part, due to being installed globally. This can be achieved by adding the `--global` flag in the installation command.
+
+## Usage
+
+### Publishing a Package
+
+Uploads your `.zip` file directly to Thunderstore.
+
+```bash
+ThunderPipe publish <file> <team> <community> --token <your-token>
+```
+
+| Argument       | Description                                    |
+|----------------|------------------------------------------------|
+| `<file>`       | Path to your `.zip` file                       |
+| `<team>`       | Name of the team that owns the service account |
+| `<community>`  | Slug of the community                          |
+| `<your-token>` | API token of the service account to use        |
+
+### Validating a Community
+
+Checks if your community slug matches with an existing community.
+
+```bash
+ThunderPipe validate community <community>
+```
+
+| Argument      | Description           |
+|---------------|-----------------------|
+| `<community>` | Slug of the community |
+
+Modding communities often provide a template that you can use that includes this value. However, if you need to find it yourself, you can look at this [API endpoint](https://thunderstore.io/api/experimental/community/) for the `identifier` you are looking for.
+
+### Validating Categories
+
+Checks if your categories' slugs match existing categories in your community.
+
+```bash
+ThunderPipe validate categories <community> \
+	--categories <category1> \
+	--categories <category2>
+```
+
+| Argument      | Description            |
+|---------------|------------------------|
+| `<community>` | Slug of the community  |
+| `<category#>` | Slug for each category |
+
+Modding communities often provide a lookup table to see the slug of every category. However, if you need to find it yourself, you can look at this [API endpoint](https://thunderstore.io/api/experimental/community/<COMMUNITY>/category/) for the `slug` you are looking for.
+
+> [!NOTE]
+> If you use the endpoint, make sure to replace `<COMMUNITY>` with the slug of the community you are within.
+
+### Validating Dependencies
+
+Checks if your dependencies' strings match existing packages.
+
+```bash
+ThunderPipe validate dependencies <dependencies>
+```
+
+| Argument         | Description                            |
+|------------------|----------------------------------------|
+| `<dependencies>` | Dependency strings for each dependency |
+
+### Validating a Package
+
+Checks if your package meets [Thunderstore's requirements](https://thunderstore.io/package/create/docs/) before you attempt to publish it.
+
+```bash
+ThunderPipe validate package <package-folder>
+```
+
+| Argument           | Description                                       |
+|--------------------|---------------------------------------------------|
+| `<package-folder>` | Path to the folder containing the package's files |
+
+## Why ThunderPipe instead of TCLI?
+
+While the official [Thunderstore CLI (TCLI)](https://github.com/thunderstore-io/thunderstore-cli) is excellent for general users, ThunderPipe is built **by modders for modders**. who prefer a "do one thing and do it well" philosophy.
 
 <details>
     <summary><b>Leaner Tooling</b></summary>
@@ -30,88 +125,6 @@ While the official [Thunderstore CLI (TCLI)](https://github.com/thunderstore-io/
     	ThunderPipe is built to solve the lack of a standardized automation workflow. It provides clear exit codes and validation steps ideal for automated CI/CD pipelines.
 	</p>
 </details>
-
-## Installation
-
-Install ThunderPipe globally via NuGet:
-
-```bash
-dotnet tool install --global ThunderPipe
-```
-
-Once installed, you can run the tool using:
-
-```bash
-ThunderPipe --help
-```
-
-## Usage
-
-### Publishing a Package
-
-Upload your `.zip` package directly to Thunderstore for a specific team in a specific community.
-
-```bash
-ThunderPipe publish <file> <team> <community> --token <your-token>
-```
-
-| Argument       | Description                             |
-|----------------|-----------------------------------------|
-| `<file>`       | Path to the file to publish             |
-| `<team>`       | The team name on Thunderstore           |
-| `<community>`  | The community slug                       |
-| `<your-token>` | API token of the service account to use |
-
-### Validating a Community
-
-Check if your target community exists.
-
-```bash
-ThunderPipe validate community <community>
-```
-
-| Argument      | Description           |
-|---------------|-----------------------|
-| `<community>` | Slug of the community |
-
-### Validating Categories
-
-Check if your categories exist.
-
-```bash
-ThunderPipe validate categories <community> --categories <categories>
-```
-
-| Argument       | Description             |
-|----------------|-------------------------|
-| `<community>`  | Slug of the community   |
-| `<categories>` | Slugs for each category |
-
-### Validating Dependencies
-
-Check if your target dependencies exist.
-
-```bash
-ThunderPipe validate dependencies <dependencies>
-```
-
-| Argument         | Description                            |
-|------------------|----------------------------------------|
-| `<dependencies>` | Dependency strings for each dependency |
-
-
-### Validating a Package
-
-Check if your package meets [Thunderstore's requirements](https://thunderstore.io/package/create/docs/) before you attempt to publish.
-
-```bash
-ThunderPipe validate package <package-folder>
-```
-
-| Argument           | Description                                       |
-|--------------------|---------------------------------------------------|
-| `<package-folder>` | Path to the folder containing the package's files |
-
 
 ## Contributing
 
