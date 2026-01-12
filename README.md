@@ -70,8 +70,8 @@ Checks if your categories' slugs match existing categories in your community.
 
 ```bash
 ThunderPipe validate categories <community> \
-	--categories <category1> \
-	--categories <category2>
+	--category <category1> \
+	--category <category2>
 ```
 
 | Argument      | Description            |
