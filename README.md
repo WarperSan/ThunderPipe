@@ -74,10 +74,10 @@ ThunderPipe validate categories <community> \
 	--categories <category2>
 ```
 
-| Argument       | Description             |
-|----------------|-------------------------|
-| `<community>`  | Slug of the community   |
-| `<categories>` | Slugs for each category |
+| Argument      | Description            |
+|---------------|------------------------|
+| `<community>` | Slug of the community  |
+| `<category#>` | Slug for each category |
 
 Modding communities often provide a lookup table to see the slug of every category. However, if you need to find it yourself, you can look at this [API endpoint](https://thunderstore.io/api/experimental/community/<COMMUNITY>/category/) for the `slug` you are looking for.
 
