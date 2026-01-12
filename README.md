@@ -91,7 +91,7 @@ Modding communities often provide a lookup table to see the slug of every catego
 
 ### Validating Dependencies
 
-Check if your target dependencies exist.
+Checks if your dependencies' strings match existing packages.
 
 ```bash
 ThunderPipe validate dependencies <dependencies>
