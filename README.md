@@ -11,7 +11,7 @@
 
 ## Overview
 
-ThunderPipe is a command-line tool for building, validating and publishing mod packages to [Thunderstore](https://thunderstore.io/).
+ThunderPipe is a command-line tool for validating and publishing mod packages to [Thunderstore](https://thunderstore.io/).
 
 ## Installation
 
