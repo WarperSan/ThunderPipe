@@ -37,18 +37,23 @@ dotnet tool install ThunderPipe --add-source <path-to-download>
 
 ### Publishing a Package
 
-Upload your `.zip` package directly to Thunderstore for a specific team in a specific community.
+Uploads your `.zip` file directly to Thunderstore.
 
 ```bash
 ThunderPipe publish <file> <team> <community> --token <your-token>
 ```
 
-| Argument       | Description                             |
-|----------------|-----------------------------------------|
-| `<file>`       | Path to the file to publish             |
-| `<team>`       | The team name on Thunderstore           |
-| `<community>`  | The communiy slug                       |
-| `<your-token>` | API token of the service account to use |
+| Argument       | Description                                    |
+|----------------|------------------------------------------------|
+| `<file>`       | Path to your `.zip` file                       |
+| `<team>`       | Name of the team that owns the service account |
+| `<community>`  | Slug of the community                          |
+| `<your-token>` | API token of the service account to use        |
+
+For more information, you can use the help command:
+```
+ThundePipe publish --help
+```
 
 ### Validating a Community
 
