@@ -17,7 +17,7 @@ public sealed class ValidateCategoriesSettings : ValidateSettings
 	[Description("Community where the package will be published")]
 	public required string Community { get; init; }
 
-	[CommandOption("--categories <VALUES>")]
+	[CommandOption("--category <CATEGORY>")]
 	[Description("Categories that will be used to label the package")]
 	public string[]? Categories { get; init; }
 

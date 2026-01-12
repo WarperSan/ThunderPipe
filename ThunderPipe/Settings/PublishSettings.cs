@@ -35,7 +35,7 @@ public sealed class PublishSettings : CommandSettings
 	[TypeConverter(typeof(UriTypeConverter))]
 	public Uri? Repository { get; init; }
 
-	[CommandOption("--categories <VALUES>")]
+	[CommandOption("--category <CATEGORY>")]
 	[Description("Categories used to label this package")]
 	public string[]? Categories { get; init; }
 
