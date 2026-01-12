@@ -50,11 +50,6 @@ ThunderPipe publish <file> <team> <community> --token <your-token>
 | `<community>`  | Slug of the community                          |
 | `<your-token>` | API token of the service account to use        |
 
-For more information, you can use the help command:
-```
-ThundePipe publish --help
-```
-
 ### Validating a Community
 
 Checks if your community slug matches with an existing community.
