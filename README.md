@@ -59,7 +59,7 @@ ThunderPipe publish <file> <team> <community> --token <your-token>
 |----------------|-----------------------------------------|
 | `<file>`       | Path to the file to publish             |
 | `<team>`       | The team name on Thunderstore           |
-| `<community>`  | The communiy slug                       |
+| `<community>`  | The community slug                       |
 | `<your-token>` | API token of the service account to use |
 
 ### Validating a Community
