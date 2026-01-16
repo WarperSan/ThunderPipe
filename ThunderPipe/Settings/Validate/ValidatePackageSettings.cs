@@ -3,14 +3,14 @@ using System.Diagnostics.CodeAnalysis;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace ThunderPipe.Settings;
+namespace ThunderPipe.Settings.Validate;
 
 /// <summary>
-/// Settings used by <see cref="PackageCommand"/>
+/// Settings used by <see cref="Commands.Validate.PackageCommand"/>
 /// </summary>
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
-public sealed class ValidatePackageSettings : ValidateSettings
+public sealed class PackageSettings : BaseSettings
 {
 	[CommandArgument(0, "<package-folder>")]
 	[Description("Folder containg the package's files")]

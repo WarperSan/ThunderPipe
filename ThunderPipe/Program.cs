@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Spectre.Console.Cli;
-using ThunderPipe.Settings;
 
 namespace ThunderPipe;
 
@@ -48,7 +47,7 @@ internal static class Program
 			config.ValidateExamples();
 #endif
 
-			config.AddBranch<ValidateSettings>("validate", ValidateBranch);
+			config.AddBranch("validate", ValidateBranch);
 
 			config
 				.AddCommand<Commands.Publish.Command>("publish")
@@ -58,7 +57,7 @@ internal static class Program
 		return await app.RunAsync(args, cancellationTokenSource.Token);
 	}
 
-	private static void ValidateBranch(IConfigurator<ValidateSettings> config)
+	private static void ValidateBranch(IConfigurator<Settings.Validate.BaseSettings> config)
 	{
 		config
 			.AddCommand<Commands.Validate.PackageCommand>("package")

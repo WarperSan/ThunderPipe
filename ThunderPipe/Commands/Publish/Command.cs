@@ -2,13 +2,12 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 using Spectre.Console.Cli;
 using ThunderPipe.DTOs;
-using ThunderPipe.Settings;
 using ThunderPipe.Utils;
 
 namespace ThunderPipe.Commands.Publish;
 
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
-internal sealed class Command : AsyncCommand<PublishSettings>
+internal sealed class Command : AsyncCommand<Settings.Publish.Settings>
 {
 	private readonly ILogger<Command> _logger;
 
@@ -20,7 +19,7 @@ internal sealed class Command : AsyncCommand<PublishSettings>
 	/// <inheritdoc />
 	public override async Task<int> ExecuteAsync(
 		CommandContext context,
-		PublishSettings settings,
+		Settings.Publish.Settings settings,
 		CancellationToken cancellationToken
 	)
 	{

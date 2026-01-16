@@ -3,14 +3,14 @@ using System.Diagnostics.CodeAnalysis;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace ThunderPipe.Settings;
+namespace ThunderPipe.Settings.Validate;
 
 /// <summary>
-/// Settings used by <see cref="DependenciesCommand"/>
+/// Settings used by <see cref="Commands.Validate.DependenciesCommand"/>
 /// </summary>
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
-public sealed class ValidateDependenciesSettings : ValidateSettings
+public sealed class DependenciesSettings : BaseSettings
 {
 	[CommandArgument(0, "<dependencies>")]
 	[Description("Dependencies needed by the package")]

@@ -3,13 +3,13 @@ using System.Text;
 using Microsoft.Extensions.Logging;
 using Spectre.Console;
 using Spectre.Console.Cli;
-using ThunderPipe.Settings;
+using ThunderPipe.Settings.Validate;
 using ThunderPipe.Utils;
 
 namespace ThunderPipe.Commands.Validate;
 
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
-internal sealed class PackageCommand : AsyncCommand<ValidatePackageSettings>
+internal sealed class PackageCommand : AsyncCommand<PackageSettings>
 {
 	private readonly ILogger<PackageCommand> _logger;
 
@@ -20,9 +20,9 @@ internal sealed class PackageCommand : AsyncCommand<ValidatePackageSettings>
 
 	/// <inheritdoc />
 	public override async Task<int> ExecuteAsync(
-		CommandContext          context,
-		ValidatePackageSettings settings,
-		CancellationToken       cancellationToken
+		CommandContext context,
+		PackageSettings settings,
+		CancellationToken cancellationToken
 	)
 	{
 		_logger.LogInformation(

@@ -3,14 +3,14 @@ using System.Diagnostics.CodeAnalysis;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace ThunderPipe.Settings;
+namespace ThunderPipe.Settings.Publish;
 
 /// <summary>
-/// Settings used by <see cref="PublishCommand"/>
+/// Settings used by <see cref="Commands.Publish.Command"/>
 /// </summary>
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
-public sealed class PublishSettings : CommandSettings
+public sealed class Settings : CommandSettings
 {
 	[CommandArgument(0, "<file>")]
 	[Description("Path to the package file to publish")]

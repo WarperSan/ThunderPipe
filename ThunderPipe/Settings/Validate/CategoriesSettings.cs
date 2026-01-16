@@ -3,14 +3,14 @@ using System.Diagnostics.CodeAnalysis;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace ThunderPipe.Settings;
+namespace ThunderPipe.Settings.Validate;
 
 /// <summary>
-/// Settings used by <see cref="CategoriesCommand"/>
+/// Settings used by <see cref="Commands.Validate.CategoriesCommand"/>
 /// </summary>
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
-public sealed class ValidateCategoriesSettings : ValidateSettings
+public sealed class CategoriesSettings : BaseSettings
 {
 	[CommandArgument(0, "<community>")]
 	[Description("Community where the package will be published")]

@@ -3,14 +3,14 @@ using System.Diagnostics.CodeAnalysis;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace ThunderPipe.Settings;
+namespace ThunderPipe.Settings.Validate;
 
 /// <summary>
 /// Settings used by any validation command
 /// </summary>
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
-public abstract class ValidateSettings : CommandSettings
+public abstract class BaseSettings : CommandSettings
 {
 	[CommandOption("--repository")]
 	[Description("URL of the server hosting the package")]
