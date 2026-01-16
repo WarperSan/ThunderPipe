@@ -1,5 +1,4 @@
 using System.Net.Http.Headers;
-using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Spectre.Console;
 
@@ -49,7 +48,6 @@ internal sealed class ThunderstoreClient : HttpClient
 		using var client = new ThunderstoreClient();
 
 		return await client.SendAsync(request, cancellationToken);
-		;
 	}
 
 	/// <summary>
