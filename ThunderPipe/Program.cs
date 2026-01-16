@@ -61,7 +61,7 @@ internal static class Program
 	{
 		config
 			.AddCommand<Commands.Validate.PackageCommand>("package")
-			.WithDescription("Validates a package");
+			.WithDescription("Checks if the package meets the server's requirements");
 
 		config
 			.AddCommand<Commands.Validate.CommunityCommand>("community")
