@@ -2,12 +2,11 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using Spectre.Console;
 using Spectre.Console.Cli;
-using ThunderPipe.Commands;
 
 namespace ThunderPipe.Settings;
 
 /// <summary>
-/// Settings used by <see cref="ValidatePackageCommand"/>
+/// Settings used by <see cref="PackageCommand"/>
 /// </summary>
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]

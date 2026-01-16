@@ -4,14 +4,14 @@ using Spectre.Console.Cli;
 using ThunderPipe.Settings;
 using ThunderPipe.Utils;
 
-namespace ThunderPipe.Commands;
+namespace ThunderPipe.Commands.Validate;
 
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
-internal sealed class ValidateCommunityCommand : AsyncCommand<ValidateCommunitySettings>
+internal sealed class CommunityCommand : AsyncCommand<ValidateCommunitySettings>
 {
-	private readonly ILogger<PublishCommand> _logger;
+	private readonly ILogger<CommunityCommand> _logger;
 
-	public ValidateCommunityCommand(ILogger<PublishCommand> logger)
+	public CommunityCommand(ILogger<CommunityCommand> logger)
 	{
 		_logger = logger;
 	}

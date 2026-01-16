@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Spectre.Console.Cli;
-using ThunderPipe.Commands;
 using ThunderPipe.Settings;
 
 namespace ThunderPipe;
@@ -52,7 +51,7 @@ internal static class Program
 			config.AddBranch<ValidateSettings>("validate", ValidateBranch);
 
 			config
-				.AddCommand<PublishCommand>("publish")
+				.AddCommand<Commands.Publish.Command>("publish")
 				.WithDescription("Publish a package to Thunderstore.");
 		});
 
@@ -61,18 +60,20 @@ internal static class Program
 
 	private static void ValidateBranch(IConfigurator<ValidateSettings> config)
 	{
-		config.AddCommand<ValidatePackageCommand>("package").WithDescription("Validates a package");
+		config
+			.AddCommand<Commands.Validate.PackageCommand>("package")
+			.WithDescription("Validates a package");
 
 		config
-			.AddCommand<ValidateCommunityCommand>("community")
+			.AddCommand<Commands.Validate.CommunityCommand>("community")
 			.WithDescription("Checks if a community slug exists");
 
 		config
-			.AddCommand<ValidateCategoriesCommand>("categories")
+			.AddCommand<Commands.Validate.CategoriesCommand>("categories")
 			.WithDescription("Checks if every category slug exists");
 
 		config
-			.AddCommand<ValidateDependenciesCommand>("dependencies")
+			.AddCommand<Commands.Validate.DependenciesCommand>("dependencies")
 			.WithDescription("Checks if every dependency exists");
 	}
 }

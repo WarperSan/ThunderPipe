@@ -5,14 +5,14 @@ using ThunderPipe.DTOs;
 using ThunderPipe.Settings;
 using ThunderPipe.Utils;
 
-namespace ThunderPipe.Commands;
+namespace ThunderPipe.Commands.Publish;
 
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
-internal sealed class PublishCommand : AsyncCommand<PublishSettings>
+internal sealed class Command : AsyncCommand<PublishSettings>
 {
-	private readonly ILogger<PublishCommand> _logger;
+	private readonly ILogger<Command> _logger;
 
-	public PublishCommand(ILogger<PublishCommand> logger)
+	public Command(ILogger<Command> logger)
 	{
 		_logger = logger;
 	}

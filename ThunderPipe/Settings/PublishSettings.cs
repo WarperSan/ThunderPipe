@@ -2,7 +2,6 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using Spectre.Console;
 using Spectre.Console.Cli;
-using ThunderPipe.Commands;
 
 namespace ThunderPipe.Settings;
 
