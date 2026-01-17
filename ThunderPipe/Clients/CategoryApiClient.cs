@@ -1,4 +1,3 @@
-using System.Web;
 using ThunderPipe.Utils;
 
 namespace ThunderPipe.Clients;
@@ -20,7 +19,7 @@ internal sealed class CategoryApiClient : ThunderstoreClient
 		var tempBuilder = Builder
 			.Copy()
 			.Get()
-			.ToEndpoint(API_EXPERIMENTAL + $"community/{community}/category/");
+			.ToEndpoint($"api/experimental/community/{community}/category/");
 
 		var slugsToFind = new HashSet<string>(slugs);
 

@@ -22,7 +22,7 @@ internal sealed class ValidationApiClient : ThunderstoreClient
 		var request = Builder
 			.Copy()
 			.Post()
-			.ToEndpoint(API_EXPERIMENTAL + "submission/validate/icon/")
+			.ToEndpoint("api/experimental/submission/validate/icon/")
 			.WithJSON(payload)
 			.Build();
 
@@ -58,7 +58,7 @@ internal sealed class ValidationApiClient : ThunderstoreClient
 		var request = Builder
 			.Copy()
 			.Post()
-			.ToEndpoint(API_EXPERIMENTAL + "submission/validate/manifest-v1/")
+			.ToEndpoint("api/experimental/submission/validate/manifest-v1/")
 			.WithJSON(payload)
 			.Build();
 
@@ -90,7 +90,7 @@ internal sealed class ValidationApiClient : ThunderstoreClient
 		var request = Builder
 			.Copy()
 			.Post()
-			.ToEndpoint(API_EXPERIMENTAL + "submission/validate/readme/")
+			.ToEndpoint("api/experimental/submission/validate/readme/")
 			.WithJSON(payload)
 			.Build();
 

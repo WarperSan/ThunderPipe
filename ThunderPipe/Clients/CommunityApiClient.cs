@@ -1,4 +1,3 @@
-using System.Web;
 using ThunderPipe.Utils;
 
 namespace ThunderPipe.Clients;
@@ -17,7 +16,7 @@ internal sealed class CommunityApiClient : ThunderstoreClient
 	/// </summary>
 	public async Task<bool> Exists(string slug)
 	{
-		var tempBuilder = Builder.Copy().Get().ToEndpoint(API_EXPERIMENTAL + "community/");
+		var tempBuilder = Builder.Copy().Get().ToEndpoint("api/experimental/community/");
 
 		string? currentCursor = null;
 

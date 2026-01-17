@@ -22,7 +22,7 @@ internal sealed class DependencyApiClient : ThunderstoreClient
 		var tempBuilder = Builder
 			.Copy()
 			.Get()
-			.ToEndpoint(API_EXPERIMENTAL + "package/{NAMESPACE}/{NAME}/{VERSION}/");
+			.ToEndpoint("api/experimental/package/{NAMESPACE}/{NAME}/{VERSION}/");
 
 		var foundDependencies = new Dictionary<string, Models.API.GetDependency.Response>();
 
