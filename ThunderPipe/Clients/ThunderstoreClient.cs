@@ -1,8 +1,9 @@
 using System.Net.Http.Headers;
 using Newtonsoft.Json;
 using Spectre.Console;
+using ThunderPipe.Utils;
 
-namespace ThunderPipe.Utils;
+namespace ThunderPipe.Clients;
 
 /// <summary>
 /// Class that handles HTTP requests to Thunderstore
