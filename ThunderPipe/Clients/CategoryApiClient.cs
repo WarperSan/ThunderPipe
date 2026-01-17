@@ -22,8 +22,7 @@ internal sealed class CategoryApiClient : ThunderstoreClient
 		var tempBuilder = Builder
 			.Copy()
 			.Get()
-			.ToEndpoint(API_EXPERIMENTAL + "community/{COMMUNITY}/category/")
-			.SetPathParameter("COMMUNITY", community);
+			.ToEndpoint(API_EXPERIMENTAL + $"community/{community}/category/");
 
 		var slugsHash = new HashSet<string>(slugs);
 		var categories = new Dictionary<string, Models.API.GetCategory.Response.PageItemModel>();

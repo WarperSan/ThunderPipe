@@ -135,8 +135,7 @@ internal sealed class PublishApiClient : ThunderstoreClient
 		var request = Builder
 			.Copy()
 			.Post()
-			.ToEndpoint(API_EXPERIMENTAL + "usermedia/{UUID}/abort-upload/")
-			.SetPathParameter("UUID", uuid)
+			.ToEndpoint(API_EXPERIMENTAL + $"usermedia/{uuid}/abort-upload/")
 			.Build();
 
 		await SendRequest(request);
@@ -158,8 +157,7 @@ internal sealed class PublishApiClient : ThunderstoreClient
 		var request = Builder
 			.Copy()
 			.Post()
-			.ToEndpoint(API_EXPERIMENTAL + "usermedia/{UUID}/finish-upload/")
-			.SetPathParameter("UUID", uuid)
+			.ToEndpoint(API_EXPERIMENTAL + $"usermedia/{uuid}/finish-upload/")
 			.WithJSON(payload)
 			.Build();
 
