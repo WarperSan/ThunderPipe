@@ -10,10 +10,6 @@ namespace ThunderPipe.Clients;
 /// </summary>
 internal abstract class ThunderstoreClient : HttpClient
 {
-	public const string REGEX_NAMESPACE = "(?!_)[a-zA-Z0-9_]+(?<!_)";
-	public const string REGEX_NAME = "[a-zA-Z 0-9_]+";
-	public const string REGEX_VERSION = "[0-9]+.[0-9]+.[0-9]+";
-
 	/// <summary>
 	/// Default <see cref="RequestBuilder"/> for this client
 	/// </summary>
