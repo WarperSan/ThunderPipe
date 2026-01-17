@@ -36,9 +36,7 @@ internal sealed class CommunityApiClient : ThunderstoreClient
 			if (response.Pagination.NextPage == null)
 				break;
 
-			var uri = new Uri(response.Pagination.NextPage);
-			var query = HttpUtility.ParseQueryString(uri.Query);
-			var nextCursor = query.Get("cursor");
+			var nextCursor = UrlHelper.GetQueryValue(response.Pagination.NextPage, "cursor");
 
 			// Prevent looping
 			if (currentCursor == nextCursor)

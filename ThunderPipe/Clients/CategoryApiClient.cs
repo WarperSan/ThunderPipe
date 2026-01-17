@@ -32,9 +32,6 @@ internal sealed class CategoryApiClient : ThunderstoreClient
 
 			var response = await SendRequest<Models.API.GetCategory.Response>(request);
 
-			if (response == null)
-				break;
-
 			foreach (var category in response.Items)
 				slugsToFind.Remove(category.Slug);
 
@@ -42,9 +39,7 @@ internal sealed class CategoryApiClient : ThunderstoreClient
 			if (response.Pagination.NextPage == null)
 				break;
 
-			var uri = new Uri(response.Pagination.NextPage);
-			var query = HttpUtility.ParseQueryString(uri.Query);
-			var nextCursor = query.Get("cursor");
+			var nextCursor = UrlHelper.GetQueryValue(response.Pagination.NextPage, "cursor");
 
 			// Prevent looping
 			if (currentCursor == nextCursor)
