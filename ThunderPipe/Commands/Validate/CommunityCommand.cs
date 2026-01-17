@@ -28,15 +28,15 @@ internal sealed class CommunityCommand : AsyncCommand<CommunitySettings>
 		var builder = new RequestBuilder().ToUri(settings.Repository!);
 		using var client = new CommunityApiClient(builder, cancellationToken);
 
-		var community = await client.FindCommunity(communitySlug);
+		var doesCommunityExist = await client.CommunityExists(communitySlug);
 
-		if (community == null)
+		if (!doesCommunityExist)
 		{
 			_logger.LogError("Could not find a community with the slug '{Slug}'.", communitySlug);
 			return 1;
 		}
 
-		_logger.LogInformation("'{Name}' community has been found!", community.Name);
+		_logger.LogInformation("A community was found for '{Slug}'!", communitySlug);
 		return 0;
 	}
 }

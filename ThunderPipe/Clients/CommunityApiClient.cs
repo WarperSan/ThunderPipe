@@ -13,9 +13,9 @@ internal sealed class CommunityApiClient : ThunderstoreClient
 		: base(builder, ct) { }
 
 	/// <summary>
-	/// Finds the community with the slug
+	/// Checks if a community with the given slug exists
 	/// </summary>
-	public async Task<Models.API.GetCommunity.Response.PageItemModel?> FindCommunity(string slug)
+	public async Task<bool> CommunityExists(string slug)
 	{
 		var tempBuilder = Builder.Copy().Get().ToEndpoint(API_EXPERIMENTAL + "community/");
 
@@ -33,7 +33,7 @@ internal sealed class CommunityApiClient : ThunderstoreClient
 			var community = response.Items.FirstOrDefault(i => i.Slug == slug);
 
 			if (community != null)
-				return community;
+				return true;
 
 			// Can't continue to crawl
 			if (response.Pagination.NextPage == null)
@@ -50,6 +50,6 @@ internal sealed class CommunityApiClient : ThunderstoreClient
 			currentCursor = nextCursor;
 		} while (currentCursor != null);
 
-		return null;
+		return false;
 	}
 }
