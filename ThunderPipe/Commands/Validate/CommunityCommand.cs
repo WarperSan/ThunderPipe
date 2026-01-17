@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 using Spectre.Console.Cli;
+using ThunderPipe.Clients;
 using ThunderPipe.Settings.Validate;
 using ThunderPipe.Utils;
 
@@ -25,12 +26,9 @@ internal sealed class CommunityCommand : AsyncCommand<CommunitySettings>
 	{
 		var communitySlug = settings.Community;
 		var builder = new RequestBuilder().ToUri(settings.Repository!);
+		using var client = new CommunityApiClient(builder, cancellationToken);
 
-		var community = await ThunderstoreAPI.FindCommunity(
-			communitySlug,
-			builder,
-			cancellationToken
-		);
+		var community = await client.FindCommunity(communitySlug);
 
 		if (community == null)
 		{

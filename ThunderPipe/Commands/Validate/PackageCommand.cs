@@ -3,6 +3,7 @@ using System.Text;
 using Microsoft.Extensions.Logging;
 using Spectre.Console;
 using Spectre.Console.Cli;
+using ThunderPipe.Clients;
 using ThunderPipe.Settings.Validate;
 using ThunderPipe.Utils;
 
@@ -31,18 +32,20 @@ internal sealed class PackageCommand : AsyncCommand<PackageSettings>
 		);
 
 		var builder = new RequestBuilder().ToUri(settings.Repository!).WithAuth(settings.Token);
+		var client = new ValidationApiClient(builder, cancellationToken);
 
 		var iconPath = Path.GetFullPath(settings.IconPath!, settings.PackageFolder);
 		var manifestPath = Path.GetFullPath(settings.ManifestPath!, settings.PackageFolder);
 		var readmePath = Path.GetFullPath(settings.ReadmePath!, settings.PackageFolder);
 
-		var validations = new List<Func<Task<ValidationResult>>>();
+		var validations = new List<Func<Task<ValidationResult>>>
+		{
+			() => ValidateIconRemote(iconPath, client),
+			() => ValidateManifestRemote(manifestPath, settings.Team!, client),
+			//() => ValidateReadmeRemote(readmePath, client)
+		};
 
-		validations.Add(() => ValidateIconRemote(iconPath, builder, cancellationToken));
-		validations.Add(() =>
-			ValidateManifestRemote(manifestPath, settings.Team!, builder, cancellationToken)
-		);
-		//validations.Add(() => ValidateReadmeRemote(readmePath, builder, cancellationToken));
+		//validations.Add();
 
 		if (validations.Count == 0)
 		{
@@ -103,11 +106,10 @@ internal sealed class PackageCommand : AsyncCommand<PackageSettings>
 
 	private static async Task<ValidationResult> ValidateIconRemote(
 		string path,
-		RequestBuilder builder,
-		CancellationToken cancellationToken
+		ValidationApiClient client
 	)
 	{
-		var response = await ThunderstoreAPI.ValidateIcon(path, builder, cancellationToken);
+		var response = await client.ValidateIcon(path);
 
 		if (response == null)
 			return new ValidationResult(false, ["Failed to validate icon remotely."]);
@@ -127,16 +129,10 @@ internal sealed class PackageCommand : AsyncCommand<PackageSettings>
 	private static async Task<ValidationResult> ValidateManifestRemote(
 		string path,
 		string team,
-		RequestBuilder builder,
-		CancellationToken cancellationToken
+		ValidationApiClient client
 	)
 	{
-		var response = await ThunderstoreAPI.ValidateManifest(
-			path,
-			team,
-			builder,
-			cancellationToken
-		);
+		var response = await client.ValidateManifest(path, team);
 
 		if (response == null)
 			return new ValidationResult(false, ["Failed to validate manifest remotely."]);
@@ -158,11 +154,10 @@ internal sealed class PackageCommand : AsyncCommand<PackageSettings>
 
 	private static async Task<ValidationResult> ValidateReadmeRemote(
 		string path,
-		RequestBuilder builder,
-		CancellationToken cancellationToken
+		ValidationApiClient client
 	)
 	{
-		var response = await ThunderstoreAPI.ValidateReadme(path, builder, cancellationToken);
+		var response = await client.ValidateReadme(path);
 
 		if (response == null)
 			return new ValidationResult(false, ["Failed to validate README remotely."]);

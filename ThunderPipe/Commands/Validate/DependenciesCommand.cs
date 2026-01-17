@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 using Spectre.Console.Cli;
+using ThunderPipe.Clients;
 using ThunderPipe.Settings.Validate;
 using ThunderPipe.Utils;
 
@@ -25,12 +26,9 @@ internal sealed class DependenciesCommand : AsyncCommand<DependenciesSettings>
 	{
 		var dependencyStrings = settings.Dependencies!;
 		var builder = new RequestBuilder().ToUri(settings.Repository!);
+		using var client = new DependencyApiClient(builder, cancellationToken);
 
-		var dependencies = await ThunderstoreAPI.FindDependencies(
-			dependencyStrings,
-			builder,
-			cancellationToken
-		);
+		var dependencies = await client.FindDependencies(dependencyStrings);
 
 		var missingDependencies = dependencyStrings.Where(c => !dependencies.ContainsKey(c));
 

@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 using Spectre.Console.Cli;
+using ThunderPipe.Clients;
 using ThunderPipe.Settings.Validate;
 using ThunderPipe.Utils;
 
@@ -26,13 +27,9 @@ internal sealed class CategoriesCommand : AsyncCommand<CategoriesSettings>
 		var categorySlugs = settings.Categories!;
 		var communitySlug = settings.Community;
 		var builder = new RequestBuilder().ToUri(settings.Repository!);
+		using var client = new CategoryApiClient(builder, cancellationToken);
 
-		var categories = await ThunderstoreAPI.FindCategories(
-			categorySlugs,
-			communitySlug,
-			builder,
-			cancellationToken
-		);
+		var categories = await client.FindCategories(categorySlugs, communitySlug);
 
 		var missingCategories = categorySlugs.Where(c => !categories.ContainsKey(c));
 

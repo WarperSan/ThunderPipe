@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 using Spectre.Console.Cli;
+using ThunderPipe.Clients;
 using ThunderPipe.Utils;
 
 namespace ThunderPipe.Commands.Publish;
@@ -30,11 +31,8 @@ internal sealed class Command : AsyncCommand<Settings.Publish.Settings>
 
 		_logger.LogInformation("Publishing '{File}'", file);
 
-		var uploadData = await ThunderstoreAPI.InitiateMultipartUpload(
-			file,
-			builder,
-			cancellationToken
-		);
+		using var client = new PublishApiClient(builder, cancellationToken);
+		var uploadData = await client.InitiateMultipartUpload(file);
 
 		if (uploadData == null)
 		{
@@ -56,21 +54,13 @@ internal sealed class Command : AsyncCommand<Settings.Publish.Settings>
 
 		try
 		{
-			uploadedParts = await ThunderstoreAPI.UploadParts(
-				file,
-				uploadData.UploadParts,
-				cancellationToken
-			);
+			uploadedParts = await client.UploadParts(file, uploadData.UploadParts);
 		}
 		catch (Exception e)
 		{
 			_logger.LogError(e.Message);
 
-			await ThunderstoreAPI.AbortMultipartUpload(
-				uploadData.FileMetadata.UUID,
-				builder,
-				cancellationToken
-			);
+			await client.AbortMultipartUpload(uploadData.FileMetadata.UUID);
 			return 1;
 		}
 
@@ -80,11 +70,9 @@ internal sealed class Command : AsyncCommand<Settings.Publish.Settings>
 			return 1;
 		}
 
-		var finishedUpload = await ThunderstoreAPI.FinishMultipartUpload(
+		var finishedUpload = await client.FinishMultipartUpload(
 			uploadData.FileMetadata.UUID,
-			uploadedParts,
-			builder,
-			cancellationToken
+			uploadedParts
 		);
 
 		if (!finishedUpload)
@@ -95,14 +83,12 @@ internal sealed class Command : AsyncCommand<Settings.Publish.Settings>
 
 		_logger.LogInformation("Successfully finalized the upload.");
 
-		var releasedPackage = await ThunderstoreAPI.SubmitPackage(
+		var releasedPackage = await client.SubmitPackage(
 			settings.Team,
 			settings.Community,
 			settings.Categories ?? [],
 			settings.HasNsfw,
-			uploadData.FileMetadata.UUID,
-			builder,
-			cancellationToken
+			uploadData.FileMetadata.UUID
 		);
 
 		if (releasedPackage == null)
