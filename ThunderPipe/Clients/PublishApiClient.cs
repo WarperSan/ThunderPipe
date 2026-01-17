@@ -19,7 +19,7 @@ internal sealed class PublishApiClient : ThunderstoreClient
 	/// <remarks>
 	/// Internally, this calls the <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateMultipartUpload.html">Multipart upload initiation</a> step
 	/// </remarks>
-	public Task<Models.API.InitiateMultipartUpload.Response?> InitiateMultipartUpload(string path)
+	public Task<Models.API.InitiateMultipartUpload.Response> InitiateMultipartUpload(string path)
 	{
 		var fileInfo = new FileInfo(path);
 
@@ -43,14 +43,14 @@ internal sealed class PublishApiClient : ThunderstoreClient
 	/// Uploads every part of the file
 	/// </summary>
 	/// <remarks>
-	/// This is simply a helper method to simplify using <see cref="ThunderstoreAPI.UploadPart"/>
+	/// This is simply a helper method to simplify using <see cref="UploadPart"/>
 	/// </remarks>
 	public async Task<Models.API.UploadPart.Response[]> UploadParts(
 		string file,
 		Models.API.InitiateMultipartUpload.Response.UploadPartModel[] parts
 	)
 	{
-		var uploadTasks = new List<Task<Models.API.UploadPart.Response?>>();
+		var uploadTasks = new List<Task<Models.API.UploadPart.Response>>();
 
 		await using (var stream = File.OpenRead(file))
 		{
@@ -66,7 +66,7 @@ internal sealed class PublishApiClient : ThunderstoreClient
 
 		var uploadedParts = await Task.WhenAll(uploadTasks).WaitAsync(CancellationToken);
 
-		return uploadedParts.OfType<Models.API.UploadPart.Response>().ToArray();
+		return uploadedParts.ToArray();
 	}
 
 	/// <summary>
@@ -75,7 +75,7 @@ internal sealed class PublishApiClient : ThunderstoreClient
 	/// <remarks>
 	/// Internally, this calls the <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_UploadPart.html">Upload part</a> step
 	/// </remarks>
-	private async Task<Models.API.UploadPart.Response?> UploadPart(
+	private async Task<Models.API.UploadPart.Response> UploadPart(
 		Stream stream,
 		int id,
 		int size,
@@ -169,7 +169,7 @@ internal sealed class PublishApiClient : ThunderstoreClient
 	/// <summary>
 	/// Submits the package
 	/// </summary>
-	public Task<Models.API.SubmitPackage.Response?> SubmitPackage(
+	public Task<Models.API.SubmitPackage.Response> SubmitPackage(
 		string author,
 		string community,
 		string[] categories,
