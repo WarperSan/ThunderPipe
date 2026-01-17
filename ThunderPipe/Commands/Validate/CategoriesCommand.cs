@@ -24,12 +24,10 @@ internal sealed class CategoriesCommand : AsyncCommand<CategoriesSettings>
 		CancellationToken cancellationToken
 	)
 	{
-		var categorySlugs = settings.Categories!;
-		var communitySlug = settings.Community;
 		var builder = new RequestBuilder().ToUri(settings.Repository!);
 		using var client = new CategoryApiClient(builder, cancellationToken);
 
-		var missingCategories = await client.GetMissing(categorySlugs, communitySlug);
+		var missingCategories = await client.GetMissing(settings.Categories!, settings.Community);
 
 		if (missingCategories.Count > 0)
 		{

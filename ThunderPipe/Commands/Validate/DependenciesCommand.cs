@@ -24,11 +24,10 @@ internal sealed class DependenciesCommand : AsyncCommand<DependenciesSettings>
 		CancellationToken cancellationToken
 	)
 	{
-		var dependencyStrings = settings.Dependencies;
 		var builder = new RequestBuilder().ToUri(settings.Repository!);
 		using var client = new DependencyApiClient(builder, cancellationToken);
 
-		var missingDependencies = await client.GetMissing(dependencyStrings);
+		var missingDependencies = await client.GetMissing(settings.Dependencies);
 
 		if (missingDependencies.Count > 0)
 		{

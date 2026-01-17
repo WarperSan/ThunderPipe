@@ -40,9 +40,24 @@ internal sealed class PackageCommand : AsyncCommand<PackageSettings>
 
 		var validations = new List<Func<Task<ValidationResult>>>
 		{
-			() => ValidateIconRemote(iconPath, client),
-			() => ValidateManifestRemote(manifestPath, settings.Team!, client),
-			//() => ValidateReadmeRemote(readmePath, client)
+			async () =>
+			{
+				var errors = await client.IsIconValid(iconPath);
+
+				return new ValidationResult(errors.Count == 0, errors);
+			},
+			async () =>
+			{
+				var errors = await client.IsManifestValid(manifestPath, settings.Team!);
+
+				return new ValidationResult(errors.Count == 0, errors);
+			},
+			async () =>
+			{
+				var errors = await client.IsReadmeValid(readmePath);
+
+				return new ValidationResult(errors.Count == 0, errors);
+			},
 		};
 
 		//validations.Add();
@@ -74,7 +89,6 @@ internal sealed class PackageCommand : AsyncCommand<PackageSettings>
 	}
 
 	#region Validation Rules
-	// ReSharper disable ConvertIfStatementToReturnStatement
 
 	private sealed record ValidationResult(bool IsValid, IEnumerable<string> Errors);
 
@@ -104,37 +118,5 @@ internal sealed class PackageCommand : AsyncCommand<PackageSettings>
 		return errors;
 	}
 
-	private static async Task<ValidationResult> ValidateIconRemote(
-		string path,
-		ValidationApiClient client
-	)
-	{
-		var errors = await client.IsIconValid(path);
-
-		return new ValidationResult(errors.Count == 0, errors);
-	}
-
-	private static async Task<ValidationResult> ValidateManifestRemote(
-		string path,
-		string team,
-		ValidationApiClient client
-	)
-	{
-		var errors = await client.IsManifestValid(path, team);
-
-		return new ValidationResult(errors.Count == 0, errors);
-	}
-
-	private static async Task<ValidationResult> ValidateReadmeRemote(
-		string path,
-		ValidationApiClient client
-	)
-	{
-		var errors = await client.IsReadmeValid(path);
-
-		return new ValidationResult(errors.Count == 0, errors);
-	}
-
-	// ReSharper restore ConvertIfStatementToReturnStatement
 	#endregion
 }
