@@ -48,6 +48,7 @@ internal static class Program
 #endif
 
 			config.AddBranch("validate", ValidateBranch);
+			config.AddBranch("create", CreateBranch);
 
 			config
 				.AddCommand<Commands.Publish.Command>("publish")
@@ -74,5 +75,12 @@ internal static class Program
 		config
 			.AddCommand<Commands.Validate.DependenciesCommand>("dependencies")
 			.WithDescription("Checks if every dependency exists");
+	}
+
+	private static void CreateBranch(IConfigurator<Settings.Create.BaseSettings> config)
+	{
+		config
+			.AddCommand<Commands.Create.ManifestCommand>("manifest")
+			.WithDescription("Creates a 'manifest.json' file");
 	}
 }
