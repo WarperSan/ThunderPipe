@@ -13,19 +13,17 @@ internal sealed class CategoryApiClient : ThunderstoreClient
 		: base(builder, ct) { }
 
 	/// <summary>
-	/// Finds the categories with the slugs in the community
+	/// Finds the missing categories in the given community
 	/// </summary>
-	public async Task<
-		Dictionary<string, Models.API.GetCategory.Response.PageItemModel>
-	> FindCategories(string[] slugs, string community)
+	public async Task<ISet<string>> GetMissing(string[] slugs, string community)
 	{
 		var tempBuilder = Builder
 			.Copy()
 			.Get()
 			.ToEndpoint(API_EXPERIMENTAL + $"community/{community}/category/");
 
-		var slugsHash = new HashSet<string>(slugs);
-		var categories = new Dictionary<string, Models.API.GetCategory.Response.PageItemModel>();
+		var slugsToFind = new HashSet<string>(slugs);
+
 		string? currentCursor = null;
 
 		do
@@ -38,12 +36,7 @@ internal sealed class CategoryApiClient : ThunderstoreClient
 				break;
 
 			foreach (var category in response.Items)
-			{
-				if (!slugsHash.Contains(category.Slug))
-					continue;
-
-				categories[category.Slug] = category;
-			}
+				slugsToFind.Remove(category.Slug);
 
 			// Can't continue to crawl
 			if (response.Pagination.NextPage == null)
@@ -58,8 +51,8 @@ internal sealed class CategoryApiClient : ThunderstoreClient
 				break;
 
 			currentCursor = nextCursor;
-		} while (categories.Count < slugs.Length && currentCursor != null);
+		} while (slugsToFind.Count > 0 && currentCursor != null);
 
-		return categories;
+		return slugsToFind;
 	}
 }

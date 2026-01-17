@@ -29,11 +29,9 @@ internal sealed class CategoriesCommand : AsyncCommand<CategoriesSettings>
 		var builder = new RequestBuilder().ToUri(settings.Repository!);
 		using var client = new CategoryApiClient(builder, cancellationToken);
 
-		var categories = await client.FindCategories(categorySlugs, communitySlug);
+		var missingCategories = await client.GetMissing(categorySlugs, communitySlug);
 
-		var missingCategories = categorySlugs.Where(c => !categories.ContainsKey(c));
-
-		if (missingCategories.Any())
+		if (missingCategories.Count == 0)
 		{
 			var listString = "- " + string.Join("\n- ", missingCategories);
 
