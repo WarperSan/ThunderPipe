@@ -44,6 +44,9 @@ internal sealed class DependencyApiClient : ThunderstoreClient
 
 			var response = await SendRequest<Models.API.GetDependency.Response>(request);
 
+			if (response == null)
+				continue;
+
 			if (!response.IsActive)
 				continue;
 

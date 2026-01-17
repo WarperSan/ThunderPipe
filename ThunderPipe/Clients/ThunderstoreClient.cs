@@ -42,7 +42,7 @@ internal abstract class ThunderstoreClient : HttpClient
 	/// <summary>
 	/// Sends the given request, and returns the JSON response
 	/// </summary>
-	protected async Task<T> SendRequest<T>(HttpRequestMessage request)
+	protected async Task<T?> SendRequest<T>(HttpRequestMessage request)
 	{
 		var response = await SendRequest(request);
 		var content = await response.Content.ReadAsStringAsync(CancellationToken);
