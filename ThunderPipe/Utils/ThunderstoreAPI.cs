@@ -3,7 +3,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
-using ThunderPipe.DTOs;
 
 namespace ThunderPipe.Utils;
 
@@ -15,7 +14,7 @@ internal static class ThunderstoreAPI
 	/// <summary>
 	/// Validates the icon
 	/// </summary>
-	public static async Task<ValidateIconResponse?> ValidateIcon(
+	public static async Task<Models.API.ValidateIcon.Response?> ValidateIcon(
 		string path,
 		RequestBuilder builder,
 		CancellationToken cancellationToken
@@ -23,7 +22,7 @@ internal static class ThunderstoreAPI
 	{
 		var data = await File.ReadAllBytesAsync(path, cancellationToken);
 
-		var payload = new ValidateIconRequest { Data = Convert.ToBase64String(data) };
+		var payload = new Models.API.ValidateIcon.Request { Data = Convert.ToBase64String(data) };
 
 		var request = builder
 			.Copy()
@@ -32,7 +31,7 @@ internal static class ThunderstoreAPI
 			.WithJSON(payload)
 			.Build();
 
-		return await ThunderstoreClient.SendRequest<ValidateIconResponse>(
+		return await ThunderstoreClient.SendRequest<Models.API.ValidateIcon.Response>(
 			request,
 			cancellationToken
 		);
@@ -41,7 +40,7 @@ internal static class ThunderstoreAPI
 	/// <summary>
 	/// Validates the manifest
 	/// </summary>
-	public static async Task<ValidateManifestResponse?> ValidateManifest(
+	public static async Task<Models.API.ValidateManifest.Response?> ValidateManifest(
 		string path,
 		string team,
 		RequestBuilder builder,
@@ -50,7 +49,7 @@ internal static class ThunderstoreAPI
 	{
 		var data = await File.ReadAllBytesAsync(path, cancellationToken);
 
-		var payload = new ValidateManifestRequest
+		var payload = new Models.API.ValidateManifest.Request
 		{
 			AuthorName = team,
 			Data = Convert.ToBase64String(data),
@@ -63,7 +62,7 @@ internal static class ThunderstoreAPI
 			.WithJSON(payload)
 			.Build();
 
-		return await ThunderstoreClient.SendRequest<ValidateManifestResponse>(
+		return await ThunderstoreClient.SendRequest<Models.API.ValidateManifest.Response>(
 			request,
 			cancellationToken
 		);
@@ -72,7 +71,7 @@ internal static class ThunderstoreAPI
 	/// <summary>
 	/// Validates the README
 	/// </summary>
-	public static async Task<ValidateReadmeResponse?> ValidateReadme(
+	public static async Task<Models.API.ValidateReadme.Response?> ValidateReadme(
 		string path,
 		RequestBuilder builder,
 		CancellationToken cancellationToken
@@ -80,7 +79,7 @@ internal static class ThunderstoreAPI
 	{
 		var data = await File.ReadAllBytesAsync(path, cancellationToken);
 
-		var payload = new ValidateReadmeRequest { Data = Convert.ToBase64String(data) };
+		var payload = new Models.API.ValidateReadme.Request { Data = Convert.ToBase64String(data) };
 
 		var request = builder
 			.Copy()
@@ -89,7 +88,7 @@ internal static class ThunderstoreAPI
 			.WithJSON(payload)
 			.Build();
 
-		return await ThunderstoreClient.SendRequest<ValidateReadmeResponse>(
+		return await ThunderstoreClient.SendRequest<Models.API.ValidateReadme.Response>(
 			request,
 			cancellationToken
 		);
@@ -101,7 +100,7 @@ internal static class ThunderstoreAPI
 	/// <remarks>
 	/// Internally, this calls the <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateMultipartUpload.html">Multipart upload initiation</a> step
 	/// </remarks>
-	public static Task<InitialUploadResponse?> InitiateMultipartUpload(
+	public static Task<Models.API.InitiateMultipartUpload.Response?> InitiateMultipartUpload(
 		string path,
 		RequestBuilder builder,
 		CancellationToken cancellationToken
@@ -109,7 +108,7 @@ internal static class ThunderstoreAPI
 	{
 		var fileInfo = new FileInfo(path);
 
-		var payload = new InitialUploadRequest
+		var payload = new Models.API.InitiateMultipartUpload.Request
 		{
 			File = Path.GetFileName(path),
 			FileSize = fileInfo.Length,
@@ -122,7 +121,10 @@ internal static class ThunderstoreAPI
 			.WithJSON(payload)
 			.Build();
 
-		return ThunderstoreClient.SendRequest<InitialUploadResponse>(request, cancellationToken);
+		return ThunderstoreClient.SendRequest<Models.API.InitiateMultipartUpload.Response>(
+			request,
+			cancellationToken
+		);
 	}
 
 	/// <summary>
@@ -131,13 +133,13 @@ internal static class ThunderstoreAPI
 	/// <remarks>
 	/// This is simply a helper method to simplify using <see cref="ThunderstoreAPI.UploadPart"/>
 	/// </remarks>
-	public static async Task<UploadPartResponse[]> UploadParts(
+	public static async Task<Models.API.UploadPart.Response[]> UploadParts(
 		string file,
-		InitialUploadResponse.UploadPartModel[] parts,
+		Models.API.InitiateMultipartUpload.Response.UploadPartModel[] parts,
 		CancellationToken cancellationToken
 	)
 	{
-		var uploadTasks = new List<Task<UploadPartResponse?>>();
+		var uploadTasks = new List<Task<Models.API.UploadPart.Response?>>();
 
 		await using (var stream = File.OpenRead(file))
 		{
@@ -159,7 +161,7 @@ internal static class ThunderstoreAPI
 
 		var uploadedParts = await Task.WhenAll(uploadTasks).WaitAsync(cancellationToken);
 
-		return uploadedParts.OfType<UploadPartResponse>().ToArray();
+		return uploadedParts.OfType<Models.API.UploadPart.Response>().ToArray();
 	}
 
 	/// <summary>
@@ -168,7 +170,7 @@ internal static class ThunderstoreAPI
 	/// <remarks>
 	/// Internally, this calls the <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_UploadPart.html">Upload part</a> step
 	/// </remarks>
-	public static async Task<UploadPartResponse?> UploadPart(
+	public static async Task<Models.API.UploadPart.Response?> UploadPart(
 		Stream stream,
 		int id,
 		int size,
@@ -218,7 +220,7 @@ internal static class ThunderstoreAPI
 		if (etag == null)
 			throw new NullReferenceException("Expected the header 'ETag' to be set.");
 
-		return new UploadPartResponse { ETag = etag, PartNumber = id };
+		return new Models.API.UploadPart.Response { ETag = etag, PartNumber = id };
 	}
 
 	/// <summary>
@@ -248,12 +250,12 @@ internal static class ThunderstoreAPI
 	/// </remarks>
 	public static async Task<bool> FinishMultipartUpload(
 		string uuid,
-		UploadPartResponse[] parts,
+		Models.API.UploadPart.Response[] parts,
 		RequestBuilder builder,
 		CancellationToken cancellationToken
 	)
 	{
-		var payload = new FinishUploadRequest { Parts = parts };
+		var payload = new Models.API.FinishMultipartUpload.Request { Parts = parts };
 
 		var request = builder
 			.Copy()
@@ -271,7 +273,7 @@ internal static class ThunderstoreAPI
 	/// <summary>
 	/// Submits the package
 	/// </summary>
-	public static Task<SubmitPackageResponse?> SubmitPackage(
+	public static Task<Models.API.SubmitPackage.Response?> SubmitPackage(
 		string author,
 		string community,
 		string[] categories,
@@ -281,7 +283,7 @@ internal static class ThunderstoreAPI
 		CancellationToken cancellationToken
 	)
 	{
-		var payload = new SubmitPackageRequest
+		var payload = new Models.API.SubmitPackage.Request
 		{
 			AuthorName = author,
 			Communities = [community],
@@ -297,13 +299,16 @@ internal static class ThunderstoreAPI
 			.WithJSON(payload)
 			.Build();
 
-		return ThunderstoreClient.SendRequest<SubmitPackageResponse>(request, cancellationToken);
+		return ThunderstoreClient.SendRequest<Models.API.SubmitPackage.Response>(
+			request,
+			cancellationToken
+		);
 	}
 
 	/// <summary>
 	/// Finds the community with the slug
 	/// </summary>
-	public static async Task<FindCommunityResponse.PageItemModel?> FindCommunity(
+	public static async Task<Models.API.GetCommunity.Response.PageItemModel?> FindCommunity(
 		string slug,
 		RequestBuilder builder,
 		CancellationToken cancellationToken
@@ -317,7 +322,7 @@ internal static class ThunderstoreAPI
 		{
 			var request = tempBuilder.Copy().SetParameter("cursor", currentCursor).Build();
 
-			var response = await ThunderstoreClient.SendRequest<FindCommunityResponse>(
+			var response = await ThunderstoreClient.SendRequest<Models.API.GetCommunity.Response>(
 				request,
 				cancellationToken
 			);
@@ -352,7 +357,7 @@ internal static class ThunderstoreAPI
 	/// Finds the categories with the slugs in the community
 	/// </summary>
 	public static async Task<
-		Dictionary<string, FindCategoriesResponse.PageItemModel>
+		Dictionary<string, Models.API.GetCategory.Response.PageItemModel>
 	> FindCategories(
 		string[] slugs,
 		string community,
@@ -367,14 +372,14 @@ internal static class ThunderstoreAPI
 			.SetPathParameter("COMMUNITY", community);
 
 		var slugsHash = new HashSet<string>(slugs);
-		var categories = new Dictionary<string, FindCategoriesResponse.PageItemModel>();
+		var categories = new Dictionary<string, Models.API.GetCategory.Response.PageItemModel>();
 		string? currentCursor = null;
 
 		do
 		{
 			var request = tempBuilder.Copy().SetParameter("cursor", currentCursor).Build();
 
-			var response = await ThunderstoreClient.SendRequest<FindCategoriesResponse>(
+			var response = await ThunderstoreClient.SendRequest<Models.API.GetCategory.Response>(
 				request,
 				cancellationToken
 			);
@@ -411,7 +416,9 @@ internal static class ThunderstoreAPI
 	/// <summary>
 	/// Finds the dependencies
 	/// </summary>
-	public static async Task<Dictionary<string, FindDependenciesResponse>> FindDependencies(
+	public static async Task<
+		Dictionary<string, Models.API.GetDependency.Response>
+	> FindDependencies(
 		string[] dependencies,
 		RequestBuilder builder,
 		CancellationToken cancellationToken
@@ -421,7 +428,7 @@ internal static class ThunderstoreAPI
 			.Copy()
 			.Get()
 			.ToEndpoint(ThunderstoreClient.API_DEPENDENCY_VERSION);
-		var foundDependencies = new Dictionary<string, FindDependenciesResponse>();
+		var foundDependencies = new Dictionary<string, Models.API.GetDependency.Response>();
 
 #pragma warning disable SYSLIB1045
 		var regex = new Regex(
@@ -456,7 +463,7 @@ internal static class ThunderstoreAPI
 				.SetPathParameter("VERSION", version)
 				.Build();
 
-			var response = await ThunderstoreClient.SendRequest<FindDependenciesResponse>(
+			var response = await ThunderstoreClient.SendRequest<Models.API.GetDependency.Response>(
 				request,
 				cancellationToken
 			);

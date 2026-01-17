@@ -1,35 +1,8 @@
 using Newtonsoft.Json;
-using ThunderPipe.Utils;
 
-namespace ThunderPipe.DTOs;
+namespace ThunderPipe.Models.API.InitiateMultipartUpload;
 
-/// <summary>
-/// Model used as the request payload in <see cref="ThunderstoreAPI.InitiateMultipartUpload"/>
-/// </summary>
-internal record InitialUploadRequest
-{
-	/// <summary>
-	/// Name of the file uploaded to the Amazon S3 bucket
-	/// </summary>
-	/// <remarks>
-	/// It refers to <a href="http://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html">this</a>
-	/// </remarks>
-	[JsonProperty("filename")]
-	[JsonRequired]
-	public required string File { get; set; }
-
-	/// <summary>
-	/// Size of the file uploaded in bytes
-	/// </summary>
-	[JsonProperty("file_size_bytes")]
-	[JsonRequired]
-	public required long FileSize { get; set; }
-}
-
-/// <summary>
-/// Model used as the response payload in <see cref="ThunderstoreAPI.InitiateMultipartUpload"/>
-/// </summary>
-internal record InitialUploadResponse
+internal record Response
 {
 	/// <summary>
 	/// Model used to represent metadata from <see cref="ThunderstoreAPI.InitiateMultipartUpload"/>
@@ -49,21 +22,6 @@ internal record InitialUploadResponse
 		[JsonProperty("size")]
 		[JsonRequired]
 		public required long Size { get; set; }
-
-		// These fields are not used by this tool
-#if false
-		[JsonProperty("filename")]
-		public string? Filename { get; set; }
-
-		[JsonProperty("datetime_created")]
-		public DateTime TimeCreated { get; set; }
-
-		[JsonProperty("expiry")]
-		public DateTime? ExpireTime { get; set; }
-
-		[JsonProperty("status")]
-		public string? Status { get; set; }
-#endif
 	}
 
 	/// <summary>

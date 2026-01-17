@@ -1,12 +1,8 @@
 using Newtonsoft.Json;
-using ThunderPipe.Utils;
 
-namespace ThunderPipe.DTOs;
+namespace ThunderPipe.Models.API.GetCategory;
 
-/// <summary>
-/// Model used as the response payload in <see cref="ThunderstoreAPI.FindCommunity"/>
-/// </summary>
-internal record FindCommunityResponse
+internal record Response
 {
 	public record PaginationModel
 	{
@@ -25,7 +21,7 @@ internal record FindCommunityResponse
 
 	public record PageItemModel
 	{
-		[JsonProperty("identifier")]
+		[JsonProperty("slug")]
 		[JsonRequired]
 		public required string Slug { get; set; }
 

@@ -1,7 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 using Spectre.Console.Cli;
-using ThunderPipe.DTOs;
 using ThunderPipe.Utils;
 
 namespace ThunderPipe.Commands.Publish;
@@ -53,7 +52,7 @@ internal sealed class Command : AsyncCommand<Settings.Publish.Settings>
 			chunkCount
 		);
 
-		UploadPartResponse[] uploadedParts;
+		Models.API.UploadPart.Response[] uploadedParts;
 
 		try
 		{

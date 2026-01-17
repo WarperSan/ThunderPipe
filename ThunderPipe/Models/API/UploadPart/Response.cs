@@ -1,14 +1,10 @@
 using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json;
-using ThunderPipe.Utils;
 
-namespace ThunderPipe.DTOs;
+namespace ThunderPipe.Models.API.UploadPart;
 
-/// <summary>
-/// Model used as the response payload in <see cref="ThunderstoreAPI.UploadPart"/>
-/// </summary>
 [SuppressMessage("Maintainability", "CA1507:Use nameof to express symbol names")]
-internal record UploadPartResponse
+internal record Response
 {
 	/// <summary>
 	/// Entity tag for the uploaded part
