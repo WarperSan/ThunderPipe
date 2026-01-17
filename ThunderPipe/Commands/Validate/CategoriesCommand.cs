@@ -31,7 +31,7 @@ internal sealed class CategoriesCommand : AsyncCommand<CategoriesSettings>
 
 		var missingCategories = await client.GetMissing(categorySlugs, communitySlug);
 
-		if (missingCategories.Count == 0)
+		if (missingCategories.Count > 0)
 		{
 			var listString = "- " + string.Join("\n- ", missingCategories);
 

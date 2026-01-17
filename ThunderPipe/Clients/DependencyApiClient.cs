@@ -13,18 +13,16 @@ internal sealed class DependencyApiClient : ThunderstoreClient
 		: base(builder, ct) { }
 
 	/// <summary>
-	/// Finds the dependencies
+	/// Finds the missing dependencies
 	/// </summary>
-	public async Task<Dictionary<string, Models.API.GetDependency.Response>> FindDependencies(
-		string[] dependencies
-	)
+	public async Task<ISet<string>> GetMissing(string[] dependencies)
 	{
 		var tempBuilder = Builder
 			.Copy()
 			.Get()
 			.ToEndpoint("api/experimental/package/{NAMESPACE}/{NAME}/{VERSION}/");
 
-		var foundDependencies = new Dictionary<string, Models.API.GetDependency.Response>();
+		var dependenciesToFind = new HashSet<string>(dependencies);
 
 #pragma warning disable SYSLIB1045
 		var regex = new Regex(
@@ -64,9 +62,9 @@ internal sealed class DependencyApiClient : ThunderstoreClient
 			if (!response.IsActive)
 				continue;
 
-			foundDependencies[dependency] = response;
+			dependenciesToFind.Remove(dependency);
 		}
 
-		return foundDependencies;
+		return dependenciesToFind;
 	}
 }
