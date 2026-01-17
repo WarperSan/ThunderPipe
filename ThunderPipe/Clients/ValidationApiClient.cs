@@ -83,8 +83,6 @@ internal sealed class ValidationApiClient : ThunderstoreClient
 	/// </summary>
 	public async Task<ICollection<string>> IsReadmeValid(string path)
 	{
-		// For some reason, the endpoint is bugged
-		return [];
 		var data = await File.ReadAllBytesAsync(path, CancellationToken);
 
 		var payload = new Models.API.ValidateReadme.Request { Data = Convert.ToBase64String(data) };
