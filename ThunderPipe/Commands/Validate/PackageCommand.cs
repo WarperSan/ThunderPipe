@@ -76,7 +76,7 @@ internal sealed class PackageCommand : AsyncCommand<PackageSettings>
 	#region Validation Rules
 	// ReSharper disable ConvertIfStatementToReturnStatement
 
-	private sealed record ValidationResult(bool IsValid, IReadOnlyList<string> Errors);
+	private sealed record ValidationResult(bool IsValid, IEnumerable<string> Errors);
 
 	private static async Task<List<string>> RunValidations(
 		List<Func<Task<ValidationResult>>> validations,
@@ -109,21 +109,9 @@ internal sealed class PackageCommand : AsyncCommand<PackageSettings>
 		ValidationApiClient client
 	)
 	{
-		var response = await client.ValidateIcon(path);
+		var errors = await client.IsIconValid(path);
 
-		if (response == null)
-			return new ValidationResult(false, ["Failed to validate icon remotely."]);
-
-		if (response.DataErrors != null)
-			return new ValidationResult(false, response.DataErrors);
-
-		if (response.ValidationErrors != null)
-			return new ValidationResult(false, response.ValidationErrors);
-
-		if (response.Valid is null or false)
-			return new ValidationResult(false, ["Icon was not marked as valid."]);
-
-		return new ValidationResult(true, []);
+		return new ValidationResult(errors.Count == 0, errors);
 	}
 
 	private static async Task<ValidationResult> ValidateManifestRemote(
@@ -132,24 +120,9 @@ internal sealed class PackageCommand : AsyncCommand<PackageSettings>
 		ValidationApiClient client
 	)
 	{
-		var response = await client.ValidateManifest(path, team);
+		var errors = await client.IsManifestValid(path, team);
 
-		if (response == null)
-			return new ValidationResult(false, ["Failed to validate manifest remotely."]);
-
-		if (response.DataErrors != null)
-			return new ValidationResult(false, response.DataErrors);
-
-		if (response.NamespaceErrors != null)
-			return new ValidationResult(false, response.NamespaceErrors);
-
-		if (response.ValidationErrors != null)
-			return new ValidationResult(false, response.ValidationErrors);
-
-		if (response.Valid is null or false)
-			return new ValidationResult(false, ["Manifest was not marked as valid."]);
-
-		return new ValidationResult(true, []);
+		return new ValidationResult(errors.Count == 0, errors);
 	}
 
 	private static async Task<ValidationResult> ValidateReadmeRemote(
@@ -157,21 +130,9 @@ internal sealed class PackageCommand : AsyncCommand<PackageSettings>
 		ValidationApiClient client
 	)
 	{
-		var response = await client.ValidateReadme(path);
+		var errors = await client.IsReadmeValid(path);
 
-		if (response == null)
-			return new ValidationResult(false, ["Failed to validate README remotely."]);
-
-		if (response.DataErrors != null)
-			return new ValidationResult(false, response.DataErrors);
-
-		if (response.ValidationErrors != null)
-			return new ValidationResult(false, response.ValidationErrors);
-
-		if (response.Valid is null or false)
-			return new ValidationResult(false, ["README was not marked as valid."]);
-
-		return new ValidationResult(true, []);
+		return new ValidationResult(errors.Count == 0, errors);
 	}
 
 	// ReSharper restore ConvertIfStatementToReturnStatement

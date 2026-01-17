@@ -12,14 +12,13 @@ internal sealed class ValidationApiClient : ThunderstoreClient
 		: base(builder, ct) { }
 
 	/// <summary>
-	/// Validates the icon file at the given path
+	/// Checks if the icon at the given path is valid
 	/// </summary>
-	public async Task<Models.API.ValidateIcon.Response?> ValidateIcon(string path)
+	public async Task<ICollection<string>> IsIconValid(string path)
 	{
 		var data = await File.ReadAllBytesAsync(path, CancellationToken);
 
 		var payload = new Models.API.ValidateIcon.Request { Data = Convert.ToBase64String(data) };
-
 		var request = Builder
 			.Copy()
 			.Post()
@@ -27,16 +26,26 @@ internal sealed class ValidationApiClient : ThunderstoreClient
 			.WithJSON(payload)
 			.Build();
 
-		return await SendRequest<Models.API.ValidateIcon.Response>(request);
+		var response = await SendRequest<Models.API.ValidateIcon.Response>(request);
+
+		var errors = new List<string>();
+
+		if (response.DataErrors != null)
+			errors.AddRange(response.DataErrors);
+
+		if (response.ValidationErrors != null)
+			errors.AddRange(response.ValidationErrors);
+
+		if (errors.Count > 0 && response.Valid is null or false)
+			errors.Add("Icon was not marked as valid.");
+
+		return errors;
 	}
 
 	/// <summary>
-	/// Validates the manifest file at the given path
+	/// Checks if the manifest at the given path is valid for the given team
 	/// </summary>
-	public async Task<Models.API.ValidateManifest.Response?> ValidateManifest(
-		string path,
-		string team
-	)
+	public async Task<ICollection<string>> IsManifestValid(string path, string team)
 	{
 		var data = await File.ReadAllBytesAsync(path, CancellationToken);
 
@@ -53,13 +62,26 @@ internal sealed class ValidationApiClient : ThunderstoreClient
 			.WithJSON(payload)
 			.Build();
 
-		return await SendRequest<Models.API.ValidateManifest.Response>(request);
+		var response = await SendRequest<Models.API.ValidateManifest.Response>(request);
+
+		var errors = new List<string>();
+
+		if (response.DataErrors != null)
+			errors.AddRange(response.DataErrors);
+
+		if (response.ValidationErrors != null)
+			errors.AddRange(response.ValidationErrors);
+
+		if (errors.Count > 0 && response.Valid is null or false)
+			errors.Add("Manifest was not marked as valid.");
+
+		return errors;
 	}
 
 	/// <summary>
-	/// Validates the README file at the given path
+	/// Checks if the README at the given path is valid
 	/// </summary>
-	public async Task<Models.API.ValidateReadme.Response?> ValidateReadme(string path)
+	public async Task<ICollection<string>> IsReadmeValid(string path)
 	{
 		var data = await File.ReadAllBytesAsync(path, CancellationToken);
 
@@ -72,6 +94,19 @@ internal sealed class ValidationApiClient : ThunderstoreClient
 			.WithJSON(payload)
 			.Build();
 
-		return await SendRequest<Models.API.ValidateReadme.Response>(request);
+		var response = await SendRequest<Models.API.ValidateReadme.Response>(request);
+
+		var errors = new List<string>();
+
+		if (response.DataErrors != null)
+			errors.AddRange(response.DataErrors);
+
+		if (response.ValidationErrors != null)
+			errors.AddRange(response.ValidationErrors);
+
+		if (errors.Count > 0 && response.Valid is null or false)
+			errors.Add("README was not marked as valid.");
+
+		return errors;
 	}
 }
