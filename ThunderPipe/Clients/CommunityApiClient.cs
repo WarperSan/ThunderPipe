@@ -15,7 +15,7 @@ internal sealed class CommunityApiClient : ThunderstoreClient
 	/// <summary>
 	/// Checks if a community with the given slug exists
 	/// </summary>
-	public async Task<bool> CommunityExists(string slug)
+	public async Task<bool> Exists(string slug)
 	{
 		var tempBuilder = Builder.Copy().Get().ToEndpoint(API_EXPERIMENTAL + "community/");
 

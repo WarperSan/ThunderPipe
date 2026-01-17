@@ -28,7 +28,7 @@ internal sealed class CommunityCommand : AsyncCommand<CommunitySettings>
 		var builder = new RequestBuilder().ToUri(settings.Repository!);
 		using var client = new CommunityApiClient(builder, cancellationToken);
 
-		var doesCommunityExist = await client.CommunityExists(communitySlug);
+		var doesCommunityExist = await client.Exists(communitySlug);
 
 		if (!doesCommunityExist)
 		{
