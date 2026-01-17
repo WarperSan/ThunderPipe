@@ -14,15 +14,30 @@ internal static class RegexHelper
 	private const string REGEX_VERSION = "[0-9]+.[0-9]+.[0-9]+";
 
 	/// <summary>
-	/// Checks if the given name matches allowed names
+	/// Checks if the given name is valid
 	/// </summary>
-	public static bool IsNameValid(string name) => Regex.IsMatch(name, $"^{REGEX_NAME}$");
+	public static bool IsNameValid(string name)
+	{
+		return Regex.IsMatch(name, $"^{REGEX_NAME}$");
+	}
 
 	/// <summary>
-	/// Checks if the given version matches allowed versions
+	/// Checks if the given version is valid
 	/// </summary>
-	public static bool IsVersionValid(string version) =>
-		Regex.IsMatch(version, $"^{REGEX_VERSION}$");
+	public static bool IsVersionValid(string version)
+	{
+		return Regex.IsMatch(version, $"^{REGEX_VERSION}$");
+	}
+
+	/// <summary>
+	/// Checks if the given dependency string is valid
+	/// </summary>
+	public static bool IsDependencyValid(string dependencyString)
+	{
+		SplitDependency(dependencyString, out var @namespace, out var name, out var version);
+
+		return @namespace != null && name != null && version != null;
+	}
 
 	/// <summary>
 	/// Splits the given dependency string into its main components
