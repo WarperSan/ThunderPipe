@@ -115,7 +115,8 @@ internal sealed class PublishApiClient : ThunderstoreClient
 		content.Headers.ContentMD5 = hash;
 		content.Headers.ContentLength = size;
 
-		var request = new RequestBuilder().ToUrl(url).Put().WithContent(content).Build();
+		var uri = new Uri(url, UriKind.Absolute);
+		var request = new RequestBuilder().ToUri(uri).Put().WithContent(content).Build();
 
 		var response = await SendRequest(request);
 

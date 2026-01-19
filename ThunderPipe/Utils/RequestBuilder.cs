@@ -61,15 +61,6 @@ internal sealed class RequestBuilder
 	/// <summary>
 	/// Sets the URL of this request
 	/// </summary>
-	public RequestBuilder ToUrl(string url)
-	{
-		_uriBuilder = new UriBuilder(url);
-		return this;
-	}
-
-	/// <summary>
-	/// Sets the URL of this request
-	/// </summary>
 	public RequestBuilder ToUri(Uri uri)
 	{
 		_uriBuilder = new UriBuilder(uri);
