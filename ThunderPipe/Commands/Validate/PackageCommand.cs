@@ -60,8 +60,6 @@ internal sealed class PackageCommand : AsyncCommand<PackageSettings>
 			},
 		};
 
-		//validations.Add();
-
 		if (validations.Count == 0)
 		{
 			_logger.LogError("No validation rule was applied.");

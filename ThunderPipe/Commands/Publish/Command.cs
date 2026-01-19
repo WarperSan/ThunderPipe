@@ -34,9 +34,6 @@ internal sealed class Command : AsyncCommand<Settings.Publish.Settings>
 		using var client = new PublishApiClient(builder, cancellationToken);
 		var uploadData = await client.InitiateMultipartUpload(file);
 
-		if (uploadData == null)
-			throw new InvalidOperationException("Could not initiate upload.");
-
 		var fileSize = uploadData.FileMetadata.Size;
 		var chunkCount = uploadData.UploadParts.Length;
 
@@ -79,9 +76,6 @@ internal sealed class Command : AsyncCommand<Settings.Publish.Settings>
 			settings.HasNsfw,
 			uploadData.FileMetadata.UUID
 		);
-
-		if (releasedPackage == null)
-			throw new InvalidOperationException("Failed to finish upload.");
 
 		_logger.LogInformation(
 			"Successfully published '{VersionName}' v{VersionVersion}",

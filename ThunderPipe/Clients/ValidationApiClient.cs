@@ -28,9 +28,6 @@ internal sealed class ValidationApiClient : ThunderstoreClient
 
 		var response = await SendRequest<Models.API.ValidateIcon.Response>(request);
 
-		if (response == null)
-			return ["Failed to verify the icon."];
-
 		var errors = new List<string>();
 
 		if (response.DataErrors != null)
@@ -67,9 +64,6 @@ internal sealed class ValidationApiClient : ThunderstoreClient
 
 		var response = await SendRequest<Models.API.ValidateManifest.Response>(request);
 
-		if (response == null)
-			return ["Failed to verify the manifest."];
-
 		var errors = new List<string>();
 
 		if (response.DataErrors != null)
@@ -101,9 +95,6 @@ internal sealed class ValidationApiClient : ThunderstoreClient
 			.Build();
 
 		var response = await SendRequest<Models.API.ValidateReadme.Response>(request);
-
-		if (response == null)
-			return ["Failed to verify the readme."];
 
 		var errors = new List<string>();
 

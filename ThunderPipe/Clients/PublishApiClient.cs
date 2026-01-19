@@ -19,7 +19,7 @@ internal sealed class PublishApiClient : ThunderstoreClient
 	/// <remarks>
 	/// Internally, this calls the <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateMultipartUpload.html">Multipart upload initiation</a> step
 	/// </remarks>
-	public Task<Models.API.InitiateMultipartUpload.Response?> InitiateMultipartUpload(string path)
+	public Task<Models.API.InitiateMultipartUpload.Response> InitiateMultipartUpload(string path)
 	{
 		var fileInfo = new FileInfo(path);
 
@@ -169,7 +169,7 @@ internal sealed class PublishApiClient : ThunderstoreClient
 	/// <summary>
 	/// Submits the package
 	/// </summary>
-	public Task<Models.API.SubmitPackage.Response?> SubmitPackage(
+	public Task<Models.API.SubmitPackage.Response> SubmitPackage(
 		string author,
 		string community,
 		string[] categories,
