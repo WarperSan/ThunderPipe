@@ -110,12 +110,12 @@ ThunderPipe validate package <package-folder>
 
 ## Why ThunderPipe instead of TCLI?
 
-While the official [Thunderstore CLI (TCLI)](https://github.com/thunderstore-io/thunderstore-cli) is excellent for general users, ThunderPipe is built **by modders for modders**. who prefer a "do one thing and do it well" philosophy.
+While the official [Thunderstore CLI (TCLI)](https://github.com/thunderstore-io/thunderstore-cli) is excellent for general users, ThunderPipe is built **by modders for modders**. It is meant for developers, for Thunderstore.
 
 <details>
     <summary><b>Leaner Tooling</b></summary>
 	<p>
-		TCLI is a mod installer, mod manager and mod publisher. If you already use applications like <a href="https://galemodmanager.com/"><i>Gale</i></a> or <a href="https://r2modman.com"><i>r2modman</i></a>, ThunderPipe provides a lighter footprint for your development environment.
+		TCLI is a mod installer, mod manager and mod publisher. If you already use applications like <a href="https://galemodmanager.com/"><i>Gale</i></a> or <a href="https://r2modman.com"><i>r2modman</i></a>, you likely never even used TCLI to manage mods. ThunderPipe provides a lighter footprint for your development environment.
 	</p>
 </details>
 
