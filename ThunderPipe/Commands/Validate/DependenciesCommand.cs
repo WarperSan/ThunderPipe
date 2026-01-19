@@ -32,9 +32,9 @@ internal sealed class DependenciesCommand : AsyncCommand<DependenciesSettings>
 		if (missingDependencies.Count > 0)
 		{
 			var listString = "- " + string.Join("\n- ", missingDependencies);
-
-			_logger.LogError("Failed to find these dependencies:\n{Dependencies}", listString);
-			return 1;
+			throw new KeyNotFoundException(
+				$"Could not find a package for the following dependency strings:\n{listString}"
+			);
 		}
 
 		_logger.LogInformation("All dependencies have been found!");
