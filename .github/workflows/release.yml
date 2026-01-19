@@ -27,8 +27,18 @@ jobs:
             - name: Setup .NET
               uses: actions/setup-dotnet@v4
 
-            - name: Pack Tool
-              run: dotnet pack --configuration "$CONFIGURATION" --output "nupkg/"
+            - name: Build
+              run: dotnet build --configuration "$CONFIGURATION"
+              env:
+                  CONFIGURATION: ${{ env.DOTNET_CONFIGURATION }}
+
+            - name: Test
+              run: dotnet test --no-build --configuration "$CONFIGURATION"
+              env:
+                  CONFIGURATION: ${{ env.DOTNET_CONFIGURATION }}
+
+            - name: Pack
+              run: dotnet pack --no-build --configuration "$CONFIGURATION" --output "nupkg/"
               env:
                   CONFIGURATION: ${{ env.DOTNET_CONFIGURATION }}
 
