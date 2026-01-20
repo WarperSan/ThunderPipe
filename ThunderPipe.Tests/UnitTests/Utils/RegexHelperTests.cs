@@ -12,6 +12,7 @@ public class RegexHelperTests
 			new object[] { "Cyto_Commando", true },
 			new object[] { "ExponentialItemStacks", true },
 			new object[] { "Some_Mod", true },
+			new object[] { "Some Mod", false },
 			new object[] { "HAND_OVERCLOCKED!", false },
 			new object[] { "Supply-Drop", false },
 		};
