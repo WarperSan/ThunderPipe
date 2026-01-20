@@ -5,7 +5,7 @@ namespace ThunderPipe.Clients;
 /// <summary>
 /// Client used to call API endpoints related to dependencies
 /// </summary>
-internal class DependencyApiClient : ThunderstoreClient
+internal sealed class DependencyApiClient : ThunderstoreClient
 {
 	/// <inheritdoc />
 	public DependencyApiClient(RequestBuilder builder, CancellationToken ct)
