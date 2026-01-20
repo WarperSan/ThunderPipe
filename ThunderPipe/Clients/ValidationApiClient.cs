@@ -5,7 +5,7 @@ namespace ThunderPipe.Clients;
 /// <summary>
 /// Client used to call validation API endpoints
 /// </summary>
-internal sealed class ValidationApiClient : ThunderstoreClient
+internal class ValidationApiClient : ThunderstoreClient
 {
 	/// <inheritdoc />
 	public ValidationApiClient(RequestBuilder builder, CancellationToken ct)

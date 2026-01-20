@@ -7,7 +7,7 @@ namespace ThunderPipe.Clients;
 /// <summary>
 /// Client used to call API endpoints for publishing packages
 /// </summary>
-internal sealed class PublishApiClient : ThunderstoreClient
+internal class PublishApiClient : ThunderstoreClient
 {
 	/// <inheritdoc />
 	public PublishApiClient(RequestBuilder builder, CancellationToken ct)
