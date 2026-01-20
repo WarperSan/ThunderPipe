@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ThunderPipe.Utils;
 
-namespace ThunderPipe.Tests.Utils;
+namespace ThunderPipe.Tests.UnitTests.Utils;
 
 public class RequestBuilderTests
 {
