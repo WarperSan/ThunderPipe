@@ -21,12 +21,12 @@ internal abstract class ThunderstoreClient : IDisposable
 	/// </summary>
 	protected readonly CancellationToken CancellationToken;
 
-	protected ThunderstoreClient(RequestBuilder builder, HttpClient client, CancellationToken ct)
+	protected ThunderstoreClient(RequestBuilder builder, CancellationToken ct)
 	{
 		Builder = builder.Copy();
 		CancellationToken = ct;
 
-		_client = client;
+		_client = new HttpClient();
 		_client.DefaultRequestHeaders.UserAgent.Add(
 			new ProductInfoHeaderValue(Metadata.GUID, Metadata.VERSION)
 		);
