@@ -108,23 +108,9 @@ ThunderPipe validate package <package-folder>
 |--------------------|---------------------------------------------------|
 | `<package-folder>` | Path to the folder containing the package's files |
 
-## Why ThunderPipe instead of TCLI?
+## Documentation
 
-While the official [Thunderstore CLI (TCLI)](https://github.com/thunderstore-io/thunderstore-cli) is excellent for general users, ThunderPipe is built **by modders for modders**. It is meant for developers, for Thunderstore.
-
-<details>
-    <summary><b>Leaner Tooling</b></summary>
-	<p>
-		TCLI is a mod installer, mod manager and mod publisher. If you already use applications like <a href="https://galemodmanager.com/"><i>Gale</i></a> or <a href="https://r2modman.com"><i>r2modman</i></a>, you likely never even used TCLI to manage mods. ThunderPipe provides a lighter footprint for your development environment.
-	</p>
-</details>
-
-<details>
-    <summary><b>Structured Workflow</b></summary>
-	<p>
-    	ThunderPipe is built to solve the lack of a standardized automation workflow. It provides clear exit codes and validation steps ideal for automated CI/CD pipelines.
-	</p>
-</details>
+You can find more information on [ThunderPipe's Wiki](https://github.com/WarperSan/ThunderPipe/wiki).
 
 ## Contributing
 
