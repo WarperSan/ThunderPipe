@@ -141,6 +141,31 @@ public class RequestBuilderTests
 			Assert.Equal(parameters[key], query[key]);
 	}
 
+	[Fact]
+	public void SetParameter_WhenKeyNull_AssignNoQueryValue()
+	{
+		var request = new RequestBuilder().SetParameter(null, "?!?").Build();
+
+		Assert.NotNull(request.RequestUri);
+		var query = HttpUtility.ParseQueryString(request.RequestUri.Query);
+
+		Assert.Empty(query);
+	}
+
+	[Fact]
+	public void SetParameter_WhenValueNull_AssignEmptyQueryValue()
+	{
+		const string KEY = "very-important";
+
+		var request = new RequestBuilder().SetParameter(KEY, null).Build();
+
+		Assert.NotNull(request.RequestUri);
+		var query = HttpUtility.ParseQueryString(request.RequestUri.Query);
+
+		Assert.Single(query);
+		Assert.Equal(string.Empty, query[KEY]);
+	}
+
 	public static IEnumerable<object[]> SetPathParameter_WhenSet_ReplacePathParams_Data =>
 		new List<object[]>
 		{
