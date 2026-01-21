@@ -124,7 +124,7 @@ internal sealed class RequestBuilder
 	/// <summary>
 	/// Sets the query parameter with the given key to the given value
 	/// </summary>
-	public RequestBuilder SetParameter(string key, string? value)
+	public RequestBuilder SetParameter(string? key, string? value)
 	{
 		_queryParams.Set(key, value);
 
