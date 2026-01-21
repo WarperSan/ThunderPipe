@@ -1,0 +1,38 @@
+name: 'Build & Test'
+
+on:
+    workflow_dispatch:
+    # Trigger on pushes to the main branch
+    push:
+        branches: [ master ]
+    # Trigger on any pull request
+    pull_request:
+
+jobs:
+    build-and-test:
+        name: 'Build and Test for ${{ matrix.os }}'
+        runs-on: ${{ matrix.os }}
+        strategy:
+            matrix:
+                os: [ ubuntu-latest, windows-latest, macOS-latest ]
+        env:
+            OS: ${{ matrix.os }}
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-dotnet@v4
+            - name: 'Install dependencies'
+              run: dotnet restore
+
+            - name: 'Build'
+              run: dotnet build --configuration Release --no-restore
+
+            - name: 'Run Tests'
+              run: dotnet test --collect:"XPlat Code Coverage"
+
+            - name: 'Upload coverage to Codecov'
+              uses: codecov/codecov-action@v3
+              with:
+                directory: './ThunderPipe.Tests/TestResults/'
+                env_vars: OS
+                fail_ci_if_error: 'true'
+                token: ${{ secrets.CODECOV_TOKEN }}
