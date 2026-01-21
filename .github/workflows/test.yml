@@ -1,4 +1,4 @@
-name: 'Build & Test'
+name: 'Test and Coverage'
 
 on:
     workflow_dispatch:
