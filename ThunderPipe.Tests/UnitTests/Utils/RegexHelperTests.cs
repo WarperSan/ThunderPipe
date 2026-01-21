@@ -58,7 +58,6 @@ public class RegexHelperTests
 			new object[] { "rob-Belmont-1.0.8", true },
 			new object[] { "Rune580-Risk_Of_Options-2.8.5", true },
 			new object[] { "MrKixcat-Altered-Moons-2.0.1", false },
-			new object[] { "MrKixcat-Altered-Moons-2.0.1", false },
 			new object[] { "rob-Belmont-uwu-2.0.1", false },
 		};
 
