@@ -31,10 +31,9 @@ internal sealed class CommunityCommand : AsyncCommand<CommunitySettings>
 		var doesCommunityExist = await client.Exists(communitySlug);
 
 		if (!doesCommunityExist)
-		{
-			_logger.LogError("Could not find a community with the slug '{Slug}'.", communitySlug);
-			return 1;
-		}
+			throw new KeyNotFoundException(
+				$"Could not find a community with the slug '{communitySlug}'."
+			);
 
 		_logger.LogInformation("A community was found for '{Slug}'!", communitySlug);
 		return 0;

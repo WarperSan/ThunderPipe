@@ -31,9 +31,6 @@ internal sealed class CategoryApiClient : ThunderstoreClient
 
 			var response = await SendRequest<Models.API.GetCategory.Response>(request);
 
-			if (response == null)
-				break;
-
 			foreach (var category in response.Items)
 				slugsToFind.Remove(category.Slug);
 

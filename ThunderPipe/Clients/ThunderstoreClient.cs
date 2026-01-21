@@ -1,6 +1,5 @@
 using System.Net.Http.Headers;
 using Newtonsoft.Json;
-using Spectre.Console;
 using ThunderPipe.Utils;
 
 namespace ThunderPipe.Clients;
@@ -45,29 +44,32 @@ internal abstract class ThunderstoreClient : IDisposable
 	/// <summary>
 	/// Sends the given request, and returns the JSON response
 	/// </summary>
-	protected async Task<T?> SendRequest<T>(HttpRequestMessage request)
+	protected async Task<T> SendRequest<T>(HttpRequestMessage request)
 	{
 		var response = await SendRequest(request);
 		var content = await response.Content.ReadAsStringAsync(CancellationToken);
 
+		T? json;
+
 		try
 		{
-			return JsonConvert.DeserializeObject<T>(content);
+			json = JsonConvert.DeserializeObject<T>(content);
 		}
-		catch (JsonSerializationException e)
+		catch (JsonException e)
 		{
-			AnsiConsole.MarkupLine(
-				$"Failed to deserialize response:\n{e.Message.EscapeMarkup()}\n\n[gray]{content.EscapeMarkup()}[/]"
+			throw new InvalidOperationException(
+				$"Failed to deserialize the response: \n\n{content}",
+				e
 			);
-			return default;
 		}
-		catch (JsonReaderException e)
-		{
-			AnsiConsole.MarkupLine(
-				$"Failed to read response:\n{e.Message.EscapeMarkup()}\n\n[gray]{content.EscapeMarkup()}[/]"
+
+		// ReSharper disable once ConvertIfStatementToReturnStatement
+		if (json == null)
+			throw new NullReferenceException(
+				$"Failed to parse the response's payload as '{nameof(T)}'"
 			);
-			return default;
-		}
+
+		return json;
 	}
 
 	/// <inheritdoc />

@@ -34,12 +34,6 @@ internal sealed class Command : AsyncCommand<Settings.Publish.Settings>
 		using var client = new PublishApiClient(builder, new HttpClient(), cancellationToken);
 		var uploadData = await client.InitiateMultipartUpload(file);
 
-		if (uploadData == null)
-		{
-			_logger.LogError("Failed to initiate upload.");
-			return 1;
-		}
-
 		var fileSize = uploadData.FileMetadata.Size;
 		var chunkCount = uploadData.UploadParts.Length;
 
@@ -56,19 +50,14 @@ internal sealed class Command : AsyncCommand<Settings.Publish.Settings>
 		{
 			uploadedParts = await client.UploadParts(file, uploadData.UploadParts);
 		}
-		catch (Exception e)
+		catch (Exception)
 		{
-			_logger.LogError(e.Message);
-
 			await client.AbortMultipartUpload(uploadData.FileMetadata.UUID);
-			return 1;
+			throw;
 		}
 
 		if (uploadedParts.Length != chunkCount)
-		{
-			_logger.LogError("Failed to upload parts.");
-			return 1;
-		}
+			throw new InvalidOperationException("Failed to upload every parts.");
 
 		var finishedUpload = await client.FinishMultipartUpload(
 			uploadData.FileMetadata.UUID,
@@ -76,10 +65,7 @@ internal sealed class Command : AsyncCommand<Settings.Publish.Settings>
 		);
 
 		if (!finishedUpload)
-		{
-			_logger.LogError("Failed to finish upload.");
-			return 1;
-		}
+			throw new InvalidOperationException("Failed to finish upload.");
 
 		_logger.LogInformation("Successfully finalized the upload.");
 
@@ -90,12 +76,6 @@ internal sealed class Command : AsyncCommand<Settings.Publish.Settings>
 			settings.HasNsfw,
 			uploadData.FileMetadata.UUID
 		);
-
-		if (releasedPackage == null)
-		{
-			_logger.LogError("Failed to submit package.");
-			return 1;
-		}
 
 		_logger.LogInformation(
 			"Successfully published '{VersionName}' v{VersionVersion}",

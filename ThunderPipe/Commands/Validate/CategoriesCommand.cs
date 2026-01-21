@@ -32,9 +32,9 @@ internal sealed class CategoriesCommand : AsyncCommand<CategoriesSettings>
 		if (missingCategories.Count > 0)
 		{
 			var listString = "- " + string.Join("\n- ", missingCategories);
-
-			_logger.LogError("Failed to find these categories:\n{Categories}", listString);
-			return 1;
+			throw new KeyNotFoundException(
+				$"Could not find a category for the following slugs:\n{listString}"
+			);
 		}
 
 		_logger.LogInformation("All categories have been found!");
