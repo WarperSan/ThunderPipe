@@ -318,6 +318,30 @@ public class RequestBuilderTests
 	}
 
 	[Fact]
+	public void Copy_WhenCopiedWithNullKeyParameter_ReturnNewInstanceWithNullKeyParameter()
+	{
+		const string PARAMETER_VALUE = "abc";
+
+		var originalBuilder = new RequestBuilder().SetParameter(null, PARAMETER_VALUE);
+		var copiedBuilder = originalBuilder.Copy();
+
+		var originalRequest = originalBuilder.Build();
+		var copiedRequest = copiedBuilder.Build();
+
+		Assert.NotNull(originalRequest.RequestUri);
+		var originalParameter = HttpUtility
+			.ParseQueryString(originalRequest.RequestUri.Query)
+			.Get(null);
+		Assert.Null(originalParameter);
+
+		Assert.NotNull(copiedRequest.RequestUri);
+		var copiedParameter = HttpUtility
+			.ParseQueryString(copiedRequest.RequestUri.Query)
+			.Get(null);
+		Assert.Null(copiedParameter);
+	}
+
+	[Fact]
 	public void Copy_WhenCopiedWithPathParameter_ReturnNewInstanceWithPathParameter()
 	{
 		const string PATH_KEY = "UUID";
