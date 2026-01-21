@@ -3,6 +3,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ThunderPipe.Utils;
 
+// ReSharper disable InconsistentNaming
+
 namespace ThunderPipe.Tests.UnitTests.Utils;
 
 // TODO: Redo all tests to match proper syntax
@@ -42,59 +44,46 @@ public class RequestBuilderTests
 		Assert.Equal(method, request.Method);
 	}
 
-	public static IEnumerable<object[]> SetUriData =>
-		new List<object[]>
-		{
-			new object[] { new Uri("https://www.google.com") },
-			new object[] { new Uri("https://www.google.com/?a=1") },
-			new object[] { new Uri("https://google.com") },
-		};
-
 	[Theory]
-	[MemberData(nameof(SetUriData))]
-	public void SetUri(Uri expected)
+	[InlineData("https://www.google.com")]
+	[InlineData("https://www.google.com/?a=1")]
+	[InlineData("https://google.com")]
+	public void ToUri_WhenSet_AssignUri(string url)
 	{
-		var request = new RequestBuilder().ToUri(expected).Build();
+		var uri = new Uri(url);
+		var request = new RequestBuilder().ToUri(uri).Build();
 
-		Assert.Equal(expected, request.RequestUri);
+		Assert.NotNull(request.RequestUri);
+		Assert.Equal(uri.AbsoluteUri, request.RequestUri.AbsoluteUri);
 	}
 
-	public static IEnumerable<object[]> SetEndpointData =>
-		new List<object[]>
-		{
-			new object[] { "/apple/com" },
-			new object[] { "/https/www/google/com" },
-			new object[] { "/api/experimental/submission/package/" },
-		};
-
 	[Theory]
-	[MemberData(nameof(SetEndpointData))]
-	public void SetEndpoint(string endpoint)
+	[InlineData("/apple/com")]
+	[InlineData("/https/www/google/com")]
+	[InlineData("/api/experimental/submission/package/")]
+	public void ToEndpoint_WhenSet_AssignEndpoint(string endpoint)
 	{
 		var uri = new Uri("https://www.google.com");
 		var request = new RequestBuilder().ToUri(uri).ToEndpoint(endpoint).Build();
 
-		Assert.Equal(endpoint, request.RequestUri?.AbsolutePath);
+		Assert.NotNull(request.RequestUri);
+		Assert.Equal(endpoint, request.RequestUri.AbsolutePath);
 	}
-
-	public static IEnumerable<object[]> SetAuthData =>
-		new List<object[]>
-		{
-			new object[] { "vcgbcfhjhgfcxv" },
-			new object[] { "vcgfrytahdusbgysahusjdhuagshudjahusdou2 betg2" },
-			new object[] { "tss_ nbvcgfhtyjgbgf7asdfgkubeg17y8" },
-			new object[] { "uwu this is a very secure password" },
-		};
 
 	[Theory]
-	[MemberData(nameof(SetAuthData))]
-	public void SetAuth(string token)
+	[InlineData("vcgbcfhjhgfcxv")]
+	[InlineData("vcgfrytahdusbgysahusjdhuagshudjahusdou2 betg2")]
+	[InlineData("tss_ nbvcgfhtyjgbgf7asdfgkubeg17y8")]
+	[InlineData("uwu this is a very secure password")]
+	public void WithAuth_WhenSet_AssignAuthToken(string token)
 	{
 		var request = new RequestBuilder().WithAuth(token).Build();
-		Assert.Equal(token, request.Headers.Authorization?.Parameter);
+
+		Assert.NotNull(request.Headers.Authorization);
+		Assert.Equal(token, request.Headers.Authorization.Parameter);
 	}
 
-	public static IEnumerable<object[]> SetJsonContentData =>
+	public static IEnumerable<object[]> WithJSON_WhenSet_AssignJsonContent_Data =>
 		new List<object[]>
 		{
 			new object[] { new { baba = 2 } },
@@ -102,21 +91,22 @@ public class RequestBuilderTests
 		};
 
 	[Theory]
-	[MemberData(nameof(SetJsonContentData))]
-	public async Task SetJsonContent(object json)
+	[MemberData(nameof(WithJSON_WhenSet_AssignJsonContent_Data))]
+	public async Task WithJSON_WhenSet_AssignJsonContent(object payload)
 	{
-		var request = new RequestBuilder().WithJSON(json).Build();
+		var request = new RequestBuilder().WithJSON(payload).Build();
 
 		Assert.NotNull(request.Content);
-		var payload = await request.Content!.ReadAsStringAsync();
+		var actualPayload = await request.Content.ReadAsStringAsync();
 
-		var expectedJson = JObject.FromObject(json);
-		var actualJson = JsonConvert.DeserializeObject(payload);
+		var expectedJson = JObject.FromObject(payload);
+		var actualJson = JsonConvert.DeserializeObject(actualPayload);
 
+		Assert.NotSame(expectedJson, actualJson);
 		Assert.Equal(expectedJson, actualJson);
 	}
 
-	public static IEnumerable<object[]> SetParameterData =>
+	public static IEnumerable<object[]> SetParameter_WhenSet_AssignQueryValues_Data =>
 		new List<object[]>
 		{
 			new object[] { new Dictionary<string, string> { ["test"] = "1" } },
@@ -132,8 +122,8 @@ public class RequestBuilderTests
 		};
 
 	[Theory]
-	[MemberData(nameof(SetParameterData))]
-	public void SetParameter(Dictionary<string, string> parameters)
+	[MemberData(nameof(SetParameter_WhenSet_AssignQueryValues_Data))]
+	public void SetParameter_WhenSet_AssignQueryValues(Dictionary<string, string> parameters)
 	{
 		var builder = new RequestBuilder();
 
@@ -151,7 +141,7 @@ public class RequestBuilderTests
 			Assert.Equal(parameters[key], query[key]);
 	}
 
-	public static IEnumerable<object[]> SetPathParameterData =>
+	public static IEnumerable<object[]> SetPathParameter_WhenSet_ReplacePathParams_Data =>
 		new List<object[]>
 		{
 			new object[]
@@ -167,12 +157,20 @@ public class RequestBuilderTests
 		};
 
 	[Theory]
-	[MemberData(nameof(SetPathParameterData))]
-	public void SetPathParameter(string endpoint, Dictionary<string, string> pathParameters)
+	[MemberData(nameof(SetPathParameter_WhenSet_ReplacePathParams_Data))]
+	public void SetPathParameter_WhenSet_ReplacePathParams(
+		string endpoint,
+		Dictionary<string, string> pathParameters
+	)
 	{
 		var builder = new RequestBuilder()
 			.ToUri(new Uri("https://www.google.com"))
 			.ToEndpoint(endpoint);
+
+		var expectedPath = endpoint;
+
+		foreach (var key in pathParameters.Keys)
+			expectedPath = expectedPath.Replace("{" + key + "}", pathParameters[key]);
 
 		foreach ((var key, var value) in pathParameters)
 			builder.SetPathParameter(key, value);
@@ -180,40 +178,62 @@ public class RequestBuilderTests
 		var request = builder.Build();
 
 		Assert.NotNull(request.RequestUri);
-		var path = endpoint;
-
-		foreach (var key in pathParameters.Keys)
-			path = path.Replace("{" + key + "}", pathParameters[key]);
-
-		Assert.Equal(path, request.RequestUri.AbsolutePath);
+		Assert.Equal(expectedPath, request.RequestUri.AbsolutePath);
 	}
 
 	[Fact]
-	public void CopyBuilder()
+	public void Copy_WhenCopied_ReturnNewInstance()
 	{
-		var firstBuilder = new RequestBuilder();
+		var originalBuilder = new RequestBuilder();
+		var copiedBuilder = originalBuilder.Copy();
 
-		firstBuilder.Get();
-		firstBuilder.WithAuth("ABC");
-
-		var secondBuilder = firstBuilder.Copy();
-		secondBuilder.Post();
-
-		var firstRequest = firstBuilder.Build();
-		var secondRequest = secondBuilder.Build();
-		var thirdRequest = firstBuilder.Post().WithAuth("DDD").Build();
-
-		Assert.NotSame(firstBuilder, secondBuilder);
-		Assert.Equal(HttpMethod.Get, firstRequest.Method);
-		Assert.Equal(HttpMethod.Post, secondRequest.Method);
-		Assert.Equal(HttpMethod.Post, thirdRequest.Method);
-		Assert.Equal("ABC", firstRequest.Headers.Authorization?.Parameter);
-		Assert.Equal("ABC", secondRequest.Headers.Authorization?.Parameter);
-		Assert.Equal("DDD", thirdRequest.Headers.Authorization?.Parameter);
+		Assert.NotSame(copiedBuilder, originalBuilder);
 	}
 
 	[Fact]
-	public async Task Copy_WhenHasContent_CopyContent()
+	public void Copy_WhenCopiedAndModified_OriginalStaysUntouched()
+	{
+		var originalBuilder = new RequestBuilder().Post();
+		var copiedBuilder = originalBuilder.Copy().Get();
+
+		var originalRequest = originalBuilder.Build();
+		var copiedRequest = copiedBuilder.Build();
+
+		Assert.Equal(HttpMethod.Post, originalRequest.Method);
+		Assert.Equal(HttpMethod.Get, copiedRequest.Method);
+	}
+
+	[Fact]
+	public void Copy_WhenCopiedWithMethod_ReturnNewInstanceWithMethod()
+	{
+		var originalBuilder = new RequestBuilder().Post();
+		var copiedBuilder = originalBuilder.Copy();
+
+		var originalRequest = originalBuilder.Build();
+		var copiedRequest = copiedBuilder.Build();
+
+		Assert.Equal(originalRequest.Method, copiedRequest.Method);
+	}
+
+	[Fact]
+	public void Copy_WhenCopiedWithAuth_ReturnNewInstanceWithAuth()
+	{
+		var originalBuilder = new RequestBuilder().WithAuth("DDD");
+		var copiedBuilder = originalBuilder.Copy();
+
+		var originalRequest = originalBuilder.Build();
+		var copiedRequest = copiedBuilder.Build();
+
+		Assert.NotNull(originalRequest.Headers.Authorization);
+		Assert.NotNull(copiedRequest.Headers.Authorization);
+		Assert.Equal(
+			originalRequest.Headers.Authorization.Parameter,
+			copiedRequest.Headers.Authorization.Parameter
+		);
+	}
+
+	[Fact]
+	public async Task Copy_WhenCopiedWithContent_ReturnNewInstanceWithContent()
 	{
 		// Arrange
 		var payload = new
@@ -224,28 +244,26 @@ public class RequestBuilderTests
 			test4 = 4,
 		};
 
-		var firstBuilder = new RequestBuilder().WithJSON(payload);
-
-		var secondBuilder = firstBuilder.Copy();
+		var originalBuilder = new RequestBuilder().WithJSON(payload);
+		var copiedBuilder = originalBuilder.Copy();
 
 		// Act
-		var firstRequest = firstBuilder.Build();
-		var secondRequest = secondBuilder.Build();
+		var originalRequest = originalBuilder.Build();
+		var copiedRequest = copiedBuilder.Build();
 
 		// Assert
-		Assert.NotSame(firstBuilder, secondBuilder);
+		Assert.NotNull(originalRequest.Content);
+		var originalPayload = await originalRequest.Content.ReadAsStringAsync();
 
-		Assert.NotNull(firstRequest.Content);
-		Assert.NotNull(secondRequest.Content);
-
-		var firstPayload = await firstRequest.Content!.ReadAsStringAsync();
-		var secondPayload = await secondRequest.Content!.ReadAsStringAsync();
+		Assert.NotNull(copiedRequest.Content);
+		var copiedPayload = await copiedRequest.Content.ReadAsStringAsync();
 
 		var expectedJson = JObject.FromObject(payload);
-		var actualFirstJson = JsonConvert.DeserializeObject(firstPayload);
-		var actualSecondJson = JsonConvert.DeserializeObject(secondPayload);
+		var actualOriginalPayload = JsonConvert.DeserializeObject(originalPayload);
+		var actualCopiedPayload = JsonConvert.DeserializeObject(copiedPayload);
 
-		Assert.Equal(expectedJson, actualFirstJson);
-		Assert.Equal(expectedJson, actualSecondJson);
+		Assert.Equal(expectedJson, actualOriginalPayload);
+		Assert.Equal(expectedJson, actualCopiedPayload);
+		Assert.NotSame(actualOriginalPayload, actualCopiedPayload);
 	}
 }
