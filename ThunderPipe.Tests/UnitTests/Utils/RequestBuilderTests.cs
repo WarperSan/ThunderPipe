@@ -201,12 +201,49 @@ public class RequestBuilderTests
 		var secondRequest = secondBuilder.Build();
 		var thirdRequest = firstBuilder.Post().WithAuth("DDD").Build();
 
-		Assert.NotEqual(firstBuilder, secondBuilder);
+		Assert.NotSame(firstBuilder, secondBuilder);
 		Assert.Equal(HttpMethod.Get, firstRequest.Method);
 		Assert.Equal(HttpMethod.Post, secondRequest.Method);
 		Assert.Equal(HttpMethod.Post, thirdRequest.Method);
 		Assert.Equal("ABC", firstRequest.Headers.Authorization?.Parameter);
 		Assert.Equal("ABC", secondRequest.Headers.Authorization?.Parameter);
 		Assert.Equal("DDD", thirdRequest.Headers.Authorization?.Parameter);
+	}
+
+	[Fact]
+	public async Task Copy_WhenHasContent_CopyContent()
+	{
+		// Arrange
+		var payload = new
+		{
+			test = 1,
+			test2 = 2,
+			test3 = 3,
+			test4 = 4,
+		};
+
+		var firstBuilder = new RequestBuilder().WithJSON(payload);
+
+		var secondBuilder = firstBuilder.Copy();
+
+		// Act
+		var firstRequest = firstBuilder.Build();
+		var secondRequest = secondBuilder.Build();
+
+		// Assert
+		Assert.NotSame(firstBuilder, secondBuilder);
+
+		Assert.NotNull(firstRequest.Content);
+		Assert.NotNull(secondRequest.Content);
+
+		var firstPayload = await firstRequest.Content!.ReadAsStringAsync();
+		var secondPayload = await secondRequest.Content!.ReadAsStringAsync();
+
+		var expectedJson = JObject.FromObject(payload);
+		var actualFirstJson = JsonConvert.DeserializeObject(firstPayload);
+		var actualSecondJson = JsonConvert.DeserializeObject(secondPayload);
+
+		Assert.Equal(expectedJson, actualFirstJson);
+		Assert.Equal(expectedJson, actualSecondJson);
 	}
 }
