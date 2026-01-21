@@ -1,4 +1,3 @@
-using RichardSzalay.MockHttp;
 using ThunderPipe.Clients;
 using ThunderPipe.Models.API.GetCommunity;
 using ThunderPipe.Utils;
