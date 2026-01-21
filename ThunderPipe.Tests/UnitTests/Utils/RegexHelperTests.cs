@@ -2,6 +2,7 @@ using ThunderPipe.Utils;
 
 namespace ThunderPipe.Tests.UnitTests.Utils;
 
+// TODO: Redo all tests to match proper syntax
 public class RegexHelperTests
 {
 	public static IEnumerable<object[]> IsNameValidData =>

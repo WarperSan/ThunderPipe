@@ -5,6 +5,8 @@ using ThunderPipe.Utils;
 
 namespace ThunderPipe.Tests.UnitTests.Utils;
 
+// TODO: Redo all tests to match proper syntax
+// TODO: Get 100% coverage on RequestBuilder
 public class RequestBuilderTests
 {
 	public static IEnumerable<object[]> SetMethodData =>

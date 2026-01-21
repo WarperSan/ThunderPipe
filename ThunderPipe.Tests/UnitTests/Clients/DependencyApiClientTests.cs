@@ -4,6 +4,7 @@ using ThunderPipe.Utils;
 
 namespace ThunderPipe.Tests.UnitTests.Clients;
 
+// TODO: Get 100% coverage on DependencyApiClient
 public class DependencyApiClientTests
 {
 	[Fact]
