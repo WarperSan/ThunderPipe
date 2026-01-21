@@ -1,13 +1,11 @@
-<br>
-<div align="center">
+<p align="center">
     <img src="https://raw.githubusercontent.com/WarperSan/ThunderPipe/refs/heads/master/icon.png" alt="Logo" height="128"/>
-    <h1>ThunderPipe</h1>
-    <div>
-        <a href="https://www.nuget.org/packages/ThunderPipe"><img alt="NuGet Badge" src="https://img.shields.io/nuget/v/ThunderPipe"></a>
-        <a href="https://www.nuget.org/packages/ThunderPipe"><img alt="NuGet Version" src="https://img.shields.io/nuget/dt/ThunderPipe"></a>
-        <a href="https://raw.githubusercontent.com/WarperSan/ThunderPipe/master/LICENSE"><img alt="License" src="https://img.shields.io/github/license/WarperSan/ThunderPipe"></a>
-    </div>
-</div>
+</p>
+
+# ThunderPipe
+[![NuGet Badge](https://img.shields.io/nuget/v/ThunderPipe)](https://www.nuget.org/packages/ThunderPipe)
+[![NuGet Version](https://img.shields.io/nuget/dt/ThunderPipe)](https://www.nuget.org/packages/ThunderPipe)
+[![License](https://img.shields.io/github/license/WarperSan/ThunderPipe)](https://raw.githubusercontent.com/WarperSan/ThunderPipe/master/LICENSE)
 
 ## Overview
 
