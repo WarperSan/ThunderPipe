@@ -31,7 +31,7 @@ jobs:
             - name: 'Upload coverage to Codecov'
               uses: codecov/codecov-action@v3
               with:
-                directory: './ThunderPipe.Tests/TestResults/'
+                directory: './ThunderPipe/ThunderPipe.Tests/TestResults/'
                 env_vars: OS
                 fail_ci_if_error: 'true'
                 token: ${{ secrets.CODECOV_TOKEN }}
