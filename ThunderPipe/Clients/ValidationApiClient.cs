@@ -8,8 +8,8 @@ namespace ThunderPipe.Clients;
 internal sealed class ValidationApiClient : ThunderstoreClient
 {
 	/// <inheritdoc />
-	public ValidationApiClient(RequestBuilder builder, CancellationToken ct)
-		: base(builder, ct) { }
+	public ValidationApiClient(RequestBuilder builder, HttpClient client, CancellationToken ct)
+		: base(builder, client, ct) { }
 
 	/// <summary>
 	/// Checks if the icon at the given path is valid

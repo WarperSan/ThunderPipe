@@ -31,7 +31,7 @@ internal sealed class Command : AsyncCommand<Settings.Publish.Settings>
 
 		_logger.LogInformation("Publishing '{File}'", file);
 
-		using var client = new PublishApiClient(builder, cancellationToken);
+		using var client = new PublishApiClient(builder, new HttpClient(), cancellationToken);
 		var uploadData = await client.InitiateMultipartUpload(file);
 
 		if (uploadData == null)

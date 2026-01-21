@@ -10,8 +10,8 @@ namespace ThunderPipe.Clients;
 internal sealed class PublishApiClient : ThunderstoreClient
 {
 	/// <inheritdoc />
-	public PublishApiClient(RequestBuilder builder, CancellationToken ct)
-		: base(builder, ct) { }
+	public PublishApiClient(RequestBuilder builder, HttpClient client, CancellationToken ct)
+		: base(builder, client, ct) { }
 
 	/// <summary>
 	/// Initiates a multipart upload

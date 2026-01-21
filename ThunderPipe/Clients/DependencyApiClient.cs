@@ -8,8 +8,8 @@ namespace ThunderPipe.Clients;
 internal sealed class DependencyApiClient : ThunderstoreClient
 {
 	/// <inheritdoc />
-	public DependencyApiClient(RequestBuilder builder, CancellationToken ct)
-		: base(builder, ct) { }
+	public DependencyApiClient(RequestBuilder builder, HttpClient client, CancellationToken ct)
+		: base(builder, client, ct) { }
 
 	/// <summary>
 	/// Finds the missing dependencies
