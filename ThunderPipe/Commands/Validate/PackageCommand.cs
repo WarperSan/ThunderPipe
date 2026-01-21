@@ -48,7 +48,7 @@ internal sealed class PackageCommand : AsyncCommand<PackageSettings>
 			},
 			async () =>
 			{
-				var errors = await client.IsManifestValid(manifestPath, settings.Team!);
+				var errors = await client.IsManifestValid(manifestPath, settings.Team);
 
 				return new ValidationResult(errors.Count == 0, errors);
 			},
@@ -59,8 +59,6 @@ internal sealed class PackageCommand : AsyncCommand<PackageSettings>
 				return new ValidationResult(errors.Count == 0, errors);
 			},
 		};
-
-		//validations.Add();
 
 		if (validations.Count == 0)
 		{

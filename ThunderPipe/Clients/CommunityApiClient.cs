@@ -26,9 +26,6 @@ internal sealed class CommunityApiClient : ThunderstoreClient
 
 			var response = await SendRequest<Models.API.GetCommunity.Response>(request);
 
-			if (response == null)
-				break;
-
 			var community = response.Items.FirstOrDefault(i => i.Slug == slug);
 
 			if (community != null)
