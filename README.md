@@ -6,6 +6,7 @@
         <a href="https://www.nuget.org/packages/ThunderPipe"><img alt="NuGet Badge" src="https://img.shields.io/nuget/v/ThunderPipe"></a>
         <a href="https://www.nuget.org/packages/ThunderPipe"><img alt="NuGet Version" src="https://img.shields.io/nuget/dt/ThunderPipe"></a>
         <a href="https://raw.githubusercontent.com/WarperSan/ThunderPipe/master/LICENSE"><img alt="License" src="https://img.shields.io/github/license/WarperSan/ThunderPipe"></a>
+        <a href="https://codecov.io/github/WarperSan/ThunderPipe"><img alt="Codecov Badge" src="https://codecov.io/github/WarperSan/ThunderPipe/graph/badge.svg?token=XFCT90F1IK"/></a>
     </div>
 </div>
 
