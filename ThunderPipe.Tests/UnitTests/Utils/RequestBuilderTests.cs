@@ -266,4 +266,52 @@ public class RequestBuilderTests
 		Assert.Equal(expectedJson, actualCopiedPayload);
 		Assert.NotSame(actualOriginalPayload, actualCopiedPayload);
 	}
+
+	[Fact]
+	public async Task Copy_WhenCopiedWithParameter_ReturnNewInstanceWithParameter()
+	{
+		const string PARAMETER_KEY = "cursor";
+		const string PARAMETER_VALUE = "abc";
+
+		var originalBuilder = new RequestBuilder().SetParameter(PARAMETER_KEY, PARAMETER_VALUE);
+		var copiedBuilder = originalBuilder.Copy();
+
+		var originalRequest = originalBuilder.Build();
+		var copiedRequest = copiedBuilder.Build();
+
+		Assert.NotNull(originalRequest.RequestUri);
+		var originalParameter = HttpUtility
+			.ParseQueryString(originalRequest.RequestUri.Query)
+			.Get(PARAMETER_KEY);
+		Assert.Equal(PARAMETER_VALUE, originalParameter);
+
+		Assert.NotNull(copiedRequest.RequestUri);
+		var copiedParameter = HttpUtility
+			.ParseQueryString(copiedRequest.RequestUri.Query)
+			.Get(PARAMETER_KEY);
+		Assert.Equal(PARAMETER_VALUE, copiedParameter);
+	}
+
+	[Fact]
+	public async Task Copy_WhenCopiedWithPathParameter_ReturnNewInstanceWithPathParameter()
+	{
+		const string PATH_KEY = "UUID";
+		const string PATH_VALUE = "lethal-company";
+		const string EXPECTED_PATH = $"/api/community/{PATH_VALUE}/user";
+
+		var originalBuilder = new RequestBuilder()
+			.ToUri(new Uri("https://www.google.com"))
+			.ToEndpoint($"/api/community/{{{PATH_KEY}}}/user")
+			.SetPathParameter(PATH_KEY, PATH_VALUE);
+		var copiedBuilder = originalBuilder.Copy();
+
+		var originalRequest = originalBuilder.Build();
+		var copiedRequest = copiedBuilder.Build();
+
+		Assert.NotNull(originalRequest.RequestUri);
+		Assert.Equal(EXPECTED_PATH, originalRequest.RequestUri.AbsolutePath);
+
+		Assert.NotNull(copiedRequest.RequestUri);
+		Assert.Equal(EXPECTED_PATH, copiedRequest.RequestUri.AbsolutePath);
+	}
 }
