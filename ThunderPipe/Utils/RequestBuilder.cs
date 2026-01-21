@@ -119,7 +119,7 @@ internal sealed class RequestBuilder
 	#region Parameters
 
 	private readonly NameValueCollection _queryParams = HttpUtility.ParseQueryString(string.Empty);
-	private readonly Dictionary<string, string?> _pathParams = new();
+	private readonly Dictionary<string, string> _pathParams = new();
 
 	/// <summary>
 	/// Sets the query parameter with the given key to the given value
@@ -134,7 +134,7 @@ internal sealed class RequestBuilder
 	/// <summary>
 	/// Sets the path parameter with the given key to the given value
 	/// </summary>
-	public RequestBuilder SetPathParameter(string key, string? value)
+	public RequestBuilder SetPathParameter(string key, string value)
 	{
 		_pathParams.TryAdd(key, value);
 
