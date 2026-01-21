@@ -197,10 +197,10 @@ internal sealed class RequestBuilder
 
 		if (_pathParams.Count > 0)
 		{
-			var path = tempBuilder.Path;
+			var path = HttpUtility.UrlDecode(tempBuilder.Path);
 
 			foreach ((var key, var value) in _pathParams)
-				path = path.Replace($"%7B{key}%7D", value ?? string.Empty);
+				path = path.Replace($"{{{key}}}", value);
 
 			tempBuilder.Path = path;
 		}
