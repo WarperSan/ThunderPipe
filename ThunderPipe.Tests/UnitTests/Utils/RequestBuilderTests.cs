@@ -268,7 +268,7 @@ public class RequestBuilderTests
 	}
 
 	[Fact]
-	public async Task Copy_WhenCopiedWithParameter_ReturnNewInstanceWithParameter()
+	public void Copy_WhenCopiedWithParameter_ReturnNewInstanceWithParameter()
 	{
 		const string PARAMETER_KEY = "cursor";
 		const string PARAMETER_VALUE = "abc";
@@ -293,7 +293,7 @@ public class RequestBuilderTests
 	}
 
 	[Fact]
-	public async Task Copy_WhenCopiedWithPathParameter_ReturnNewInstanceWithPathParameter()
+	public void Copy_WhenCopiedWithPathParameter_ReturnNewInstanceWithPathParameter()
 	{
 		const string PATH_KEY = "UUID";
 		const string PATH_VALUE = "lethal-company";
