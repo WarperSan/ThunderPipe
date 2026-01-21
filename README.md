@@ -110,7 +110,7 @@ ThunderPipe validate package <package-folder>
 
 ## Documentation
 
-You can find more information on [ThunderPipe's Wiki](https://github.com/WarperSan/ThunderPipe/wiki).
+You can find more information on the [wiki](https://github.com/WarperSan/ThunderPipe/wiki).
 
 ## Contributing
 
