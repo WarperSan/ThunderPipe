@@ -2,99 +2,82 @@ using ThunderPipe.Utils;
 
 namespace ThunderPipe.Tests.UnitTests.Utils;
 
-// TODO: Redo all tests to match proper syntax
 public class RegexHelperTests
 {
-	public static IEnumerable<object[]> IsNameValidData =>
-		new List<object[]>
-		{
-			new object[] { "Belmont", true },
-			new object[] { "Starstorm2", true },
-			new object[] { "Cyto_Commando", true },
-			new object[] { "ExponentialItemStacks", true },
-			new object[] { "Some_Mod", true },
-			new object[] { "Some Mod", false },
-			new object[] { "HAND_OVERCLOCKED!", false },
-			new object[] { "Supply-Drop", false },
-			new object[] { "", false },
-		};
-
 	[Theory]
-	[MemberData(nameof(IsNameValidData))]
-	public void IsNameValid(string name, bool expected)
+	[InlineData("Belmont")]
+	[InlineData("Starstorm2")]
+	[InlineData("Cyto_Commando")]
+	[InlineData("ExponentialItemStacks")]
+	[InlineData("Some_Mod")]
+	public void IsNameValid_WhenValid_ReturnTrue(string name)
 	{
 		var actual = RegexHelper.IsNameValid(name);
-
-		Assert.Equal(expected, actual);
+		Assert.True(actual);
 	}
 
-	public static IEnumerable<object[]> IsVersionValidData =>
-		new List<object[]>
-		{
-			new object[] { "5.4.2121", true },
-			new object[] { "1.0.0", true },
-			new object[] { "1.10.0", true },
-			new object[] { "111.0.0", true },
-			new object[] { "", false },
-			new object[] { "1.0", false },
-			new object[] { "1.0.0.0", false },
-			new object[] { "1.0.0-beta", false },
-			new object[] { "12.0.0-alpha", false },
-			new object[] { "1.5.5e", false },
-		};
+	[Theory]
+	[InlineData("Some Mod")]
+	[InlineData("HAND_OVERCLOCKED!")]
+	[InlineData("Supply-Drop")]
+	[InlineData("")]
+	public void IsNameValid_WhenInvalid_ReturnFalse(string name)
+	{
+		var actual = RegexHelper.IsNameValid(name);
+		Assert.False(actual);
+	}
 
 	[Theory]
-	[MemberData(nameof(IsVersionValidData))]
-	public void IsVersionValid(string version, bool expected)
+	[InlineData("5.4.2121")]
+	[InlineData("1.0.0")]
+	[InlineData("1.10.0")]
+	[InlineData("111.0.0")]
+	public void IsVersionValid_WhenValid_ReturnTrue(string version)
 	{
 		var actual = RegexHelper.IsVersionValid(version);
-
-		Assert.Equal(expected, actual);
+		Assert.True(actual);
 	}
 
-	public static IEnumerable<object[]> IsDependencyValidData =>
-		new List<object[]>
-		{
-			new object[] { "tristanmcpherson-R2API-5.0.5", true },
-			new object[] { "rob-Belmont-1.0.8", true },
-			new object[] { "Rune580-Risk_Of_Options-2.8.5", true },
-			new object[] { "MrKixcat-Altered-Moons-2.0.1", false },
-			new object[] { "rob-Belmont-uwu-2.0.1", false },
-		};
+	[Theory]
+	[InlineData("")]
+	[InlineData("1.0")]
+	[InlineData("1.0.0.0")]
+	[InlineData("1.0.0-beta")]
+	[InlineData("12.0.0-alpha")]
+	[InlineData("1.5.5e")]
+	public void IsVersionValid_WhenInvalid_ReturnFalse(string version)
+	{
+		var actual = RegexHelper.IsVersionValid(version);
+		Assert.False(actual);
+	}
 
 	[Theory]
-	[MemberData(nameof(IsDependencyValidData))]
-	public void IsDependencyValid(string dependencyString, bool expected)
+	[InlineData("tristanmcpherson-R2API-5.0.5")]
+	[InlineData("rob-Belmont-1.0.8")]
+	[InlineData("Rune580-Risk_Of_Options-2.8.5")]
+	public void IsDependencyValid_WhenValid_ReturnTrue(string dependencyString)
 	{
 		var actual = RegexHelper.IsDependencyValid(dependencyString);
-
-		Assert.Equal(expected, actual);
+		Assert.True(actual);
 	}
 
-	public static IEnumerable<object?[]> SplitDependencyStringData =>
-		new List<object?[]>
-		{
-			new object?[] { "MrKixcat-AlteredMoons-2.0.1", "MrKixcat", "AlteredMoons", "2.0.1" },
-			new object?[]
-			{
-				"notnotnotswipez-MoreCompany-1.12.0",
-				"notnotnotswipez",
-				"MoreCompany",
-				"1.12.0",
-			},
-			new object?[] { "RugbugRedfern--5.0.0", null, null, null },
-			new object?[] { "-ReservedItemSlotCore-", null, null, null },
-			new object?[] { "", null, null, null },
-			new object?[] { "sunnobunnoYippeeMod1.2.4", null, null, null },
-		};
+	[Theory]
+	[InlineData("MrKixcat-Altered-Moons-2.0.1")]
+	[InlineData("rob-Belmont-uwu-2.0.1")]
+	public void IsDependencyValid_WhenInvalid_ReturnFalse(string dependencyString)
+	{
+		var actual = RegexHelper.IsDependencyValid(dependencyString);
+		Assert.False(actual);
+	}
 
 	[Theory]
-	[MemberData(nameof(SplitDependencyStringData))]
-	public void SplitDependencyString(
+	[InlineData("MrKixcat-AlteredMoons-2.0.1", "MrKixcat", "AlteredMoons", "2.0.1")]
+	[InlineData("notnotnotswipez-MoreCompany-1.12.0", "notnotnotswipez", "MoreCompany", "1.12.0")]
+	public void SplitDependency_WhenIsComplete_ReturnParts(
 		string dependencyString,
-		string? @namespace,
-		string? name,
-		string? version
+		string @namespace,
+		string name,
+		string version
 	)
 	{
 		RegexHelper.SplitDependency(
@@ -107,5 +90,24 @@ public class RegexHelperTests
 		Assert.Equal(@namespace, actualNamespace);
 		Assert.Equal(name, actualName);
 		Assert.Equal(version, actualVersion);
+	}
+
+	[Theory]
+	[InlineData("")]
+	[InlineData("RugbugRedfern--5.0.0")]
+	[InlineData("-ReservedItemSlotCore-")]
+	[InlineData("sunnobunnoYippeeMod1.2.4")]
+	public void SplitDependency_WhenIsInvalid_ReturnNulls(string dependencyString)
+	{
+		RegexHelper.SplitDependency(
+			dependencyString,
+			out var actualNamespace,
+			out var actualName,
+			out var actualVersion
+		);
+
+		Assert.Null(actualNamespace);
+		Assert.Null(actualName);
+		Assert.Null(actualVersion);
 	}
 }
