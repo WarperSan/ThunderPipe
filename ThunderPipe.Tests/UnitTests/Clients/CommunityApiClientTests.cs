@@ -52,7 +52,7 @@ public class CommunityApiClientTests
 
 		var builder = new RequestBuilder().ToUri(new Uri(URL_1));
 
-		var client = new CommunityApiClient(
+		using var client = new CommunityApiClient(
 			builder,
 			mockHttp.ToHttpClient(),
 			CancellationToken.None
@@ -96,7 +96,7 @@ public class CommunityApiClientTests
 
 		var builder = new RequestBuilder().ToUri(new Uri(URL_1));
 
-		var client = new CommunityApiClient(
+		using var client = new CommunityApiClient(
 			builder,
 			mockHttp.ToHttpClient(),
 			CancellationToken.None
@@ -151,7 +151,7 @@ public class CommunityApiClientTests
 
 		var builder = new RequestBuilder().ToUri(new Uri(URL_1));
 
-		var client = new CommunityApiClient(
+		using var client = new CommunityApiClient(
 			builder,
 			mockHttp.ToHttpClient(),
 			CancellationToken.None
@@ -184,7 +184,7 @@ public class CommunityApiClientTests
 
 		var builder = new RequestBuilder().ToUri(new Uri(URL_1));
 
-		var client = new CommunityApiClient(
+		using var client = new CommunityApiClient(
 			builder,
 			mockHttp.ToHttpClient(),
 			CancellationToken.None

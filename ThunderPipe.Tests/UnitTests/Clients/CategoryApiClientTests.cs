@@ -52,7 +52,7 @@ public class CategoryApiClientTests
 
 		var builder = new RequestBuilder().ToUri(new Uri(URL_1));
 
-		var client = new CategoryApiClient(
+		using var client = new CategoryApiClient(
 			builder,
 			mockHttp.ToHttpClient(),
 			CancellationToken.None
@@ -75,7 +75,7 @@ public class CategoryApiClientTests
 		var mockHttp = new MockHttpMessageHandler();
 		var builder = new RequestBuilder().ToUri(new Uri(URL_1));
 
-		var client = new CategoryApiClient(
+		using var client = new CategoryApiClient(
 			builder,
 			mockHttp.ToHttpClient(),
 			CancellationToken.None
@@ -119,7 +119,7 @@ public class CategoryApiClientTests
 
 		var builder = new RequestBuilder().ToUri(new Uri(URL_1));
 
-		var client = new CategoryApiClient(
+		using var client = new CategoryApiClient(
 			builder,
 			mockHttp.ToHttpClient(),
 			CancellationToken.None
@@ -178,7 +178,7 @@ public class CategoryApiClientTests
 
 		var builder = new RequestBuilder().ToUri(new Uri(URL_1));
 
-		var client = new CategoryApiClient(
+		using var client = new CategoryApiClient(
 			builder,
 			mockHttp.ToHttpClient(),
 			CancellationToken.None
@@ -215,7 +215,7 @@ public class CategoryApiClientTests
 
 		var builder = new RequestBuilder().ToUri(new Uri(URL_1));
 
-		var client = new CategoryApiClient(
+		using var client = new CategoryApiClient(
 			builder,
 			mockHttp.ToHttpClient(),
 			CancellationToken.None
