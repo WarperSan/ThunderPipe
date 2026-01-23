@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Spectre.Console.Cli;
+using ThunderPipe.Services.Interfaces;
 using ThunderPipe.Settings.Create;
 
 namespace ThunderPipe.Commands.Create;
@@ -10,10 +11,12 @@ namespace ThunderPipe.Commands.Create;
 internal sealed class ManifestCommand : AsyncCommand<ManifestSettings>
 {
 	private readonly ILogger<ManifestCommand> _logger;
+	private readonly IFileSystem _fileSystem;
 
-	public ManifestCommand(ILogger<ManifestCommand> logger)
+	public ManifestCommand(ILogger<ManifestCommand> logger, IFileSystem fileSystem)
 	{
 		_logger = logger;
+		_fileSystem = fileSystem;
 	}
 
 	private record ManifestModel
@@ -59,7 +62,7 @@ internal sealed class ManifestCommand : AsyncCommand<ManifestSettings>
 
 		var json = JsonConvert.SerializeObject(data, Formatting.Indented);
 
-		await File.WriteAllTextAsync(path, json, cancellationToken);
+		await _fileSystem.WriteAllTextAsync(path, json, cancellationToken);
 
 		_logger.LogInformation("File wrote to '{Path}'.", path);
 		return 0;
