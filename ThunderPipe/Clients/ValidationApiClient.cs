@@ -1,3 +1,4 @@
+using ThunderPipe.Services.Interfaces;
 using ThunderPipe.Utils;
 
 namespace ThunderPipe.Clients;
@@ -14,9 +15,9 @@ internal sealed class ValidationApiClient : ThunderstoreClient
 	/// <summary>
 	/// Checks if the icon at the given path is valid
 	/// </summary>
-	public async Task<ICollection<string>> IsIconValid(string path)
+	public async Task<ICollection<string>> IsIconValid(string path, IFileSystem fileSystem)
 	{
-		var data = await File.ReadAllBytesAsync(path, CancellationToken);
+		var data = await fileSystem.ReadAllBytesAsync(path, CancellationToken);
 
 		var payload = new Models.API.ValidateIcon.Request { Data = Convert.ToBase64String(data) };
 		var request = Builder
@@ -45,9 +46,13 @@ internal sealed class ValidationApiClient : ThunderstoreClient
 	/// <summary>
 	/// Checks if the manifest at the given path is valid for the given team
 	/// </summary>
-	public async Task<ICollection<string>> IsManifestValid(string path, string team)
+	public async Task<ICollection<string>> IsManifestValid(
+		string path,
+		string team,
+		IFileSystem fileSystem
+	)
 	{
-		var data = await File.ReadAllBytesAsync(path, CancellationToken);
+		var data = await fileSystem.ReadAllBytesAsync(path, CancellationToken);
 
 		var payload = new Models.API.ValidateManifest.Request
 		{
@@ -81,9 +86,9 @@ internal sealed class ValidationApiClient : ThunderstoreClient
 	/// <summary>
 	/// Checks if the README at the given path is valid
 	/// </summary>
-	public async Task<ICollection<string>> IsReadmeValid(string path)
+	public async Task<ICollection<string>> IsReadmeValid(string path, IFileSystem fileSystem)
 	{
-		var data = await File.ReadAllBytesAsync(path, CancellationToken);
+		var data = await fileSystem.ReadAllBytesAsync(path, CancellationToken);
 
 		var payload = new Models.API.ValidateReadme.Request { Data = Convert.ToBase64String(data) };
 
