@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using ThunderPipe.Clients;
+using ThunderPipe.Services.Interfaces;
 using ThunderPipe.Settings.Validate;
 using ThunderPipe.Utils;
 
@@ -13,10 +14,12 @@ namespace ThunderPipe.Commands.Validate;
 internal sealed class PackageCommand : AsyncCommand<PackageSettings>
 {
 	private readonly ILogger<PackageCommand> _logger;
+	private readonly IFileSystem _fileSystem;
 
-	public PackageCommand(ILogger<PackageCommand> logger)
+	public PackageCommand(ILogger<PackageCommand> logger, IFileSystem fileSystem)
 	{
 		_logger = logger;
+		_fileSystem = fileSystem;
 	}
 
 	/// <inheritdoc />
@@ -42,19 +45,19 @@ internal sealed class PackageCommand : AsyncCommand<PackageSettings>
 		{
 			async () =>
 			{
-				var errors = await client.IsIconValid(iconPath);
+				var errors = await client.IsIconValid(iconPath, _fileSystem);
 
 				return new ValidationResult(errors.Count == 0, errors);
 			},
 			async () =>
 			{
-				var errors = await client.IsManifestValid(manifestPath, settings.Team);
+				var errors = await client.IsManifestValid(manifestPath, settings.Team, _fileSystem);
 
 				return new ValidationResult(errors.Count == 0, errors);
 			},
 			async () =>
 			{
-				var errors = await client.IsReadmeValid(readmePath);
+				var errors = await client.IsReadmeValid(readmePath, _fileSystem);
 
 				return new ValidationResult(errors.Count == 0, errors);
 			},
