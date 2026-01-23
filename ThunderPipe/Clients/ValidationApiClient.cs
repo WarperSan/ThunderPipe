@@ -77,6 +77,9 @@ internal sealed class ValidationApiClient : ThunderstoreClient
 		if (response.ValidationErrors != null)
 			errors.AddRange(response.ValidationErrors);
 
+		if (response.NamespaceErrors != null)
+			errors.AddRange(response.NamespaceErrors);
+
 		if (errors.Count == 0 && response.Valid is null or false)
 			throw new InvalidOperationException("Manifest was not marked as valid.");
 
