@@ -29,6 +29,9 @@ internal sealed class ValidationApiClient : ThunderstoreClient
 
 		var response = await SendRequest<Models.API.ValidateIcon.Response>(request);
 
+		if (response.Valid is null or false)
+			throw new InvalidOperationException("Icon was not marked as valid.");
+
 		var errors = new List<string>();
 
 		if (response.DataErrors != null)
@@ -36,9 +39,6 @@ internal sealed class ValidationApiClient : ThunderstoreClient
 
 		if (response.ValidationErrors != null)
 			errors.AddRange(response.ValidationErrors);
-
-		if (errors.Count == 0 && response.Valid is null or false)
-			errors.Add("Icon was not marked as valid.");
 
 		return errors;
 	}
@@ -69,6 +69,9 @@ internal sealed class ValidationApiClient : ThunderstoreClient
 
 		var response = await SendRequest<Models.API.ValidateManifest.Response>(request);
 
+		if (response.Valid is null or false)
+			throw new InvalidOperationException("Manifest was not marked as valid.");
+
 		var errors = new List<string>();
 
 		if (response.DataErrors != null)
@@ -76,9 +79,6 @@ internal sealed class ValidationApiClient : ThunderstoreClient
 
 		if (response.ValidationErrors != null)
 			errors.AddRange(response.ValidationErrors);
-
-		if (errors.Count == 0 && response.Valid is null or false)
-			errors.Add("Manifest was not marked as valid.");
 
 		return errors;
 	}
@@ -101,6 +101,9 @@ internal sealed class ValidationApiClient : ThunderstoreClient
 
 		var response = await SendRequest<Models.API.ValidateReadme.Response>(request);
 
+		if (response.Valid is null or false)
+			throw new InvalidOperationException("README was not marked as valid.");
+
 		var errors = new List<string>();
 
 		if (response.DataErrors != null)
@@ -108,9 +111,6 @@ internal sealed class ValidationApiClient : ThunderstoreClient
 
 		if (response.ValidationErrors != null)
 			errors.AddRange(response.ValidationErrors);
-
-		if (errors.Count == 0 && response.Valid is null or false)
-			errors.Add("README was not marked as valid.");
 
 		return errors;
 	}
