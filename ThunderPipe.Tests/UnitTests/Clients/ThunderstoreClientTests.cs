@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
-using ThunderPipe.Clients;
 using ThunderPipe.Models.API.GetCategory;
+using ThunderPipe.Tests.MockedObjects;
 using ThunderPipe.Utils;
 
 namespace ThunderPipe.Tests.UnitTests.Clients;
@@ -15,29 +15,6 @@ public class ThunderstoreClientTests
 
 		public string LastName { get; private set; } = "";
 		// ReSharper restore NotAccessedPositionalProperty.Local
-	}
-
-	private class TestClient : ThunderstoreClient
-	{
-		/// <inheritdoc />
-		public TestClient(RequestBuilder builder, HttpClient client, CancellationToken ct)
-			: base(builder, client, ct) { }
-
-		public async Task TrySend()
-		{
-			var request = Builder.Build();
-
-			var response = await SendRequest(request);
-
-			response.EnsureSuccessStatusCode();
-		}
-
-		public Task<T> TryReceiveJson<T>()
-		{
-			var request = Builder.Build();
-
-			return SendRequest<T>(request);
-		}
 	}
 
 	[Fact]
@@ -131,7 +108,7 @@ public class ThunderstoreClientTests
 
 		try
 		{
-			await client.TrySend();
+			await client.TryReceiveSuccess();
 		}
 		catch (Exception e)
 		{
