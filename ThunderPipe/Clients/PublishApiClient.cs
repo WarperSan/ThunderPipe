@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
+using ThunderPipe.Services.Interfaces;
 using ThunderPipe.Utils;
 
 namespace ThunderPipe.Clients;
@@ -47,12 +48,13 @@ internal sealed class PublishApiClient : ThunderstoreClient
 	/// </remarks>
 	public async Task<Models.API.UploadPart.Response[]> UploadParts(
 		string file,
-		Models.API.InitiateMultipartUpload.Response.UploadPartModel[] parts
+		Models.API.InitiateMultipartUpload.Response.UploadPartModel[] parts,
+		IFileSystem fileSystem
 	)
 	{
 		var uploadTasks = new List<Task<Models.API.UploadPart.Response>>();
 
-		await using (var stream = File.OpenRead(file))
+		await using (var stream = fileSystem.OpenRead(file))
 		{
 			foreach (var part in parts)
 			{
