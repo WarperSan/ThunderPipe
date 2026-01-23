@@ -1,3 +1,4 @@
+using System.Text;
 using ThunderPipe.Services.Interfaces;
 
 namespace ThunderPipe.Tests.MockedObjects;
@@ -35,9 +36,17 @@ public class TestFileSystem : IFileSystem
 	/// <summary>
 	/// Sets the raw content to the given file
 	/// </summary>
-	public TestFileSystem SetContent(string path, byte[] content)
+	public void SetContent(string path, byte[] content)
 	{
 		_files[path] = content;
-		return this;
+	}
+
+	/// <summary>
+	/// Sets the text content to the given file
+	/// </summary>
+	public void SetContent(string path, string content)
+	{
+		var rawContent = Encoding.Default.GetBytes(content);
+		SetContent(path, rawContent);
 	}
 }
