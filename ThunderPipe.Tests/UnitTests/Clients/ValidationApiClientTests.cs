@@ -133,6 +133,64 @@ public class ValidationApiClientTests
 	}
 
 	[Fact]
+	public async Task IsIconValid_WhenErrorReceivedButMarkedAsValid_ThrowException()
+	{
+		const string PATH = "~/icon.png";
+
+		var mockedHttp = new MockHttpMessageHandler();
+		var fileSystem = new TestFileSystem();
+
+		mockedHttp
+			.When("*")
+			.RespondJSON(
+				new Models.API.ValidateIcon.Response { DataErrors = ["Error"], Valid = true }
+			);
+
+		fileSystem.SetContent(PATH, await ImageHelper.CreateImage(1, 1));
+
+		using var client = new ValidationApiClient(
+			new RequestBuilder(),
+			mockedHttp.ToHttpClient(),
+			CancellationToken.None
+		);
+
+		try
+		{
+			_ = await client.IsIconValid(PATH, fileSystem);
+		}
+		catch (Exception e)
+		{
+			Assert.IsType<InvalidOperationException>(e);
+			return;
+		}
+
+		Assert.Fail("Should have thrown an exception");
+	}
+
+	[Fact]
+	public async Task IsIconValid_WhenNoErrorAndMarkedAsValid_ReturnNoError()
+	{
+		const string PATH = "~/icon.png";
+
+		var mockedHttp = new MockHttpMessageHandler();
+		var fileSystem = new TestFileSystem();
+
+		mockedHttp.When("*").RespondJSON(new Models.API.ValidateIcon.Response { Valid = true });
+
+		fileSystem.SetContent(PATH, await ImageHelper.CreateImage(1, 1));
+
+		using var client = new ValidationApiClient(
+			new RequestBuilder(),
+			mockedHttp.ToHttpClient(),
+			CancellationToken.None
+		);
+
+		var errors = await client.IsIconValid(PATH, fileSystem);
+
+		Assert.Empty(errors);
+	}
+
+	[Fact]
 	public async Task IsManifestValid_WhenDataErrorReceived_ReturnError()
 	{
 		const string PATH = "~/manifest.json";
@@ -261,7 +319,7 @@ public class ValidationApiClientTests
 	}
 
 	[Fact]
-	public async Task IsManifestValid_WhenNoErrorButNotMarkedAsValid_ReturnError()
+	public async Task IsManifestValid_WhenNoErrorButNotMarkedAsValid_ThrowException()
 	{
 		const string PATH = "~/manifest.json";
 		const string TEAM = "test-team";
@@ -292,6 +350,66 @@ public class ValidationApiClientTests
 		}
 
 		Assert.Fail("Should have thrown an exception");
+	}
+
+	[Fact]
+	public async Task IsManifestValid_WhenErrorReceivedButMarkedAsValid_ThrowException()
+	{
+		const string PATH = "~/manifest.json";
+		const string TEAM = "test-team";
+
+		var mockedHttp = new MockHttpMessageHandler();
+		var fileSystem = new TestFileSystem();
+
+		mockedHttp
+			.When("*")
+			.RespondJSON(
+				new Models.API.ValidateManifest.Response { DataErrors = ["Error"], Valid = true }
+			);
+
+		fileSystem.SetContent(PATH, "{}");
+
+		using var client = new ValidationApiClient(
+			new RequestBuilder(),
+			mockedHttp.ToHttpClient(),
+			CancellationToken.None
+		);
+
+		try
+		{
+			_ = await client.IsManifestValid(PATH, TEAM, fileSystem);
+		}
+		catch (Exception e)
+		{
+			Assert.IsType<InvalidOperationException>(e);
+			return;
+		}
+
+		Assert.Fail("Should have thrown an exception");
+	}
+
+	[Fact]
+	public async Task IsManifestValid_WhenNoErrorAndMarkedAsValid_ReturnNoError()
+	{
+		const string PATH = "~/manifest.json";
+		const string TEAM = "test-team";
+
+		var mockedHttp = new MockHttpMessageHandler();
+		var fileSystem = new TestFileSystem();
+
+		mockedHttp.When("*").RespondJSON(new Models.API.ValidateManifest.Response { Valid = true });
+
+		fileSystem.SetContent(PATH, "{}");
+
+		using var client = new ValidationApiClient(
+			new RequestBuilder(),
+			mockedHttp.ToHttpClient(),
+			CancellationToken.None
+		);
+
+		var errors = await client.IsManifestValid(PATH, TEAM, fileSystem);
+
+		Assert.Empty(errors);
 	}
 
 	[Fact]
@@ -417,5 +535,63 @@ public class ValidationApiClientTests
 		}
 
 		Assert.Fail("Should have thrown an exception");
+	}
+
+	[Fact]
+	public async Task IsReadmeValid_WhenErrorReceivedButMarkedAsValid_ThrowException()
+	{
+		const string PATH = "~/README.md";
+
+		var mockedHttp = new MockHttpMessageHandler();
+		var fileSystem = new TestFileSystem();
+
+		mockedHttp
+			.When("*")
+			.RespondJSON(
+				new Models.API.ValidateReadme.Response { DataErrors = ["Error"], Valid = true }
+			);
+
+		fileSystem.SetContent(PATH, "oh?");
+
+		using var client = new ValidationApiClient(
+			new RequestBuilder(),
+			mockedHttp.ToHttpClient(),
+			CancellationToken.None
+		);
+
+		try
+		{
+			_ = await client.IsReadmeValid(PATH, fileSystem);
+		}
+		catch (Exception e)
+		{
+			Assert.IsType<InvalidOperationException>(e);
+			return;
+		}
+
+		Assert.Fail("Should have thrown an exception");
+	}
+
+	[Fact]
+	public async Task IsReadmeValid_WhenNoErrorAndMarkedAsValid_ReturnNoError()
+	{
+		const string PATH = "~/README.md";
+
+		var mockedHttp = new MockHttpMessageHandler();
+		var fileSystem = new TestFileSystem();
+
+		mockedHttp.When("*").RespondJSON(new Models.API.ValidateReadme.Response { Valid = true });
+
+		fileSystem.SetContent(PATH, "oh?");
+
+		using var client = new ValidationApiClient(
+			new RequestBuilder(),
+			mockedHttp.ToHttpClient(),
+			CancellationToken.None
+		);
+
+		var errors = await client.IsReadmeValid(PATH, fileSystem);
+
+		Assert.Empty(errors);
 	}
 }

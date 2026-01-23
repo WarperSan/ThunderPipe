@@ -40,6 +40,9 @@ internal sealed class ValidationApiClient : ThunderstoreClient
 		if (errors.Count == 0 && response.Valid is not true)
 			throw new InvalidOperationException("Icon was not marked as valid.");
 
+		if (errors.Count > 0 && response.Valid is true)
+			throw new InvalidOperationException("Icon has errors, but was marked as valid.");
+
 		return errors;
 	}
 
@@ -83,6 +86,9 @@ internal sealed class ValidationApiClient : ThunderstoreClient
 		if (errors.Count == 0 && response.Valid is not true)
 			throw new InvalidOperationException("Manifest was not marked as valid.");
 
+		if (errors.Count > 0 && response.Valid is true)
+			throw new InvalidOperationException("Manifest has errors, but was marked as valid.");
+
 		return errors;
 	}
 
@@ -114,6 +120,9 @@ internal sealed class ValidationApiClient : ThunderstoreClient
 
 		if (errors.Count == 0 && response.Valid is not true)
 			throw new InvalidOperationException("README was not marked as valid.");
+
+		if (errors.Count > 0 && response.Valid is true)
+			throw new InvalidOperationException("README has errors, but was marked as valid.");
 
 		return errors;
 	}
