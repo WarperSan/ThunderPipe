@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Spectre.Console.Cli;
+using ThunderPipe.Services.Implementations;
+using ThunderPipe.Services.Interfaces;
 
 namespace ThunderPipe;
 
@@ -30,6 +32,8 @@ internal static class Program
 			builder.SetMinimumLevel(LogLevel.Information);
 #endif
 		});
+
+		services.AddSingleton<IFileSystem>(new FileSystem());
 
 		var registrar = new Utils.TypeRegistrar(services);
 
