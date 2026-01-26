@@ -5,7 +5,7 @@ namespace ThunderPipe.Models.API.InitiateMultipartUpload;
 internal record Response
 {
 	/// <summary>
-	/// Model used to represent metadata from <see cref="ThunderstoreAPI.InitiateMultipartUpload"/>
+	/// Model used to represent metadata from <see cref="PublishApiClient.InitiateMultipartUpload"/>
 	/// </summary>
 	public record FileMetadataModel
 	{
@@ -25,7 +25,7 @@ internal record Response
 	}
 
 	/// <summary>
-	/// Model used to represent multipart upload data from <see cref="ThunderstoreAPI.InitiateMultipartUpload"/>
+	/// Model used to represent multipart upload data from <see cref="PublishApiClient.InitiateMultipartUpload"/>
 	/// </summary>
 	/// <remarks>
 	///	This refers to <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_UploadPart.html">this</a>
