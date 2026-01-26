@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="XPlat Code coverage">
+        <Configuration>
+          <Format>opencover</Format>
+		  <Include>[ThunderPipe]*</Include>
+		  <ExcludeByFile>
+		  	**/ThunderPipe/Program.cs,
+		  	**/ThunderPipe/Commands/**/*.cs,
+		  	**/ThunderPipe/Settings/**/*.cs,
+		  	**/ThunderPipe/Models/**/*.cs
+		  </ExcludeByFile>
+          <SingleHit>false</SingleHit>
+          <UseSourceLink>true</UseSourceLink>
+          <IncludeTestAssembly>true</IncludeTestAssembly>
+          <SkipAutoProps>true</SkipAutoProps>
+          <DeterministicReport>false</DeterministicReport>
+          <ExcludeAssembliesWithoutSources>MissingAny</ExcludeAssembliesWithoutSources>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>

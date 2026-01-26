@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 using Spectre.Console.Cli;
 using ThunderPipe.Clients;
+using ThunderPipe.Services.Interfaces;
 using ThunderPipe.Utils;
 
 namespace ThunderPipe.Commands.Publish;
@@ -10,10 +11,12 @@ namespace ThunderPipe.Commands.Publish;
 internal sealed class Command : AsyncCommand<Settings.Publish.Settings>
 {
 	private readonly ILogger<Command> _logger;
+	private readonly IFileSystem _fileSystem;
 
-	public Command(ILogger<Command> logger)
+	public Command(ILogger<Command> logger, IFileSystem fileSystem)
 	{
 		_logger = logger;
+		_fileSystem = fileSystem;
 	}
 
 	/// <inheritdoc />
@@ -31,7 +34,7 @@ internal sealed class Command : AsyncCommand<Settings.Publish.Settings>
 
 		_logger.LogInformation("Publishing '{File}'", file);
 
-		using var client = new PublishApiClient(builder, cancellationToken);
+		using var client = new PublishApiClient(builder, new HttpClient(), cancellationToken);
 		var uploadData = await client.InitiateMultipartUpload(file);
 
 		var fileSize = uploadData.FileMetadata.Size;
@@ -48,7 +51,7 @@ internal sealed class Command : AsyncCommand<Settings.Publish.Settings>
 
 		try
 		{
-			uploadedParts = await client.UploadParts(file, uploadData.UploadParts);
+			uploadedParts = await client.UploadParts(file, uploadData.UploadParts, _fileSystem);
 		}
 		catch (Exception)
 		{

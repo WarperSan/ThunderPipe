@@ -6,6 +6,7 @@
 [![NuGet Badge](https://img.shields.io/nuget/v/ThunderPipe)](https://www.nuget.org/packages/ThunderPipe)
 [![NuGet Version](https://img.shields.io/nuget/dt/ThunderPipe)](https://www.nuget.org/packages/ThunderPipe)
 [![License](https://img.shields.io/github/license/WarperSan/ThunderPipe)](https://raw.githubusercontent.com/WarperSan/ThunderPipe/master/LICENSE)
+[![Codecov Badge](https://codecov.io/github/WarperSan/ThunderPipe/graph/badge.svg)](https://codecov.io/github/WarperSan/ThunderPipe)
 
 ## Overview
 

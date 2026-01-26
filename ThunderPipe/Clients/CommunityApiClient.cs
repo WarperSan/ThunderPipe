@@ -8,8 +8,8 @@ namespace ThunderPipe.Clients;
 internal sealed class CommunityApiClient : ThunderstoreClient
 {
 	/// <inheritdoc />
-	public CommunityApiClient(RequestBuilder builder, CancellationToken ct)
-		: base(builder, ct) { }
+	public CommunityApiClient(RequestBuilder builder, HttpClient client, CancellationToken ct)
+		: base(builder, client, ct) { }
 
 	/// <summary>
 	/// Checks if a community with the given slug exists
@@ -18,32 +18,37 @@ internal sealed class CommunityApiClient : ThunderstoreClient
 	{
 		var tempBuilder = Builder.Copy().Get().ToEndpoint("api/experimental/community/");
 
-		string? currentCursor = null;
+		var visitedPages = new HashSet<string>();
+		var wasCommunityFound = false;
 
-		do
+		while (true)
 		{
-			var request = tempBuilder.Copy().SetParameter("cursor", currentCursor).Build();
+			var request = tempBuilder.Build();
+
+			// Prevent loops
+			if (!visitedPages.Add(request.RequestUri!.AbsoluteUri))
+				break;
 
 			var response = await SendRequest<Models.API.GetCommunity.Response>(request);
 
 			var community = response.Items.FirstOrDefault(i => i.Slug == slug);
 
 			if (community != null)
-				return true;
+			{
+				wasCommunityFound = true;
+				break;
+			}
 
 			// Can't continue to crawl
 			if (response.Pagination.NextPage == null)
 				break;
 
-			var nextCursor = UrlHelper.GetQueryValue(response.Pagination.NextPage, "cursor");
-
-			// Prevent looping
-			if (currentCursor == nextCursor)
+			if (!Uri.TryCreate(response.Pagination.NextPage, UriKind.Absolute, out var uri))
 				break;
 
-			currentCursor = nextCursor;
-		} while (currentCursor != null);
+			tempBuilder = Builder.Copy().Get().ToUri(uri);
+		}
 
-		return false;
+		return wasCommunityFound;
 	}
 }

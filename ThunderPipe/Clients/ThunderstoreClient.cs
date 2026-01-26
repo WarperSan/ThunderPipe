@@ -7,8 +7,10 @@ namespace ThunderPipe.Clients;
 /// <summary>
 /// Class that handles HTTP requests to Thunderstore
 /// </summary>
-internal abstract class ThunderstoreClient : HttpClient
+internal abstract class ThunderstoreClient : IDisposable
 {
+	private readonly HttpClient _client;
+
 	/// <summary>
 	/// Default <see cref="RequestBuilder"/> for this client
 	/// </summary>
@@ -19,15 +21,16 @@ internal abstract class ThunderstoreClient : HttpClient
 	/// </summary>
 	protected readonly CancellationToken CancellationToken;
 
-	protected ThunderstoreClient(RequestBuilder builder, CancellationToken ct)
+	protected ThunderstoreClient(RequestBuilder builder, HttpClient client, CancellationToken ct)
 	{
 		Builder = builder.Copy();
 		CancellationToken = ct;
 
-		DefaultRequestHeaders.UserAgent.Add(
+		_client = client;
+		_client.DefaultRequestHeaders.UserAgent.Add(
 			new ProductInfoHeaderValue(Metadata.GUID, Metadata.VERSION)
 		);
-		Timeout = TimeSpan.FromMinutes(5);
+		_client.Timeout = TimeSpan.FromMinutes(5);
 	}
 
 	/// <summary>
@@ -35,7 +38,7 @@ internal abstract class ThunderstoreClient : HttpClient
 	/// </summary>
 	protected async Task<HttpResponseMessage> SendRequest(HttpRequestMessage request)
 	{
-		return await SendAsync(request, CancellationToken);
+		return await _client.SendAsync(request, CancellationToken);
 	}
 
 	/// <summary>
@@ -67,5 +70,11 @@ internal abstract class ThunderstoreClient : HttpClient
 			);
 
 		return json;
+	}
+
+	/// <inheritdoc />
+	public void Dispose()
+	{
+		_client.Dispose();
 	}
 }

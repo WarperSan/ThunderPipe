@@ -11,12 +11,6 @@ internal record Response
 		/// </summary>
 		[JsonProperty("next_link")]
 		public string? NextPage { get; set; }
-
-		/// <summary>
-		/// URL of the previous page
-		/// </summary>
-		[JsonProperty("previous_link")]
-		public string? PreviousPage { get; set; }
 	}
 
 	public record PageItemModel
@@ -24,10 +18,6 @@ internal record Response
 		[JsonProperty("identifier")]
 		[JsonRequired]
 		public required string Slug { get; set; }
-
-		[JsonProperty("name")]
-		[JsonRequired]
-		public required string Name { get; set; }
 	}
 
 	[JsonProperty("pagination")]

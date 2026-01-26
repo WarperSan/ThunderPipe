@@ -1,3 +1,4 @@
+using ThunderPipe.Services.Interfaces;
 using ThunderPipe.Utils;
 
 namespace ThunderPipe.Clients;
@@ -8,15 +9,15 @@ namespace ThunderPipe.Clients;
 internal sealed class ValidationApiClient : ThunderstoreClient
 {
 	/// <inheritdoc />
-	public ValidationApiClient(RequestBuilder builder, CancellationToken ct)
-		: base(builder, ct) { }
+	public ValidationApiClient(RequestBuilder builder, HttpClient client, CancellationToken ct)
+		: base(builder, client, ct) { }
 
 	/// <summary>
 	/// Checks if the icon at the given path is valid
 	/// </summary>
-	public async Task<ICollection<string>> IsIconValid(string path)
+	public async Task<ICollection<string>> IsIconValid(string path, IFileSystem fileSystem)
 	{
-		var data = await File.ReadAllBytesAsync(path, CancellationToken);
+		var data = await fileSystem.ReadAllBytesAsync(path, CancellationToken);
 
 		var payload = new Models.API.ValidateIcon.Request { Data = Convert.ToBase64String(data) };
 		var request = Builder
@@ -36,8 +37,11 @@ internal sealed class ValidationApiClient : ThunderstoreClient
 		if (response.ValidationErrors != null)
 			errors.AddRange(response.ValidationErrors);
 
-		if (errors.Count > 0 && response.Valid is null or false)
-			errors.Add("Icon was not marked as valid.");
+		if (errors.Count == 0 && response.Valid is not true)
+			throw new InvalidOperationException("Icon was not marked as valid.");
+
+		if (errors.Count > 0 && response.Valid is true)
+			throw new InvalidOperationException("Icon has errors, but was marked as valid.");
 
 		return errors;
 	}
@@ -45,9 +49,13 @@ internal sealed class ValidationApiClient : ThunderstoreClient
 	/// <summary>
 	/// Checks if the manifest at the given path is valid for the given team
 	/// </summary>
-	public async Task<ICollection<string>> IsManifestValid(string path, string team)
+	public async Task<ICollection<string>> IsManifestValid(
+		string path,
+		string team,
+		IFileSystem fileSystem
+	)
 	{
-		var data = await File.ReadAllBytesAsync(path, CancellationToken);
+		var data = await fileSystem.ReadAllBytesAsync(path, CancellationToken);
 
 		var payload = new Models.API.ValidateManifest.Request
 		{
@@ -72,8 +80,14 @@ internal sealed class ValidationApiClient : ThunderstoreClient
 		if (response.ValidationErrors != null)
 			errors.AddRange(response.ValidationErrors);
 
-		if (errors.Count > 0 && response.Valid is null or false)
-			errors.Add("Manifest was not marked as valid.");
+		if (response.NamespaceErrors != null)
+			errors.AddRange(response.NamespaceErrors);
+
+		if (errors.Count == 0 && response.Valid is not true)
+			throw new InvalidOperationException("Manifest was not marked as valid.");
+
+		if (errors.Count > 0 && response.Valid is true)
+			throw new InvalidOperationException("Manifest has errors, but was marked as valid.");
 
 		return errors;
 	}
@@ -81,9 +95,9 @@ internal sealed class ValidationApiClient : ThunderstoreClient
 	/// <summary>
 	/// Checks if the README at the given path is valid
 	/// </summary>
-	public async Task<ICollection<string>> IsReadmeValid(string path)
+	public async Task<ICollection<string>> IsReadmeValid(string path, IFileSystem fileSystem)
 	{
-		var data = await File.ReadAllBytesAsync(path, CancellationToken);
+		var data = await fileSystem.ReadAllBytesAsync(path, CancellationToken);
 
 		var payload = new Models.API.ValidateReadme.Request { Data = Convert.ToBase64String(data) };
 
@@ -104,8 +118,11 @@ internal sealed class ValidationApiClient : ThunderstoreClient
 		if (response.ValidationErrors != null)
 			errors.AddRange(response.ValidationErrors);
 
-		if (errors.Count > 0 && response.Valid is null or false)
-			errors.Add("README was not marked as valid.");
+		if (errors.Count == 0 && response.Valid is not true)
+			throw new InvalidOperationException("README was not marked as valid.");
+
+		if (errors.Count > 0 && response.Valid is true)
+			throw new InvalidOperationException("README has errors, but was marked as valid.");
 
 		return errors;
 	}

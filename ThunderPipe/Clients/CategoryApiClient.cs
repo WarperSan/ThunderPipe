@@ -8,8 +8,8 @@ namespace ThunderPipe.Clients;
 internal sealed class CategoryApiClient : ThunderstoreClient
 {
 	/// <inheritdoc />
-	public CategoryApiClient(RequestBuilder builder, CancellationToken ct)
-		: base(builder, ct) { }
+	public CategoryApiClient(RequestBuilder builder, HttpClient client, CancellationToken ct)
+		: base(builder, client, ct) { }
 
 	/// <summary>
 	/// Finds the missing categories in the given community
@@ -22,12 +22,15 @@ internal sealed class CategoryApiClient : ThunderstoreClient
 			.ToEndpoint($"api/experimental/community/{community}/category/");
 
 		var slugsToFind = new HashSet<string>(slugs);
+		var visitedPages = new HashSet<string>();
 
-		string? currentCursor = null;
-
-		do
+		while (slugsToFind.Count > 0)
 		{
-			var request = tempBuilder.Copy().SetParameter("cursor", currentCursor).Build();
+			var request = tempBuilder.Build();
+
+			// Prevent loops
+			if (!visitedPages.Add(request.RequestUri!.AbsoluteUri))
+				break;
 
 			var response = await SendRequest<Models.API.GetCategory.Response>(request);
 
@@ -38,14 +41,11 @@ internal sealed class CategoryApiClient : ThunderstoreClient
 			if (response.Pagination.NextPage == null)
 				break;
 
-			var nextCursor = UrlHelper.GetQueryValue(response.Pagination.NextPage, "cursor");
-
-			// Prevent looping
-			if (currentCursor == nextCursor)
+			if (!Uri.TryCreate(response.Pagination.NextPage, UriKind.Absolute, out var uri))
 				break;
 
-			currentCursor = nextCursor;
-		} while (slugsToFind.Count > 0 && currentCursor != null);
+			tempBuilder = Builder.Copy().Get().ToUri(uri);
+		}
 
 		return slugsToFind;
 	}

@@ -61,15 +61,6 @@ internal sealed class RequestBuilder
 	/// <summary>
 	/// Sets the URL of this request
 	/// </summary>
-	public RequestBuilder ToUrl(string url)
-	{
-		_uriBuilder = new UriBuilder(url);
-		return this;
-	}
-
-	/// <summary>
-	/// Sets the URL of this request
-	/// </summary>
 	public RequestBuilder ToUri(Uri uri)
 	{
 		_uriBuilder = new UriBuilder(uri);
@@ -128,12 +119,12 @@ internal sealed class RequestBuilder
 	#region Parameters
 
 	private readonly NameValueCollection _queryParams = HttpUtility.ParseQueryString(string.Empty);
-	private readonly Dictionary<string, string?> _pathParams = new();
+	private readonly Dictionary<string, string> _pathParams = new();
 
 	/// <summary>
 	/// Sets the query parameter with the given key to the given value
 	/// </summary>
-	public RequestBuilder SetParameter(string key, string? value)
+	public RequestBuilder SetParameter(string? key, string? value)
 	{
 		_queryParams.Set(key, value);
 
@@ -143,7 +134,7 @@ internal sealed class RequestBuilder
 	/// <summary>
 	/// Sets the path parameter with the given key to the given value
 	/// </summary>
-	public RequestBuilder SetPathParameter(string key, string? value)
+	public RequestBuilder SetPathParameter(string key, string value)
 	{
 		_pathParams.TryAdd(key, value);
 
@@ -206,10 +197,10 @@ internal sealed class RequestBuilder
 
 		if (_pathParams.Count > 0)
 		{
-			var path = tempBuilder.Path;
+			var path = HttpUtility.UrlDecode(tempBuilder.Path);
 
 			foreach ((var key, var value) in _pathParams)
-				path = path.Replace($"%7B{key}%7D", value ?? string.Empty);
+				path = path.Replace($"{{{key}}}", value);
 
 			tempBuilder.Path = path;
 		}

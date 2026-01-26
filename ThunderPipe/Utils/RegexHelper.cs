@@ -10,7 +10,7 @@ namespace ThunderPipe.Utils;
 internal static class RegexHelper
 {
 	private const string REGEX_NAMESPACE = "(?!_)[a-zA-Z0-9_]+(?<!_)";
-	private const string REGEX_NAME = "[a-zA-Z 0-9_]+";
+	private const string REGEX_NAME = "[a-zA-Z0-9_]+";
 	private const string REGEX_VERSION = "[0-9]+.[0-9]+.[0-9]+";
 
 	/// <summary>
