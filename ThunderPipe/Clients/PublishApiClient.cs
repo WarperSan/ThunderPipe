@@ -26,7 +26,7 @@ internal sealed class PublishApiClient : ThunderstoreClient
 
 		var payload = new Models.API.InitiateMultipartUpload.Request
 		{
-			File = Path.GetFileName(path),
+			File = fileInfo.Name,
 			FileSize = fileInfo.Length,
 		};
 
