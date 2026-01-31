@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Spectre.Console.Cli;
+using ThunderPipe.Infrastructure;
 using ThunderPipe.Services.Implementations;
 using ThunderPipe.Services.Interfaces;
 
@@ -35,7 +36,7 @@ internal static class Program
 
 		services.AddSingleton<IFileSystem>(new FileSystem());
 
-		var registrar = new Utils.TypeRegistrar(services);
+		var registrar = new TypeRegistrar(services);
 
 		var app = new CommandApp(registrar);
 

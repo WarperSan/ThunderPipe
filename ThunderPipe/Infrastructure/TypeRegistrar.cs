@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
 
-namespace ThunderPipe.Utils;
+namespace ThunderPipe.Infrastructure;
 
 internal sealed class TypeRegistrar(IServiceCollection services) : ITypeRegistrar
 {
@@ -19,10 +19,4 @@ internal sealed class TypeRegistrar(IServiceCollection services) : ITypeRegistra
 	/// <inheritdoc/>
 	public void RegisterLazy(Type service, Func<object> factory) =>
 		services.AddSingleton(service, _ => factory());
-}
-
-internal sealed class TypeResolver(IServiceProvider provider) : ITypeResolver
-{
-	/// <inheritdoc/>
-	public object? Resolve(Type? type) => type == null ? null : provider.GetService(type);
 }
