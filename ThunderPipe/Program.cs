@@ -26,12 +26,7 @@ internal static class Program
 		services.AddLogging(builder =>
 		{
 			builder.AddConsole();
-
-#if DEBUG
-			builder.SetMinimumLevel(LogLevel.Debug);
-#else
-			builder.SetMinimumLevel(LogLevel.Information);
-#endif
+			builder.AddFilter(level => level >= LogInterceptor.Level);
 		});
 
 		services.AddSingleton<IFileSystem>(new FileSystem());
@@ -43,6 +38,7 @@ internal static class Program
 		app.Configure(config =>
 		{
 			config.SetApplicationName(nameof(ThunderPipe));
+			config.SetInterceptor(new LogInterceptor());
 
 			config.Settings.CaseSensitivity = CaseSensitivity.None;
 			config.Settings.StrictParsing = false;
