@@ -1,3 +1,5 @@
+using System.ComponentModel;
+using Microsoft.Extensions.Logging;
 using Spectre.Console.Cli;
 
 namespace ThunderPipe.Settings;
