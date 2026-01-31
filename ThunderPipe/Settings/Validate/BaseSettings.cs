@@ -10,7 +10,7 @@ namespace ThunderPipe.Settings.Validate;
 /// </summary>
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
-public abstract class BaseSettings : CommandSettings
+public abstract class BaseSettings : BaseCommandSettings
 {
 	[CommandOption("--repository")]
 	[Description("URL of the server hosting the package")]

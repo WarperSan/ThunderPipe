@@ -7,7 +7,7 @@ namespace ThunderPipe.Settings.Create;
 /// <summary>
 /// Settings used by any creation command
 /// </summary>
-public abstract class BaseSettings : CommandSettings
+public abstract class BaseSettings : BaseCommandSettings
 {
 	[CommandOption("--directory")]
 	[Description("Directory from which the relative paths begin")]
