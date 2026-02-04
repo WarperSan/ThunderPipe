@@ -15,13 +15,6 @@ internal record Response
 		[JsonProperty("uuid")]
 		[JsonRequired]
 		public required string UUID { get; set; }
-
-		/// <summary>
-		/// Total size of the file
-		/// </summary>
-		[JsonProperty("size")]
-		[JsonRequired]
-		public required long Size { get; set; }
 	}
 
 	/// <summary>
