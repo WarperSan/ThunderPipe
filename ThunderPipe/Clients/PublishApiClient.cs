@@ -1,5 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
+using ThunderPipe.Models.Domain.MultipartUpload;
+using ThunderPipe.Models.Domain.Submission;
 using ThunderPipe.Services.Interfaces;
 using ThunderPipe.Utils;
 
@@ -20,14 +22,12 @@ internal sealed class PublishApiClient : ThunderstoreClient
 	/// <remarks>
 	/// Internally, this calls the <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateMultipartUpload.html">Multipart upload initiation</a> step
 	/// </remarks>
-	public Task<Models.API.InitiateMultipartUpload.Response> InitiateMultipartUpload(string path)
+	public async Task<UploadSession> InitiateMultipartUpload(string path, IFileSystem fileSystem)
 	{
-		var fileInfo = new FileInfo(path);
-
 		var payload = new Models.API.InitiateMultipartUpload.Request
 		{
-			File = fileInfo.Name,
-			FileSize = fileInfo.Length,
+			File = fileSystem.GetName(path),
+			FileSize = fileSystem.GetSize(path),
 		};
 
 		var request = Builder
@@ -37,7 +37,21 @@ internal sealed class PublishApiClient : ThunderstoreClient
 			.WithJSON(payload)
 			.Build();
 
-		return SendRequest<Models.API.InitiateMultipartUpload.Response>(request);
+		var response = await SendRequest<Models.API.InitiateMultipartUpload.Response>(request);
+
+		var parts = response.UploadParts.Select(p => new UploadPartDescriptor
+		{
+			Id = p.PartNumber,
+			UploadURL = new Uri(p.Url),
+			Offset = p.Offset,
+			Size = p.Size,
+		});
+
+		return new UploadSession
+		{
+			UUID = response.FileMetadata.UUID,
+			Parts = parts.ToArray().AsReadOnly(),
+		};
 	}
 
 	/// <summary>
@@ -46,13 +60,13 @@ internal sealed class PublishApiClient : ThunderstoreClient
 	/// <remarks>
 	/// This is simply a helper method to simplify using <see cref="UploadPart"/>
 	/// </remarks>
-	public async Task<Models.API.UploadPart.Response[]> UploadParts(
+	public async Task<IReadOnlyCollection<UploadPart>> UploadParts(
 		string file,
-		Models.API.InitiateMultipartUpload.Response.UploadPartModel[] parts,
+		IReadOnlyCollection<UploadPartDescriptor> parts,
 		IFileSystem fileSystem
 	)
 	{
-		var uploadTasks = new List<Task<Models.API.UploadPart.Response>>();
+		var uploadTasks = new List<Task<UploadPart>>();
 
 		await using (var stream = fileSystem.OpenRead(file))
 		{
@@ -60,7 +74,7 @@ internal sealed class PublishApiClient : ThunderstoreClient
 			{
 				stream.Seek(part.Offset, SeekOrigin.Begin);
 
-				var task = UploadPart(stream, part.PartNumber, part.Size, part.Url);
+				var task = UploadPart(stream, part.Id, part.Size, part.UploadURL);
 
 				uploadTasks.Add(task);
 			}
@@ -68,7 +82,7 @@ internal sealed class PublishApiClient : ThunderstoreClient
 
 		var uploadedParts = await Task.WhenAll(uploadTasks).WaitAsync(CancellationToken);
 
-		return uploadedParts.ToArray();
+		return uploadedParts.AsReadOnly();
 	}
 
 	/// <summary>
@@ -77,12 +91,7 @@ internal sealed class PublishApiClient : ThunderstoreClient
 	/// <remarks>
 	/// Internally, this calls the <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_UploadPart.html">Upload part</a> step
 	/// </remarks>
-	private async Task<Models.API.UploadPart.Response> UploadPart(
-		Stream stream,
-		int id,
-		int size,
-		string url
-	)
+	private async Task<UploadPart> UploadPart(Stream stream, int id, int size, Uri url)
 	{
 		const int BLOCK_SIZE = ushort.MaxValue;
 		var chunk = new MemoryStream();
@@ -117,8 +126,7 @@ internal sealed class PublishApiClient : ThunderstoreClient
 		content.Headers.ContentMD5 = hash;
 		content.Headers.ContentLength = size;
 
-		var uri = new Uri(url, UriKind.Absolute);
-		var request = new RequestBuilder().ToUri(uri).Put().WithContent(content).Build();
+		var request = new RequestBuilder().ToUri(url).Put().WithContent(content).Build();
 
 		var response = await SendRequest(request);
 
@@ -127,7 +135,7 @@ internal sealed class PublishApiClient : ThunderstoreClient
 		if (etag == null)
 			throw new NullReferenceException("Expected the header 'ETag' to be set.");
 
-		return new Models.API.UploadPart.Response { ETag = etag, PartNumber = id };
+		return new UploadPart { Id = id, ETag = etag };
 	}
 
 	/// <summary>
@@ -152,10 +160,19 @@ internal sealed class PublishApiClient : ThunderstoreClient
 	/// </remarks>
 	public async Task<bool> FinishMultipartUpload(
 		string uuid,
-		Models.API.UploadPart.Response[] parts
+		IReadOnlyCollection<UploadPart> parts
 	)
 	{
-		var payload = new Models.API.FinishMultipartUpload.Request { Parts = parts };
+		var payload = new Models.API.FinishMultipartUpload.Request
+		{
+			Parts = parts
+				.Select(p => new Models.API.UploadPart.Response
+				{
+					PartNumber = p.Id,
+					ETag = p.ETag,
+				})
+				.ToArray(),
+		};
 
 		var request = Builder
 			.Copy()
