@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Spectre.Console.Cli;
+using ThunderPipe.Infrastructure;
 using ThunderPipe.Services.Implementations;
 using ThunderPipe.Services.Interfaces;
 
@@ -25,23 +26,19 @@ internal static class Program
 		services.AddLogging(builder =>
 		{
 			builder.AddConsole();
-
-#if DEBUG
-			builder.SetMinimumLevel(LogLevel.Debug);
-#else
-			builder.SetMinimumLevel(LogLevel.Information);
-#endif
+			builder.AddFilter(level => level >= LogInterceptor.Level);
 		});
 
 		services.AddSingleton<IFileSystem>(new FileSystem());
 
-		var registrar = new Utils.TypeRegistrar(services);
+		var registrar = new TypeRegistrar(services);
 
 		var app = new CommandApp(registrar);
 
 		app.Configure(config =>
 		{
 			config.SetApplicationName(nameof(ThunderPipe));
+			config.SetInterceptor(new LogInterceptor());
 
 			config.Settings.CaseSensitivity = CaseSensitivity.None;
 			config.Settings.StrictParsing = false;

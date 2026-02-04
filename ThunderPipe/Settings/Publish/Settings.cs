@@ -10,7 +10,7 @@ namespace ThunderPipe.Settings.Publish;
 /// </summary>
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
-public sealed class Settings : CommandSettings
+public sealed class Settings : BaseCommandSettings
 {
 	[CommandArgument(0, "<file>")]
 	[Description("Path to the package file to publish")]
