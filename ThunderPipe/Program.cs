@@ -38,6 +38,7 @@ internal static class Program
 		app.Configure(config =>
 		{
 			config.SetApplicationName(nameof(ThunderPipe));
+			config.SetApplicationVersion(Metadata.VERSION);
 			config.SetInterceptor(new LogInterceptor());
 
 			config.Settings.CaseSensitivity = CaseSensitivity.None;
