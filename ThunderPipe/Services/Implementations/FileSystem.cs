@@ -17,4 +17,10 @@ internal sealed class FileSystem : IFileSystem
 		string? contents,
 		CancellationToken cancellationToken
 	) => File.WriteAllTextAsync(path, contents, cancellationToken);
+
+	/// <inheritdoc />
+	public string GetName(string path) => Path.GetFileName(path);
+
+	/// <inheritdoc/>
+	public long GetSize(string path) => new FileInfo(path).Length;
 }

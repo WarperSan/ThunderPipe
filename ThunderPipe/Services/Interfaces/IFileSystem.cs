@@ -8,7 +8,7 @@ internal interface IFileSystem
 	/// <summary>
 	/// Opens an existing file for reading
 	/// </summary>
-	public FileStream OpenRead(string path) => File.OpenRead(path);
+	public FileStream OpenRead(string path);
 
 	/// <summary>
 	/// Asynchronously opens a binary file, reads the contents of the file into a byte array, and then closes the file
@@ -23,4 +23,14 @@ internal interface IFileSystem
 		string? contents,
 		CancellationToken cancellationToken
 	);
+
+	/// <summary>
+	/// Gets the name of the file
+	/// </summary>
+	public string GetName(string path);
+
+	/// <summary>
+	/// Gets the size in bytes of the file
+	/// </summary>
+	public long GetSize(string path);
 }
