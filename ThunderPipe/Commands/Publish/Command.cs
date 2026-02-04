@@ -82,13 +82,13 @@ internal sealed class Command : AsyncCommand<Settings.Publish.Settings>
 
 		_logger.LogInformation(
 			"Successfully published '{VersionName}' v{VersionVersion}",
-			releasedPackage.Version.Name,
-			releasedPackage.Version.Version
+			releasedPackage.Name,
+			releasedPackage.Version
 		);
 
 		_logger.LogInformation(
 			"The package is now available at '{VersionDownloadURL}'.",
-			releasedPackage.Version.DownloadURL
+			releasedPackage.DownloadURL
 		);
 
 		return 0;

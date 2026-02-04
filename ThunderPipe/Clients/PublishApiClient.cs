@@ -172,7 +172,7 @@ internal sealed class PublishApiClient : ThunderstoreClient
 	/// <summary>
 	/// Submits the package
 	/// </summary>
-	public Task<Models.API.SubmitPackage.Response> SubmitPackage(
+	public async Task<PackageRelease> SubmitPackage(
 		string author,
 		string community,
 		string[] categories,
@@ -196,6 +196,13 @@ internal sealed class PublishApiClient : ThunderstoreClient
 			.WithJSON(payload)
 			.Build();
 
-		return SendRequest<Models.API.SubmitPackage.Response>(request);
+		var response = await SendRequest<Models.API.SubmitPackage.Response>(request);
+
+		return new PackageRelease
+		{
+			Name = response.Version.Name,
+			Version = new Version(response.Version.Version),
+			DownloadURL = new Uri(response.Version.DownloadURL),
+		};
 	}
 }
