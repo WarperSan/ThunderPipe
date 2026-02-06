@@ -3,6 +3,8 @@ name: 'Test and Coverage'
 on:
     # Trigger on any pull request
     pull_request:
+    push:
+        branches: [ master ]
 
 jobs:
     build-and-test:
