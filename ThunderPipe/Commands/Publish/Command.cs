@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 using Spectre.Console.Cli;
 using ThunderPipe.Clients;
+using ThunderPipe.Models.Domain.MultipartUpload;
 using ThunderPipe.Services.Interfaces;
 using ThunderPipe.Utils;
 
@@ -35,37 +36,34 @@ internal sealed class Command : AsyncCommand<Settings.Publish.Settings>
 		_logger.LogInformation("Publishing '{File}'", file);
 
 		using var client = new PublishApiClient(builder, new HttpClient(), cancellationToken);
-		var uploadData = await client.InitiateMultipartUpload(file);
-
-		var fileSize = uploadData.FileMetadata.Size;
-		var chunkCount = uploadData.UploadParts.Length;
+		var uploadSession = await client.InitiateMultipartUpload(file, _fileSystem);
 
 		_logger.LogInformation(
 			"Uploading '{File}' ({GetSizeString}) in {ChunkCount} chunks.",
 			file,
-			GetSizeString(fileSize),
-			chunkCount
+			GetSizeString(_fileSystem.GetSize(file)),
+			uploadSession.Parts.Count
 		);
 
-		Models.API.UploadPart.Response[] uploadedParts;
+		IReadOnlyCollection<UploadPart> uploadedParts;
 
 		try
 		{
-			uploadedParts = await client.UploadParts(file, uploadData.UploadParts, _fileSystem);
+			uploadedParts = await client.UploadParts(file, uploadSession.Parts, _fileSystem);
 		}
 		catch (Exception)
 		{
-			await client.AbortMultipartUpload(uploadData.FileMetadata.UUID);
+			await client.AbortMultipartUpload(uploadSession.UUID);
 			throw;
 		}
 
-		if (uploadedParts.Length != chunkCount)
+		if (uploadedParts.Count != uploadSession.Parts.Count)
+		{
+			await client.AbortMultipartUpload(uploadSession.UUID);
 			throw new InvalidOperationException("Failed to upload every parts.");
+		}
 
-		var finishedUpload = await client.FinishMultipartUpload(
-			uploadData.FileMetadata.UUID,
-			uploadedParts
-		);
+		var finishedUpload = await client.FinishMultipartUpload(uploadSession.UUID, uploadedParts);
 
 		if (!finishedUpload)
 			throw new InvalidOperationException("Failed to finish upload.");
@@ -77,18 +75,18 @@ internal sealed class Command : AsyncCommand<Settings.Publish.Settings>
 			settings.Community,
 			settings.Categories ?? [],
 			settings.HasNsfw,
-			uploadData.FileMetadata.UUID
+			uploadSession.UUID
 		);
 
 		_logger.LogInformation(
 			"Successfully published '{VersionName}' v{VersionVersion}",
-			releasedPackage.Version.Name,
-			releasedPackage.Version.Version
+			releasedPackage.Name,
+			releasedPackage.Version
 		);
 
 		_logger.LogInformation(
 			"The package is now available at '{VersionDownloadURL}'.",
-			releasedPackage.Version.DownloadURL
+			releasedPackage.DownloadURL
 		);
 
 		return 0;

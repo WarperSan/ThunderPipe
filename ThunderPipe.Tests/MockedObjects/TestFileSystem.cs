@@ -11,6 +11,9 @@ public class TestFileSystem : IFileSystem
 	#region IFileSystem
 
 	/// <inheritdoc />
+	public FileStream OpenRead(string path) => throw new NotImplementedException();
+
+	/// <inheritdoc />
 	public Task<byte[]> ReadAllBytesAsync(string path, CancellationToken cancellationToken)
 	{
 		if (!_files.TryGetValue(path, out var content))
@@ -28,6 +31,12 @@ public class TestFileSystem : IFileSystem
 		string? contents,
 		CancellationToken cancellationToken
 	) => throw new NotImplementedException();
+
+	/// <inheritdoc />
+	public string GetName(string path) => throw new NotImplementedException();
+
+	/// <inheritdoc />
+	public long GetSize(string path) => throw new NotImplementedException();
 
 	#endregion
 
