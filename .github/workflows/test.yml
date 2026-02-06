@@ -1,6 +1,6 @@
 name: 'Test and Coverage'
 
-source_files: &src_files
+x-source-files: &src_files
     - '**/*.cs'
     - '**/*.csproj'
     - '**/*.sln'
