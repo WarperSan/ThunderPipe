@@ -20,9 +20,6 @@ You can install ThunderPipe from NuGet by running the following command:
 dotnet tool install ThunderPipe
 ```
 
-> [!NOTE]
-> As this package is in beta, you will need to add the flag `--prerelease`.
-
 Alternatively, you can install it by downloading the package from [NuGet](https://www.nuget.org/packages/ThunderPipe/latest) or [GitHub Releases](https://github.com/WarperSan/ThunderPipe/releases/latest) directly, and installing the local file:
 
 ```bash
