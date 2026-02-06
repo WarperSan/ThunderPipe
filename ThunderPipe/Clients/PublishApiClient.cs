@@ -194,7 +194,7 @@ internal sealed class PublishApiClient : ThunderstoreClient
 		string community,
 		string[] categories,
 		bool hasNsfw,
-		string uploadUUID
+		string sessionUUID
 	)
 	{
 		var payload = new Models.API.SubmitPackage.Request
@@ -203,7 +203,7 @@ internal sealed class PublishApiClient : ThunderstoreClient
 			Communities = [community],
 			CommunityCategories = new Dictionary<string, string[]> { [community] = categories },
 			HasNsfwContent = hasNsfw,
-			UploadUUID = uploadUUID,
+			UploadUUID = sessionUUID,
 		};
 
 		var request = Builder
