@@ -9,7 +9,6 @@ on:
             - 'Directory.Build.targets'
             - 'global.json'
             - 'coverlet.runsettings'
-
     push:
         branches: [ master ]
         paths: *src_files
