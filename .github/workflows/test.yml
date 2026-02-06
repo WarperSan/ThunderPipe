@@ -1,17 +1,15 @@
 name: 'Test and Coverage'
 
-anchors:
-    source_files: &src_files
-        - '**/*.cs'
-        - '**/*.csproj'
-        - '**/*.sln'
-        - 'Directory.Build.targets'
-        - 'global.json'
-        - 'coverlet.runsettings'
-
 on:
     pull_request:
-        paths: *src_files
+        paths: &src_files
+            - '**/*.cs'
+            - '**/*.csproj'
+            - '**/*.sln'
+            - 'Directory.Build.targets'
+            - 'global.json'
+            - 'coverlet.runsettings'
+
     push:
         branches: [ master ]
         paths: *src_files
