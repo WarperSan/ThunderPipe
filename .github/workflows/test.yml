@@ -1,12 +1,13 @@
 name: 'Test and Coverage'
 
-x-source-files: &src_files
-    - '**/*.cs'
-    - '**/*.csproj'
-    - '**/*.sln'
-    - 'Directory.Build.targets'
-    - 'global.json'
-    - 'coverlet.runsettings'
+anchors:
+    source_files: &src_files
+        - '**/*.cs'
+        - '**/*.csproj'
+        - '**/*.sln'
+        - 'Directory.Build.targets'
+        - 'global.json'
+        - 'coverlet.runsettings'
 
 on:
     pull_request:
