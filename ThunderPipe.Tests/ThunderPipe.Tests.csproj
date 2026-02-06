@@ -10,7 +10,6 @@
 
 	<!-- Dependencies -->
 	<ItemGroup>
-		<!-- Test -->
 		<ProjectReference Include="../ThunderPipe/ThunderPipe.csproj" />
 
 		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
