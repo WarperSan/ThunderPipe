@@ -55,12 +55,12 @@ internal sealed class PackageCommand : AsyncCommand<PackageSettings>
 
 				return new ValidationResult(errors.Count == 0, errors);
 			},
-			async () =>
+			/*async () =>
 			{
 				var errors = await client.IsReadmeValid(readmePath, _fileSystem);
 
 				return new ValidationResult(errors.Count == 0, errors);
-			},
+			},*/
 		};
 
 		if (validations.Count == 0)
