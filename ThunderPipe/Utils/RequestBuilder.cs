@@ -45,8 +45,6 @@ internal sealed class RequestBuilder
 		if (original._content != null)
 			_content = new StreamContent(original._content.ReadAsStream());
 
-		_queryParams.Clear();
-
 		foreach (var paramKey in original._queryParams.AllKeys)
 		{
 			if (paramKey == null)
@@ -54,8 +52,6 @@ internal sealed class RequestBuilder
 
 			SetParameter(paramKey, original._queryParams.Get(paramKey));
 		}
-
-		_pathParams.Clear();
 
 		foreach ((var key, var value) in original._pathParams)
 			SetPathParameter(key, value);
