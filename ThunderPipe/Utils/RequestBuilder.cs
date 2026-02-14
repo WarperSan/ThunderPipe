@@ -194,8 +194,6 @@ internal sealed class RequestBuilder
 	/// </summary>
 	public HttpRequestMessage Build()
 	{
-		var request = new HttpRequestMessage();
-
 		var tempBuilder = new UriBuilder(_uriBuilder.Uri);
 
 		if (_queryParams.HasKeys())
@@ -211,10 +209,13 @@ internal sealed class RequestBuilder
 			tempBuilder.Path = path;
 		}
 
-		request.Method = _method;
-		request.RequestUri = tempBuilder.Uri;
-		request.Content = _content;
-		request.Headers.Authorization = _authHeader;
+		var request = new HttpRequestMessage
+		{
+			Method = _method,
+			RequestUri = tempBuilder.Uri,
+			Content = _content,
+			Headers = { Authorization = _authHeader },
+		};
 
 		return request;
 	}
