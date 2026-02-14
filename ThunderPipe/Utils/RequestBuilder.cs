@@ -15,6 +15,44 @@ namespace ThunderPipe.Utils;
 /// </remarks>
 internal sealed class RequestBuilder
 {
+	public RequestBuilder() { }
+
+	/// <summary>
+	/// Copies this builder to a brand-new builder with the same state
+	/// </summary>
+	public RequestBuilder(RequestBuilder original)
+		: this()
+	{
+		_uriBuilder = new UriBuilder(original._uriBuilder.Uri);
+		_method = original._method;
+
+		if (original._authHeader != null)
+		{
+			_authHeader = new AuthenticationHeaderValue(
+				original._authHeader.Scheme,
+				original._authHeader.Parameter
+			);
+		}
+
+		if (original._content != null)
+			_content = new StreamContent(original._content.ReadAsStream());
+
+		_queryParams.Clear();
+
+		foreach (var paramKey in original._queryParams.AllKeys)
+		{
+			if (paramKey == null)
+				continue;
+
+			SetParameter(paramKey, original._queryParams.Get(paramKey));
+		}
+
+		_pathParams.Clear();
+
+		foreach ((var key, var value) in original._pathParams)
+			SetPathParameter(key, value);
+	}
+
 	#region Methods
 
 	private HttpMethod _method = HttpMethod.Get;
@@ -142,46 +180,6 @@ internal sealed class RequestBuilder
 	}
 
 	#endregion
-
-	/// <summary>
-	/// Copies this builder to a brand-new builder with the same state
-	/// </summary>
-	public RequestBuilder Copy()
-	{
-		var newBuilder = new RequestBuilder
-		{
-			_uriBuilder = new UriBuilder(_uriBuilder.Uri),
-			_method = _method,
-		};
-
-		if (_authHeader != null)
-		{
-			newBuilder._authHeader = new AuthenticationHeaderValue(
-				_authHeader.Scheme,
-				_authHeader.Parameter
-			);
-		}
-
-		if (_content != null)
-			newBuilder._content = new StreamContent(_content.ReadAsStream());
-
-		newBuilder._queryParams.Clear();
-
-		foreach (var paramKey in _queryParams.AllKeys)
-		{
-			if (paramKey == null)
-				continue;
-
-			newBuilder.SetParameter(paramKey, _queryParams.Get(paramKey));
-		}
-
-		newBuilder._pathParams.Clear();
-
-		foreach ((var key, var value) in _pathParams)
-			newBuilder.SetPathParameter(key, value);
-
-		return newBuilder;
-	}
 
 	/// <summary>
 	/// Builds the <see cref="HttpRequestMessage"/> from this request
