@@ -16,7 +16,9 @@ internal sealed class CommunityApiClient : ThunderstoreClient
 	/// </summary>
 	public async Task<bool> Exists(string slug)
 	{
-		var tempBuilder = Builder.Copy().Get().ToEndpoint("api/experimental/community/");
+		var tempBuilder = new RequestBuilder(Builder)
+			.Get()
+			.ToEndpoint("api/experimental/community/");
 
 		var visitedPages = new HashSet<string>();
 		var wasCommunityFound = false;
@@ -46,7 +48,7 @@ internal sealed class CommunityApiClient : ThunderstoreClient
 			if (!Uri.TryCreate(response.Pagination.NextPage, UriKind.Absolute, out var uri))
 				break;
 
-			tempBuilder = Builder.Copy().Get().ToUri(uri);
+			tempBuilder = new RequestBuilder(Builder).Get().ToUri(uri);
 		}
 
 		return wasCommunityFound;

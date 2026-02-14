@@ -23,7 +23,7 @@ internal abstract class ThunderstoreClient : IDisposable
 
 	protected ThunderstoreClient(RequestBuilder builder, HttpClient client, CancellationToken ct)
 	{
-		Builder = builder.Copy();
+		Builder = new RequestBuilder(builder);
 		CancellationToken = ct;
 
 		_client = client;

@@ -30,8 +30,7 @@ internal sealed class PublishApiClient : ThunderstoreClient
 			FileSize = fileSystem.GetSize(path),
 		};
 
-		var request = Builder
-			.Copy()
+		var request = new RequestBuilder(Builder)
 			.Post()
 			.ToEndpoint("api/experimental/usermedia/initiate-upload/")
 			.WithJSON(payload)
@@ -143,8 +142,7 @@ internal sealed class PublishApiClient : ThunderstoreClient
 	/// </summary>
 	public async Task AbortMultipartUpload(string uuid)
 	{
-		var request = Builder
-			.Copy()
+		var request = new RequestBuilder(Builder)
 			.Post()
 			.ToEndpoint($"api/experimental/usermedia/{uuid}/abort-upload/")
 			.Build();
@@ -174,8 +172,7 @@ internal sealed class PublishApiClient : ThunderstoreClient
 				.ToArray(),
 		};
 
-		var request = Builder
-			.Copy()
+		var request = new RequestBuilder(Builder)
 			.Post()
 			.ToEndpoint($"api/experimental/usermedia/{uuid}/finish-upload/")
 			.WithJSON(payload)
@@ -206,8 +203,7 @@ internal sealed class PublishApiClient : ThunderstoreClient
 			UploadUUID = sessionUUID,
 		};
 
-		var request = Builder
-			.Copy()
+		var request = new RequestBuilder(Builder)
 			.Post()
 			.ToEndpoint("api/experimental/submission/submit/")
 			.WithJSON(payload)

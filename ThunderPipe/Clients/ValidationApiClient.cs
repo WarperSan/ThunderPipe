@@ -20,8 +20,7 @@ internal sealed class ValidationApiClient : ThunderstoreClient
 		var data = await fileSystem.ReadAllBytesAsync(path, CancellationToken);
 
 		var payload = new Models.API.ValidateIcon.Request { Data = Convert.ToBase64String(data) };
-		var request = Builder
-			.Copy()
+		var request = new RequestBuilder(Builder)
 			.Post()
 			.ToEndpoint("api/experimental/submission/validate/icon/")
 			.WithJSON(payload)
@@ -63,8 +62,7 @@ internal sealed class ValidationApiClient : ThunderstoreClient
 			Data = Convert.ToBase64String(data),
 		};
 
-		var request = Builder
-			.Copy()
+		var request = new RequestBuilder(Builder)
 			.Post()
 			.ToEndpoint("api/experimental/submission/validate/manifest-v1/")
 			.WithJSON(payload)
@@ -101,8 +99,7 @@ internal sealed class ValidationApiClient : ThunderstoreClient
 
 		var payload = new Models.API.ValidateReadme.Request { Data = Convert.ToBase64String(data) };
 
-		var request = Builder
-			.Copy()
+		var request = new RequestBuilder(Builder)
 			.Post()
 			.ToEndpoint("api/experimental/submission/validate/readme/")
 			.WithJSON(payload)
