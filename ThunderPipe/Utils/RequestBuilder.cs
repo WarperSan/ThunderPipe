@@ -15,7 +15,15 @@ namespace ThunderPipe.Utils;
 /// </remarks>
 internal sealed class RequestBuilder
 {
-	public RequestBuilder() { }
+	public RequestBuilder()
+	{
+		_method = HttpMethod.Get;
+		_uriBuilder = new UriBuilder();
+		_authHeader = null;
+		_content = null;
+		_queryParams = HttpUtility.ParseQueryString(string.Empty);
+		_pathParams = new Dictionary<string, string>();
+	}
 
 	/// <summary>
 	/// Copies this builder to a brand-new builder with the same state
@@ -55,7 +63,7 @@ internal sealed class RequestBuilder
 
 	#region Methods
 
-	private HttpMethod _method = HttpMethod.Get;
+	private HttpMethod _method;
 
 	/// <summary>
 	/// Sets the HTTP method
@@ -85,7 +93,7 @@ internal sealed class RequestBuilder
 
 	#region URI
 
-	private UriBuilder _uriBuilder = new();
+	private UriBuilder _uriBuilder;
 
 	/// <summary>
 	/// Sets the endpoint of this request
@@ -156,8 +164,8 @@ internal sealed class RequestBuilder
 
 	#region Parameters
 
-	private readonly NameValueCollection _queryParams = HttpUtility.ParseQueryString(string.Empty);
-	private readonly Dictionary<string, string> _pathParams = new();
+	private readonly NameValueCollection _queryParams;
+	private readonly Dictionary<string, string> _pathParams;
 
 	/// <summary>
 	/// Sets the query parameter with the given key to the given value
