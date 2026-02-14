@@ -210,7 +210,7 @@ public class RequestBuilderTests
 	public void Copy_WhenCopied_ReturnNewInstance()
 	{
 		var originalBuilder = new RequestBuilder();
-		var copiedBuilder = originalBuilder.Copy();
+		var copiedBuilder = new RequestBuilder(originalBuilder);
 
 		Assert.NotSame(copiedBuilder, originalBuilder);
 	}
@@ -219,7 +219,7 @@ public class RequestBuilderTests
 	public void Copy_WhenCopiedAndModified_OriginalStaysUntouched()
 	{
 		var originalBuilder = new RequestBuilder().Post();
-		var copiedBuilder = originalBuilder.Copy().Get();
+		var copiedBuilder = new RequestBuilder(originalBuilder).Get();
 
 		var originalRequest = originalBuilder.Build();
 		var copiedRequest = copiedBuilder.Build();
@@ -232,7 +232,7 @@ public class RequestBuilderTests
 	public void Copy_WhenCopiedWithMethod_ReturnNewInstanceWithMethod()
 	{
 		var originalBuilder = new RequestBuilder().Post();
-		var copiedBuilder = originalBuilder.Copy();
+		var copiedBuilder = new RequestBuilder(originalBuilder);
 
 		var originalRequest = originalBuilder.Build();
 		var copiedRequest = copiedBuilder.Build();
@@ -244,7 +244,7 @@ public class RequestBuilderTests
 	public void Copy_WhenCopiedWithAuth_ReturnNewInstanceWithAuth()
 	{
 		var originalBuilder = new RequestBuilder().WithAuth("DDD");
-		var copiedBuilder = originalBuilder.Copy();
+		var copiedBuilder = new RequestBuilder(originalBuilder);
 
 		var originalRequest = originalBuilder.Build();
 		var copiedRequest = copiedBuilder.Build();
@@ -270,7 +270,7 @@ public class RequestBuilderTests
 		};
 
 		var originalBuilder = new RequestBuilder().WithJSON(payload);
-		var copiedBuilder = originalBuilder.Copy();
+		var copiedBuilder = new RequestBuilder(originalBuilder);
 
 		// Act
 		var originalRequest = originalBuilder.Build();
@@ -299,7 +299,7 @@ public class RequestBuilderTests
 		const string PARAMETER_VALUE = "abc";
 
 		var originalBuilder = new RequestBuilder().SetParameter(PARAMETER_KEY, PARAMETER_VALUE);
-		var copiedBuilder = originalBuilder.Copy();
+		var copiedBuilder = new RequestBuilder(originalBuilder);
 
 		var originalRequest = originalBuilder.Build();
 		var copiedRequest = copiedBuilder.Build();
@@ -323,7 +323,7 @@ public class RequestBuilderTests
 		const string PARAMETER_VALUE = "abc";
 
 		var originalBuilder = new RequestBuilder().SetParameter(null, PARAMETER_VALUE);
-		var copiedBuilder = originalBuilder.Copy();
+		var copiedBuilder = new RequestBuilder(originalBuilder);
 
 		var originalRequest = originalBuilder.Build();
 		var copiedRequest = copiedBuilder.Build();
@@ -352,7 +352,7 @@ public class RequestBuilderTests
 			.ToUri(new Uri("https://www.google.com"))
 			.ToEndpoint($"/api/community/{{{PATH_KEY}}}/user")
 			.SetPathParameter(PATH_KEY, PATH_VALUE);
-		var copiedBuilder = originalBuilder.Copy();
+		var copiedBuilder = new RequestBuilder(originalBuilder);
 
 		var originalRequest = originalBuilder.Build();
 		var copiedRequest = copiedBuilder.Build();

@@ -15,9 +15,51 @@ namespace ThunderPipe.Utils;
 /// </remarks>
 internal sealed class RequestBuilder
 {
+	public RequestBuilder()
+	{
+		_method = HttpMethod.Get;
+		_uriBuilder = new UriBuilder();
+		_authHeader = null;
+		_content = null;
+		_queryParams = HttpUtility.ParseQueryString(string.Empty);
+		_pathParams = new Dictionary<string, string>();
+	}
+
+	/// <summary>
+	/// Copies this builder to a brand-new builder with the same state
+	/// </summary>
+	public RequestBuilder(RequestBuilder original)
+		: this()
+	{
+		_uriBuilder = new UriBuilder(original._uriBuilder.Uri);
+		_method = original._method;
+
+		if (original._authHeader != null)
+		{
+			_authHeader = new AuthenticationHeaderValue(
+				original._authHeader.Scheme,
+				original._authHeader.Parameter
+			);
+		}
+
+		if (original._content != null)
+			_content = new StreamContent(original._content.ReadAsStream());
+
+		foreach (var paramKey in original._queryParams.AllKeys)
+		{
+			if (paramKey == null)
+				continue;
+
+			SetParameter(paramKey, original._queryParams.Get(paramKey));
+		}
+
+		foreach ((var key, var value) in original._pathParams)
+			SetPathParameter(key, value);
+	}
+
 	#region Methods
 
-	private HttpMethod _method = HttpMethod.Get;
+	private HttpMethod _method;
 
 	/// <summary>
 	/// Sets the HTTP method
@@ -47,7 +89,7 @@ internal sealed class RequestBuilder
 
 	#region URI
 
-	private UriBuilder _uriBuilder = new();
+	private UriBuilder _uriBuilder;
 
 	/// <summary>
 	/// Sets the endpoint of this request
@@ -118,8 +160,8 @@ internal sealed class RequestBuilder
 
 	#region Parameters
 
-	private readonly NameValueCollection _queryParams = HttpUtility.ParseQueryString(string.Empty);
-	private readonly Dictionary<string, string> _pathParams = new();
+	private readonly NameValueCollection _queryParams;
+	private readonly Dictionary<string, string> _pathParams;
 
 	/// <summary>
 	/// Sets the query parameter with the given key to the given value
@@ -144,52 +186,10 @@ internal sealed class RequestBuilder
 	#endregion
 
 	/// <summary>
-	/// Copies this builder to a brand-new builder with the same state
-	/// </summary>
-	public RequestBuilder Copy()
-	{
-		var newBuilder = new RequestBuilder
-		{
-			_uriBuilder = new UriBuilder(_uriBuilder.Uri),
-			_method = _method,
-		};
-
-		if (_authHeader != null)
-		{
-			newBuilder._authHeader = new AuthenticationHeaderValue(
-				_authHeader.Scheme,
-				_authHeader.Parameter
-			);
-		}
-
-		if (_content != null)
-			newBuilder._content = new StreamContent(_content.ReadAsStream());
-
-		newBuilder._queryParams.Clear();
-
-		foreach (var paramKey in _queryParams.AllKeys)
-		{
-			if (paramKey == null)
-				continue;
-
-			newBuilder.SetParameter(paramKey, _queryParams.Get(paramKey));
-		}
-
-		newBuilder._pathParams.Clear();
-
-		foreach ((var key, var value) in _pathParams)
-			newBuilder.SetPathParameter(key, value);
-
-		return newBuilder;
-	}
-
-	/// <summary>
 	/// Builds the <see cref="HttpRequestMessage"/> from this request
 	/// </summary>
 	public HttpRequestMessage Build()
 	{
-		var request = new HttpRequestMessage();
-
 		var tempBuilder = new UriBuilder(_uriBuilder.Uri);
 
 		if (_queryParams.HasKeys())
@@ -205,10 +205,13 @@ internal sealed class RequestBuilder
 			tempBuilder.Path = path;
 		}
 
-		request.Method = _method;
-		request.RequestUri = tempBuilder.Uri;
-		request.Content = _content;
-		request.Headers.Authorization = _authHeader;
+		var request = new HttpRequestMessage
+		{
+			Method = _method,
+			RequestUri = tempBuilder.Uri,
+			Content = _content,
+			Headers = { Authorization = _authHeader },
+		};
 
 		return request;
 	}

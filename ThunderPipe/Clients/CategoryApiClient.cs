@@ -16,8 +16,7 @@ internal sealed class CategoryApiClient : ThunderstoreClient
 	/// </summary>
 	public async Task<ISet<string>> GetMissing(string[] slugs, string community)
 	{
-		var tempBuilder = Builder
-			.Copy()
+		var tempBuilder = new RequestBuilder(Builder)
 			.Get()
 			.ToEndpoint($"api/experimental/community/{community}/category/");
 
@@ -44,7 +43,7 @@ internal sealed class CategoryApiClient : ThunderstoreClient
 			if (!Uri.TryCreate(response.Pagination.NextPage, UriKind.Absolute, out var uri))
 				break;
 
-			tempBuilder = Builder.Copy().Get().ToUri(uri);
+			tempBuilder = new RequestBuilder(Builder).Get().ToUri(uri);
 		}
 
 		return slugsToFind;

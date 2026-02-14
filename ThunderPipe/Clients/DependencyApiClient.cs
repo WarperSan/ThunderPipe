@@ -16,8 +16,7 @@ internal sealed class DependencyApiClient : ThunderstoreClient
 	/// </summary>
 	public async Task<ISet<string>> GetMissing(string[] dependencies)
 	{
-		var tempBuilder = Builder
-			.Copy()
+		var tempBuilder = new RequestBuilder(Builder)
 			.Get()
 			.ToEndpoint("api/experimental/package/{NAMESPACE}/{NAME}/{VERSION}/");
 
@@ -35,8 +34,7 @@ internal sealed class DependencyApiClient : ThunderstoreClient
 			if (@namespace == null || name == null || version == null)
 				continue;
 
-			var request = tempBuilder
-				.Copy()
+			var request = new RequestBuilder(tempBuilder)
 				.SetPathParameter("NAMESPACE", @namespace)
 				.SetPathParameter("NAME", name)
 				.SetPathParameter("VERSION", version)
