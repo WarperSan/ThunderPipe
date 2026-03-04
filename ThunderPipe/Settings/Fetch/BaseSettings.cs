@@ -10,7 +10,7 @@ namespace ThunderPipe.Settings.Fetch;
 public abstract class BaseSettings : BaseCommandSettings
 {
 	[CommandOption("--repository")]
-	[Description("URL of the server hosting the package")]
+	[Description("URL of the repository to call")]
 	[DefaultValue("https://thunderstore.io")]
 	[TypeConverter(typeof(UriTypeConverter))]
 	public Uri? Repository { get; init; }

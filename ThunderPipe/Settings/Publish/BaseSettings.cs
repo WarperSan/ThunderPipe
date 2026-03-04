@@ -14,7 +14,7 @@ public abstract class BaseSettings : BaseCommandSettings
 	public required string Token { get; init; }
 
 	[CommandOption("--repository")]
-	[Description("URL of the server hosting the package")]
+	[Description("URL of the repository where to publish the package")]
 	[DefaultValue("https://thunderstore.io")]
 	[TypeConverter(typeof(UriTypeConverter))]
 	public Uri? Repository { get; init; }
