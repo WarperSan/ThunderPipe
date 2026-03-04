@@ -51,6 +51,7 @@ internal static class Program
 
 			config.AddBranch("validate", ValidateBranch);
 			config.AddBranch("create", CreateBranch);
+			config.AddBranch("fetch", FetchBranch);
 
 			config
 				.AddCommand<Commands.Publish.Command>("publish")
@@ -84,5 +85,12 @@ internal static class Program
 		config
 			.AddCommand<Commands.Create.ManifestCommand>("manifest")
 			.WithDescription("Creates a 'manifest.json' file");
+	}
+
+	private static void FetchBranch(IConfigurator<Settings.Fetch.BaseSettings> config)
+	{
+		config
+			.AddCommand<Commands.Fetch.LatestVersionCommand>("version")
+			.WithDescription("Fetches the latest version of a package");
 	}
 }
