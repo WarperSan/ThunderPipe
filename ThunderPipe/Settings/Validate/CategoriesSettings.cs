@@ -13,11 +13,11 @@ namespace ThunderPipe.Settings.Validate;
 public sealed class CategoriesSettings : BaseSettings
 {
 	[CommandArgument(0, "<community>")]
-	[Description("Community where the package will be published")]
+	[Description("Slug of the community to validate categories against")]
 	public required string Community { get; init; }
 
 	[CommandOption("--category <CATEGORY>")]
-	[Description("Categories that will be used to label the package")]
+	[Description("Slug of the category to validate")]
 	public string[]? Categories { get; init; }
 
 	/// <inheritdoc />

@@ -13,7 +13,7 @@ namespace ThunderPipe.Settings.Validate;
 public sealed class DependenciesSettings : BaseSettings
 {
 	[CommandArgument(0, "<dependencies>")]
-	[Description("Dependencies needed by the package")]
+	[Description("Dependency string to validate")]
 	public required string[] Dependencies { get; init; }
 
 	/// <inheritdoc />

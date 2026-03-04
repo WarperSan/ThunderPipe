@@ -13,7 +13,7 @@ namespace ThunderPipe.Settings.Validate;
 public sealed class CommunitySettings : BaseSettings
 {
 	[CommandArgument(0, "<community>")]
-	[Description("Community where the package will be published")]
+	[Description("Slug of the community to look up")]
 	public required string Community { get; init; }
 
 	/// <inheritdoc />

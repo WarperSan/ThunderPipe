@@ -10,7 +10,7 @@ namespace ThunderPipe.Settings.Publish;
 public abstract class BaseSettings : BaseCommandSettings
 {
 	[CommandOption("--token", true)]
-	[Description("Authentication token used to publish the package")]
+	[Description("Service account API token for authentication")]
 	public required string Token { get; init; }
 
 	[CommandOption("--repository")]

@@ -13,30 +13,30 @@ namespace ThunderPipe.Settings.Validate;
 public sealed class PackageSettings : BaseSettings
 {
 	[CommandArgument(0, "<package-folder>")]
-	[Description("Folder containg the package's files")]
+	[Description("Path to the folder containing the package files")]
 	public required string PackageFolder { get; init; }
 
 	[CommandOption("--icon")]
-	[Description("Path from the package folder to the icon file")]
+	[Description("Relative path to the package icon")]
 	[DefaultValue("./icon.png")]
 	public string? IconPath { get; init; }
 
 	[CommandOption("--manifest")]
-	[Description("Path from the package folder to the manifest file")]
+	[Description("Relative path to the manifest file")]
 	[DefaultValue("./manifest.json")]
 	public string? ManifestPath { get; init; }
 
 	[CommandOption("--readme")]
-	[Description("Path from the package folder to the README file")]
+	[Description("Relative path to the README file")]
 	[DefaultValue("./README.md")]
 	public string? ReadmePath { get; init; }
 
 	[CommandOption("--token", true)]
-	[Description("Authentication token used to publish the package")]
+	[Description("Service account API token for authentication")]
 	public required string Token { get; init; }
 
 	[CommandOption("--team", true)]
-	[Description("Team that will publish the package")]
+	[Description("Team that will own the package")]
 	public required string Team { get; init; }
 
 	/// <inheritdoc />

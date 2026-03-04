@@ -14,23 +14,23 @@ namespace ThunderPipe.Settings.Publish;
 public sealed class PackageSettings : BaseSettings
 {
 	[CommandArgument(0, "<file>")]
-	[Description("Path to the package file to publish")]
+	[Description("Path to the '.zip' file to publish")]
 	public required string File { get; init; }
 
 	[CommandArgument(1, "<team>")]
-	[Description("Team to publish the package for")]
+	[Description("Team that will own the published package")]
 	public required string Team { get; init; }
 
 	[CommandArgument(2, "<community>")]
-	[Description("Community where to publish the package")]
+	[Description("Slug of the community to publish the package to")]
 	public required string Community { get; init; }
 
 	[CommandOption("--category <CATEGORY>")]
-	[Description("Categories used to label this package")]
+	[Description("Category slug to label the package with")]
 	public string[]? Categories { get; init; }
 
 	[CommandOption("--has-nsfw|--nsfw")]
-	[Description("Determines if this package has NSFW content")]
+	[Description("Mark the package as containing NSFW content")]
 	[DefaultValue(false)]
 	public bool HasNsfw { get; init; }
 

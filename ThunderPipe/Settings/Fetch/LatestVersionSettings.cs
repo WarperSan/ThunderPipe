@@ -14,7 +14,7 @@ namespace ThunderPipe.Settings.Fetch;
 public sealed class LatestVersionSettings : BaseSettings
 {
 	[CommandArgument(0, "<team>")]
-	[Description("Team owning the package")]
+	[Description("Team that owns the package")]
 	public required string Team { get; init; }
 
 	[CommandArgument(1, "<name>")]

@@ -22,16 +22,16 @@ public sealed class ManifestSettings : BaseSettings
 	public required string Version { get; init; }
 
 	[CommandOption("--description <DESCRIPTION>")]
-	[Description("Description of the package")]
+	[Description("Short description of the package")]
 	public string? Description { get; init; }
 
 	[CommandOption("--website <WEBSITE>")]
-	[Description("URL of the package's website")]
+	[Description("URL of the package's homepage or source repository")]
 	[TypeConverter(typeof(UriTypeConverter))]
 	public Uri? Website { get; set; }
 
 	[CommandOption("--dependency <DEPENDENCY>")]
-	[Description("Dependencies required by the package")]
+	[Description("Other package needed by the package")]
 	public string[]? Dependencies { get; init; }
 
 	/// <inheritdoc />

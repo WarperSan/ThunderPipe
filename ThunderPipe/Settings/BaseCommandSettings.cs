@@ -10,7 +10,7 @@ namespace ThunderPipe.Settings;
 public abstract class BaseCommandSettings : CommandSettings
 {
 	[CommandOption("--log-level")]
-	[Description("Minimum logging level")]
+	[Description("Minimum severity level for log output")]
 #if DEBUG
 	[DefaultValue(LogLevel.Debug)]
 #else

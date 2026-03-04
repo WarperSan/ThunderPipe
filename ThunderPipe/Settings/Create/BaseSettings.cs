@@ -10,7 +10,7 @@ namespace ThunderPipe.Settings.Create;
 public abstract class BaseSettings : BaseCommandSettings
 {
 	[CommandOption("--directory")]
-	[Description("Directory from which the relative paths begin")]
+	[Description("Working directory from which all relative output paths are resolved")]
 	[DefaultValue(null)]
 	public string? Directory { get; set; }
 
