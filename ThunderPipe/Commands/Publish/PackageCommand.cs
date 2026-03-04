@@ -9,12 +9,12 @@ using ThunderPipe.Utils;
 namespace ThunderPipe.Commands.Publish;
 
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
-internal sealed class Command : AsyncCommand<Settings.Publish.Settings>
+internal sealed class PackageCommand : AsyncCommand<Settings.Publish.PackageSettings>
 {
-	private readonly ILogger<Command> _logger;
+	private readonly ILogger<PackageCommand> _logger;
 	private readonly IFileSystem _fileSystem;
 
-	public Command(ILogger<Command> logger, IFileSystem fileSystem)
+	public PackageCommand(ILogger<PackageCommand> logger, IFileSystem fileSystem)
 	{
 		_logger = logger;
 		_fileSystem = fileSystem;
@@ -22,9 +22,9 @@ internal sealed class Command : AsyncCommand<Settings.Publish.Settings>
 
 	/// <inheritdoc />
 	public override async Task<int> ExecuteAsync(
-		CommandContext context,
-		Settings.Publish.Settings settings,
-		CancellationToken cancellationToken
+		CommandContext                   context,
+		Settings.Publish.PackageSettings settings,
+		CancellationToken                cancellationToken
 	)
 	{
 		var file = settings.File;
