@@ -1,5 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Spectre.Console.Cli;
+using ThunderPipe.Clients;
+using ThunderPipe.Utils;
 
 namespace ThunderPipe.Commands.Fetch;
 
@@ -13,6 +15,12 @@ internal sealed class LatestVersionCommand : AsyncCommand<Settings.Fetch.LatestV
 		CancellationToken cancellationToken
 	)
 	{
+		var builder = new RequestBuilder().ToUri(settings.Repository!);
+		using var client = new PackageApiClient(builder, new HttpClient(), cancellationToken);
+
+		var version = await client.GetVersion(settings.Team, settings.Name);
+		Console.WriteLine(version);
+
 		return 0;
 	}
 }
