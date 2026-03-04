@@ -2,15 +2,16 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using Spectre.Console;
 using Spectre.Console.Cli;
+using ThunderPipe.Commands.Publish;
 
 namespace ThunderPipe.Settings.Publish;
 
 /// <summary>
-/// Settings used by <see cref="Commands.Publish.Command"/>
+/// Settings used by <see cref="PackageCommand"/>
 /// </summary>
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
-public sealed class Settings : BaseCommandSettings
+public sealed class PackageSettings : BaseSettings
 {
 	[CommandArgument(0, "<file>")]
 	[Description("Path to the package file to publish")]
@@ -23,16 +24,6 @@ public sealed class Settings : BaseCommandSettings
 	[CommandArgument(2, "<community>")]
 	[Description("Community where to publish the package")]
 	public required string Community { get; init; }
-
-	[CommandOption("--token", true)]
-	[Description("Authentication token used to publish the package")]
-	public required string Token { get; init; }
-
-	[CommandOption("--repository")]
-	[Description("URL of the server hosting the package")]
-	[DefaultValue("https://thunderstore.io")]
-	[TypeConverter(typeof(UriTypeConverter))]
-	public Uri? Repository { get; init; }
 
 	[CommandOption("--category <CATEGORY>")]
 	[Description("Categories used to label this package")]
@@ -54,12 +45,6 @@ public sealed class Settings : BaseCommandSettings
 
 		if (string.IsNullOrWhiteSpace(Community))
 			return ValidationResult.Error("Community cannot be empty.");
-
-		if (string.IsNullOrWhiteSpace(Token))
-			return ValidationResult.Error("Token cannot be empty.");
-
-		if (Repository == null)
-			return ValidationResult.Error("Repository cannot be empty.");
 
 		if (Categories != null && Categories.Any(string.IsNullOrEmpty))
 			return ValidationResult.Error("Categories contains an empty item.");

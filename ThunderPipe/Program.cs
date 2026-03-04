@@ -53,7 +53,7 @@ internal static class Program
 			config.AddBranch("create", CreateBranch);
 
 			config
-				.AddCommand<Commands.Publish.Command>("publish")
+				.AddCommand<Commands.Publish.PackageCommand>("publish")
 				.WithDescription("Publish a package to Thunderstore.");
 		});
 
