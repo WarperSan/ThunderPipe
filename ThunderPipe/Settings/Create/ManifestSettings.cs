@@ -4,7 +4,6 @@ using Spectre.Console;
 using Spectre.Console.Cli;
 using ThunderPipe.Infrastructure.TypeConverters;
 using ThunderPipe.Models.Internal;
-using ThunderPipe.Utils;
 
 namespace ThunderPipe.Settings.Create;
 
@@ -15,6 +14,8 @@ namespace ThunderPipe.Settings.Create;
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 internal sealed class ManifestSettings : BaseCreateSettings
 {
+	private const string DEPENDENCY_OPTION = "--dependency";
+
 	[CommandArgument(0, "<name>")]
 	[Description("Name of the package")]
 	[TypeConverter(typeof(PackageNameTypeConverter))]
@@ -34,9 +35,9 @@ internal sealed class ManifestSettings : BaseCreateSettings
 	[TypeConverter(typeof(UriTypeConverter))]
 	public Uri? Website { get; set; }
 
-	[CommandOption("--dependency <DEPENDENCY>")]
+	[CommandOption($"{DEPENDENCY_OPTION} <DEPENDENCY>")]
 	[Description("Other package needed by the package")]
-	public string[]? Dependencies { get; init; }
+	public PackageDependency[]? Dependencies { get; init; }
 
 	/// <inheritdoc />
 	public override ValidationResult Validate()
@@ -47,8 +48,18 @@ internal sealed class ManifestSettings : BaseCreateSettings
 		if (!Version.IsValid())
 			return ValidationResult.Error($"'{Version}' is not a valid package version.");
 
-		if (Dependencies != null && !Dependencies.All(RegexHelper.IsDependencyValid))
-			return ValidationResult.Error("Dependencies contain item(s) with illegal characters.");
+		if (Dependencies != null)
+		{
+			var invalidDependencies = Dependencies.Where(d => !d.IsValid()).ToArray();
+
+			if (invalidDependencies.Length > 0)
+			{
+				var list = string.Join(", ", invalidDependencies.Select(d => $"'{d}'"));
+				return ValidationResult.Error(
+					$"'{DEPENDENCY_OPTION}' contains invalid value(s): {list}"
+				);
+			}
+		}
 
 		return base.Validate();
 	}

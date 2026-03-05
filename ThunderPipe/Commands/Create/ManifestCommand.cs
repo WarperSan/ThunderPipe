@@ -57,7 +57,7 @@ internal sealed class ManifestCommand : AsyncCommand<ManifestSettings>
 			Description = settings.Description ?? "",
 			Version = settings.Version,
 			Website = settings.Website?.ToString() ?? "",
-			Dependencies = settings.Dependencies ?? [],
+			Dependencies = settings.Dependencies?.Select(d => d.ToString()).ToArray() ?? [],
 		};
 
 		var json = JsonConvert.SerializeObject(data, Formatting.Indented);
