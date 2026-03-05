@@ -80,7 +80,7 @@ internal static class Program
 		return await app.RunAsync(args, cancellationTokenSource.Token);
 	}
 
-	private static void ValidateBranch(IConfigurator<Settings.Validate.BaseSettings> config)
+	private static void ValidateBranch(IConfigurator<Settings.Validate.BaseValidateSettings> config)
 	{
 		config.SetDescription("Check that a package and its metadata are valid.");
 
@@ -117,7 +117,7 @@ internal static class Program
 			);
 	}
 
-	private static void CreateBranch(IConfigurator<Settings.Create.BaseSettings> config)
+	private static void CreateBranch(IConfigurator<Settings.Create.BaseCreateSettings> config)
 	{
 		config.SetDescription("Generate files required by Thunderstore packages");
 
@@ -147,7 +147,7 @@ internal static class Program
 			);
 	}
 
-	private static void FetchBranch(IConfigurator<Settings.Fetch.BaseSettings> config)
+	private static void FetchBranch(IConfigurator<Settings.Fetch.BaseFetchSettings> config)
 	{
 		config
 			.AddCommand<Commands.Fetch.LatestVersionCommand>("version")
