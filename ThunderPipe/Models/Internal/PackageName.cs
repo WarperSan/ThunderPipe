@@ -18,7 +18,7 @@ public sealed record PackageName
 	/// <summary>
 	/// Checks if the package name is valid
 	/// </summary>
-	public bool IsValid() => Regex.IsMatch("^[a-zA-Z0-9_]+$", _name);
+	public bool IsValid() => Regex.IsMatch(_name, "^[a-zA-Z0-9_]+$");
 
 	/// <inheritdoc/>
 	public override string ToString() => _name;
