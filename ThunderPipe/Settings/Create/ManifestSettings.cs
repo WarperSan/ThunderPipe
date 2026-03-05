@@ -22,7 +22,8 @@ internal sealed class ManifestSettings : BaseCreateSettings
 
 	[CommandArgument(1, "<version>")]
 	[Description("Version of the package")]
-	public required string Version { get; init; }
+	[TypeConverter(typeof(PackageVersionTypeConverter))]
+	public required PackageVersion Version { get; init; }
 
 	[CommandOption("--description <DESCRIPTION>")]
 	[Description("Short description of the package")]
@@ -43,11 +44,8 @@ internal sealed class ManifestSettings : BaseCreateSettings
 		if (!Name.IsValid())
 			return ValidationResult.Error($"'{Name}' is not a valid package name.");
 
-		if (string.IsNullOrEmpty(Version))
-			return ValidationResult.Error("Version cannot be empty.");
-
-		if (!RegexHelper.IsVersionValid(Version))
-			return ValidationResult.Error("Version contains illegal characters.");
+		if (!Version.IsValid())
+			return ValidationResult.Error($"'{Version}' is not a valid package version.");
 
 		if (Dependencies != null && !Dependencies.All(RegexHelper.IsDependencyValid))
 			return ValidationResult.Error("Dependencies contain item(s) with illegal characters.");
