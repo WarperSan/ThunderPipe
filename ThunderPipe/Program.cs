@@ -9,6 +9,8 @@ namespace ThunderPipe;
 
 internal static class Program
 {
+	private const string TOKEN_EXAMPLE = "$THUNDERSTORE_TOKEN";
+
 	public static async Task<int> Main(string[] args)
 	{
 		var cancellationTokenSource = new CancellationTokenSource();
@@ -62,7 +64,7 @@ internal static class Program
 					"MyTeam",
 					"risk-of-rain2",
 					"--token",
-					"your-token"
+					TOKEN_EXAMPLE
 				)
 				.WithExample(
 					"publish",
@@ -70,7 +72,7 @@ internal static class Program
 					"MyTeam",
 					"lethal-company",
 					"--token",
-					"your-token",
+					TOKEN_EXAMPLE,
 					"--category",
 					"moons",
 					"--has-nsfw"
@@ -82,12 +84,14 @@ internal static class Program
 
 	private static void ValidateBranch(IConfigurator<Settings.Validate.BaseValidateSettings> config)
 	{
-		config.SetDescription("Check that a package and its metadata are valid.");
+		config.SetDescription(
+			"Check that values and package files meet Thunderstore's requirements"
+		);
 
 		config
 			.AddCommand<Commands.Validate.PackageCommand>("package")
 			.WithDescription("Check that a package and its metadata are valid before publishing")
-			.WithExample("validate", "package", "./my-mod", "MyTeam", "--token", "your-token");
+			.WithExample("validate", "package", "./my-mod", "MyTeam", "--token", TOKEN_EXAMPLE);
 
 		config
 			.AddCommand<Commands.Validate.CommunityCommand>("community")
@@ -149,6 +153,8 @@ internal static class Program
 
 	private static void FetchBranch(IConfigurator<Settings.Fetch.BaseFetchSettings> config)
 	{
+		config.SetDescription("Retrieve information about packages from Thunderstore");
+
 		config
 			.AddCommand<Commands.Fetch.LatestVersionCommand>("version")
 			.WithDescription("Print the latest published version number of a package")
