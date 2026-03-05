@@ -10,7 +10,8 @@
 		  	**/ThunderPipe/Program.cs,
 		  	**/ThunderPipe/Commands/**/*.cs,
 		  	**/ThunderPipe/Settings/**/*.cs,
-		  	**/ThunderPipe/Models/**/*.cs
+		  	**/ThunderPipe/Models/API/**/*.cs,
+		  	**/ThunderPipe/Models/Domain/**/*.cs
 		  </ExcludeByFile>
           <SingleHit>false</SingleHit>
           <UseSourceLink>true</UseSourceLink>
