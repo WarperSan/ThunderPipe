@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using System.Text.RegularExpressions;
 using ThunderPipe.Infrastructure.TypeConverters;
 
 namespace ThunderPipe.Models.Internal;
@@ -20,19 +19,19 @@ public sealed record PackageDependency
 
 		if (components.Length == 3)
 		{
-			Namespace = components[0];
+			Team = new PackageTeam(components[0]);
 			Name = new PackageName(components[1]);
 			Version = new PackageVersion(components[2]);
 		}
 		else
 		{
-			Namespace = null;
+			Team = null;
 			Name = null;
 			Version = null;
 		}
 	}
 
-	public string? Namespace { get; }
+	public PackageTeam? Team { get; }
 	public PackageName? Name { get; }
 	public PackageVersion? Version { get; }
 
@@ -41,7 +40,7 @@ public sealed record PackageDependency
 	/// </summary>
 	public bool IsValid()
 	{
-		if (Namespace == null)
+		if (Team == null)
 			return false;
 
 		if (Name == null)
@@ -50,9 +49,7 @@ public sealed record PackageDependency
 		if (Version == null)
 			return false;
 
-		return Regex.IsMatch(Namespace, "^(?!_)[a-zA-Z0-9_]+(?<!_)$")
-			&& Name.IsValid()
-			&& Version.IsValid();
+		return Team.IsValid() && Name.IsValid() && Version.IsValid();
 	}
 
 	/// <inheritdoc/>

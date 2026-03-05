@@ -33,7 +33,7 @@ internal sealed class DependencyApiClient : ThunderstoreClient
 				continue;
 
 			var request = new RequestBuilder(tempBuilder)
-				.SetPathParameter(NAMESPACE, dependency.Namespace!)
+				.SetPathParameter(NAMESPACE, dependency.Team!)
 				.SetPathParameter(NAME, dependency.Name!)
 				.SetPathParameter(VERSION, dependency.Version!)
 				.Build();

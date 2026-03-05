@@ -5,9 +5,9 @@ using ThunderPipe.Models.Internal;
 namespace ThunderPipe.Infrastructure.TypeConverters;
 
 /// <summary>
-/// Converts a <see cref="string"/> to a <see cref="PackageDependency"/>
+/// Converts a <see cref="string"/> to a <see cref="PackageTeam"/>
 /// </summary>
-internal sealed class PackageDependencyTypeConverter : TypeConverter
+internal sealed class PackageTeamTypeConverter : TypeConverter
 {
 	/// <inheritdoc/>
 	public override bool CanConvertFrom(ITypeDescriptorContext? context, Type sourceType)
@@ -25,6 +25,6 @@ internal sealed class PackageDependencyTypeConverter : TypeConverter
 		if (value is not string name)
 			return base.ConvertFrom(context, culture, value);
 
-		return new PackageDependency(name);
+		return new PackageTeam(name);
 	}
 }

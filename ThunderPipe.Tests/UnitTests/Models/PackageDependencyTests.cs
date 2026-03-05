@@ -35,7 +35,8 @@ public class PackageDependencyTests
 	{
 		var packageDependency = new PackageDependency(dependencyString);
 
-		Assert.Equal(@namespace, packageDependency.Namespace);
+		Assert.NotNull(packageDependency.Team);
+		Assert.Equal(@namespace, packageDependency.Team);
 		Assert.NotNull(packageDependency.Name);
 		Assert.Equal(name, packageDependency.Name);
 		Assert.NotNull(packageDependency.Version);
@@ -51,7 +52,7 @@ public class PackageDependencyTests
 	{
 		var packageDependency = new PackageDependency(dependencyString);
 
-		Assert.Null(packageDependency.Namespace);
+		Assert.Null(packageDependency.Team);
 		Assert.Null(packageDependency.Name);
 		Assert.Null(packageDependency.Version);
 	}
