@@ -2,6 +2,8 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using Spectre.Console;
 using Spectre.Console.Cli;
+using ThunderPipe.Infrastructure.TypeConverters;
+using ThunderPipe.Models.Internal;
 using ThunderPipe.Utils;
 
 namespace ThunderPipe.Settings.Create;
@@ -11,11 +13,12 @@ namespace ThunderPipe.Settings.Create;
 /// </summary>
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
-public sealed class ManifestSettings : BaseSettings
+internal sealed class ManifestSettings : BaseCreateSettings
 {
 	[CommandArgument(0, "<name>")]
 	[Description("Name of the package")]
-	public required string Name { get; init; }
+	[TypeConverter(typeof(PackageNameTypeConverter))]
+	public required PackageName Name { get; init; }
 
 	[CommandArgument(1, "<version>")]
 	[Description("Version of the package")]
@@ -37,11 +40,8 @@ public sealed class ManifestSettings : BaseSettings
 	/// <inheritdoc />
 	public override ValidationResult Validate()
 	{
-		if (string.IsNullOrEmpty(Name))
-			return ValidationResult.Error("Name cannot be empty.");
-
-		if (!RegexHelper.IsNameValid(Name))
-			return ValidationResult.Error("Name contains illegal characters.");
+		if (!Name.IsValid())
+			return ValidationResult.Error($"'{Name}' is not a valid package name.");
 
 		if (string.IsNullOrEmpty(Version))
 			return ValidationResult.Error("Version cannot be empty.");

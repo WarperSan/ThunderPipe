@@ -49,7 +49,7 @@ internal sealed class ManifestCommand : AsyncCommand<ManifestSettings>
 		CancellationToken cancellationToken
 	)
 	{
-		var path = Path.Combine(settings.Directory!, "manifest.json");
+		var path = Path.Combine(settings.OutputDirectory!, "manifest.json");
 
 		var data = new ManifestModel
 		{
