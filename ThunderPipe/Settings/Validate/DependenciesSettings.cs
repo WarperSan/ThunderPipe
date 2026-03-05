@@ -11,10 +11,10 @@ namespace ThunderPipe.Settings.Validate;
 /// </summary>
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
-internal sealed class DependenciesSettings : BaseSettings
+internal sealed class DependenciesSettings : BaseValidateSettings
 {
 	[CommandArgument(0, "<dependencies>")]
-	[Description("Dependency string to validate")]
+	[Description("Dependency strings to validate")]
 	public required PackageDependency[] Dependencies { get; init; }
 
 	/// <inheritdoc />
@@ -26,7 +26,7 @@ internal sealed class DependenciesSettings : BaseSettings
 		{
 			var list = string.Join(", ", invalidDependencies.Select(d => $"'{d}'"));
 
-			return ValidationResult.Error($"Dependencies contains invalid value(s): {list}");
+			return ValidationResult.Error($"Invalid dependency string(s): {list}");
 		}
 
 		return base.Validate();
