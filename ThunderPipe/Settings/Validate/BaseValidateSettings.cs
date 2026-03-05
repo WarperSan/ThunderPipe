@@ -10,19 +10,21 @@ namespace ThunderPipe.Settings.Validate;
 /// </summary>
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
-public abstract class BaseSettings : BaseCommandSettings
+internal abstract class BaseValidateSettings : BaseCommandSettings
 {
-	[CommandOption("--repository")]
-	[Description("URL of the server hosting the package")]
+	private const string HOST_OPTION = "--host";
+
+	[CommandOption(HOST_OPTION)]
+	[Description("URL of the Thunderstore server to validate against")]
 	[DefaultValue("https://thunderstore.io")]
 	[TypeConverter(typeof(UriTypeConverter))]
-	public Uri? Repository { get; init; }
+	public Uri? Host { get; init; }
 
 	/// <inheritdoc />
 	public override ValidationResult Validate()
 	{
-		if (Repository == null)
-			return ValidationResult.Error("Repository cannot be empty.");
+		if (Host == null)
+			return ValidationResult.Error($"'{HOST_OPTION}' cannot be empty.");
 
 		return base.Validate();
 	}
