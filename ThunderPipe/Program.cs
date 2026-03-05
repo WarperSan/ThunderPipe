@@ -108,16 +108,8 @@ internal static class Program
 		config
 			.AddCommand<Commands.Validate.CategoriesCommand>("categories")
 			.WithDescription("Check that all category slugs exist within a given community")
-			.WithExample("validate", "categories", "risk-of-rain2", "--category", "tools")
-			.WithExample(
-				"validate",
-				"categories",
-				"risk-of-rain2",
-				"--category",
-				"tools",
-				"--category",
-				"mods"
-			);
+			.WithExample("validate", "categories", "risk-of-rain2", "tools")
+			.WithExample("validate", "categories", "risk-of-rain2", "tools", "mods");
 
 		config
 			.AddCommand<Commands.Validate.DependenciesCommand>("dependencies")

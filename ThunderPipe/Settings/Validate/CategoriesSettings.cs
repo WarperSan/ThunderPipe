@@ -10,15 +10,15 @@ namespace ThunderPipe.Settings.Validate;
 /// </summary>
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
-public sealed class CategoriesSettings : BaseSettings
+internal sealed class CategoriesSettings : BaseValidateSettings
 {
 	[CommandArgument(0, "<community>")]
 	[Description("Slug of the community to validate categories against")]
 	public required string Community { get; init; }
 
-	[CommandOption("--category <CATEGORY>")]
-	[Description("Slug of the category to validate")]
-	public string[]? Categories { get; init; }
+	[CommandArgument(1, "<categories>")]
+	[Description("Slugs of the categories to validate")]
+	public required string[] Categories { get; init; }
 
 	/// <inheritdoc />
 	public override ValidationResult Validate()
@@ -26,10 +26,7 @@ public sealed class CategoriesSettings : BaseSettings
 		if (string.IsNullOrWhiteSpace(Community))
 			return ValidationResult.Error("Community cannot be empty.");
 
-		if (Categories == null || Categories.Length == 0)
-			return ValidationResult.Error("At least one category must be specified.");
-
-		if (Categories.Any(string.IsNullOrEmpty))
+		if (Categories.Any(string.IsNullOrWhiteSpace))
 			return ValidationResult.Error("Categories contain an empty item.");
 
 		return base.Validate();
