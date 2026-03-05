@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using Spectre.Console;
 using Spectre.Console.Cli;
+using ThunderPipe.Models.Internal;
 
 namespace ThunderPipe.Settings.Validate;
 
@@ -10,17 +11,23 @@ namespace ThunderPipe.Settings.Validate;
 /// </summary>
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
-public sealed class DependenciesSettings : BaseSettings
+internal sealed class DependenciesSettings : BaseSettings
 {
 	[CommandArgument(0, "<dependencies>")]
 	[Description("Dependency string to validate")]
-	public required string[] Dependencies { get; init; }
+	public required PackageDependency[] Dependencies { get; init; }
 
 	/// <inheritdoc />
 	public override ValidationResult Validate()
 	{
-		if (Dependencies.Any(string.IsNullOrEmpty))
-			return ValidationResult.Error("Dependencies contain an empty item.");
+		var invalidDependencies = Dependencies.Where(d => !d.IsValid()).ToArray();
+
+		if (invalidDependencies.Length > 0)
+		{
+			var list = string.Join(", ", invalidDependencies.Select(d => $"'{d}'"));
+
+			return ValidationResult.Error($"Dependencies contains invalid value(s): {list}");
+		}
 
 		return base.Validate();
 	}

@@ -1,3 +1,4 @@
+using ThunderPipe.Models.Internal;
 using ThunderPipe.Utils;
 
 namespace ThunderPipe.Clients;
@@ -14,40 +15,38 @@ internal sealed class DependencyApiClient : ThunderstoreClient
 	/// <summary>
 	/// Finds the missing dependencies
 	/// </summary>
-	public async Task<ISet<string>> GetMissing(string[] dependencies)
+	public async Task<ISet<PackageDependency>> GetMissing(PackageDependency[] dependencies)
 	{
+		const string NAMESPACE = "NAMESPACE";
+		const string NAME = "NAME";
+		const string VERSION = "VERSION";
+
 		var tempBuilder = new RequestBuilder(Builder)
 			.Get()
-			.ToEndpoint("api/experimental/package/{NAMESPACE}/{NAME}/{VERSION}/");
+			.ToEndpoint($"api/experimental/package/{{{NAMESPACE}}}/{{{NAME}}}/{{{VERSION}}}/");
 
-		var dependenciesToFind = new HashSet<string>(dependencies);
+		var dependenciesFound = new HashSet<PackageDependency>();
 
 		foreach (var dependency in dependencies)
 		{
-			RegexHelper.SplitDependency(
-				dependency,
-				out var @namespace,
-				out var name,
-				out var version
-			);
-
-			if (@namespace == null || name == null || version == null)
+			if (!dependency.IsValid())
 				continue;
 
 			var request = new RequestBuilder(tempBuilder)
-				.SetPathParameter("NAMESPACE", @namespace)
-				.SetPathParameter("NAME", name)
-				.SetPathParameter("VERSION", version)
+				.SetPathParameter(NAMESPACE, dependency.Namespace!)
+				.SetPathParameter(NAME, dependency.Name!)
+				.SetPathParameter(VERSION, dependency.Version!)
 				.Build();
 
+			// TODO: Check if endpoint has changed
 			var response = await SendRequest<Models.API.GetDependency.Response>(request);
 
 			if (!response.IsActive)
 				continue;
 
-			dependenciesToFind.Remove(dependency);
+			dependenciesFound.Add(dependency);
 		}
 
-		return dependenciesToFind;
+		return dependencies.Except(dependenciesFound).ToHashSet();
 	}
 }
