@@ -7,26 +7,29 @@ namespace ThunderPipe.Settings.Publish;
 /// <summary>
 /// Settings used by any publishing command
 /// </summary>
-public abstract class BaseSettings : BaseCommandSettings
+internal abstract class BasePublishSettings : BaseCommandSettings
 {
-	[CommandOption("--token", true)]
+	private const string TOKEN_OPTION = "--token";
+	private const string HOST_OPTION = "--host";
+
+	[CommandOption(TOKEN_OPTION, true)]
 	[Description("Service account API token for authentication")]
 	public required string Token { get; init; }
 
-	[CommandOption("--repository")]
-	[Description("URL of the repository where to publish the package")]
+	[CommandOption(HOST_OPTION)]
+	[Description("URL of the Thunderstore server to publish to")]
 	[DefaultValue("https://thunderstore.io")]
 	[TypeConverter(typeof(UriTypeConverter))]
-	public Uri? Repository { get; init; }
+	public Uri? Host { get; init; }
 
 	/// <inheritdoc />
 	public override ValidationResult Validate()
 	{
 		if (string.IsNullOrWhiteSpace(Token))
-			return ValidationResult.Error("Token cannot be empty.");
+			return ValidationResult.Error($"'{TOKEN_OPTION}' cannot be empty.");
 
-		if (Repository == null)
-			return ValidationResult.Error("Repository cannot be empty.");
+		if (Host == null)
+			return ValidationResult.Error($"'{HOST_OPTION}' cannot be empty.");
 
 		return base.Validate();
 	}
