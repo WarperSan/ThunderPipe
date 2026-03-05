@@ -11,29 +11,48 @@ namespace ThunderPipe.Models.Internal;
 public sealed record PackageDependency
 {
 	private readonly string _dependencyString;
-	private readonly string _namespace;
-	private readonly PackageName _name;
-	private readonly PackageVersion _version;
 
 	public PackageDependency(string dependencyString)
 	{
 		_dependencyString = dependencyString;
 
-		var components = _dependencyString.Split("-");
+		var components = _dependencyString.Split("-", StringSplitOptions.RemoveEmptyEntries);
 
-		_namespace = components.ElementAtOrDefault(0) ?? "";
-		_name = new PackageName(components.ElementAtOrDefault(1) ?? "");
-		_version = new PackageVersion(components.ElementAtOrDefault(2) ?? "");
+		if (components.Length == 3)
+		{
+			Namespace = components[0];
+			Name = new PackageName(components[1]);
+			Version = new PackageVersion(components[2]);
+		}
+		else
+		{
+			Namespace = null;
+			Name = null;
+			Version = null;
+		}
 	}
+
+	public string? Namespace { get; }
+	public PackageName? Name { get; }
+	public PackageVersion? Version { get; }
 
 	/// <summary>
 	/// Checks if the package dependency string is valid
 	/// </summary>
 	public bool IsValid()
 	{
-		return Regex.IsMatch(_namespace, "^(?!_)[a-zA-Z0-9_]+(?<!_)$")
-			&& _name.IsValid()
-			&& _version.IsValid();
+		if (Namespace == null)
+			return false;
+
+		if (Name == null)
+			return false;
+
+		if (Version == null)
+			return false;
+
+		return Regex.IsMatch(Namespace, "^(?!_)[a-zA-Z0-9_]+(?<!_)$")
+			&& Name.IsValid()
+			&& Version.IsValid();
 	}
 
 	/// <inheritdoc/>
