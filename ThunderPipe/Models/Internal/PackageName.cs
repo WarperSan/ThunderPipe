@@ -1,11 +1,13 @@
+using System.ComponentModel;
 using System.Text.RegularExpressions;
-using ThunderPipe.Utils;
+using ThunderPipe.Infrastructure.TypeConverters;
 
 namespace ThunderPipe.Models.Internal;
 
 /// <summary>
 /// Represents a valid package name
 /// </summary>
+[TypeConverter(typeof(PackageNameTypeConverter))]
 public sealed record PackageName
 {
 	private readonly string _name;

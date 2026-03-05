@@ -18,12 +18,10 @@ internal sealed class ManifestSettings : BaseCreateSettings
 
 	[CommandArgument(0, "<name>")]
 	[Description("Name of the package")]
-	[TypeConverter(typeof(PackageNameTypeConverter))]
 	public required PackageName Name { get; init; }
 
 	[CommandArgument(1, "<version>")]
 	[Description("Version of the package")]
-	[TypeConverter(typeof(PackageVersionTypeConverter))]
 	public required PackageVersion Version { get; init; }
 
 	[CommandOption("--description <DESCRIPTION>")]

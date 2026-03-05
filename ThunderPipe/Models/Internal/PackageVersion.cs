@@ -1,10 +1,13 @@
+using System.ComponentModel;
 using System.Text.RegularExpressions;
+using ThunderPipe.Infrastructure.TypeConverters;
 
 namespace ThunderPipe.Models.Internal;
 
 /// <summary>
 /// Represents a valid package version
 /// </summary>
+[TypeConverter(typeof(PackageVersionTypeConverter))]
 public sealed record PackageVersion
 {
 	private readonly string _version;
