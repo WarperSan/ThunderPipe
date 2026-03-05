@@ -22,16 +22,16 @@ internal sealed class PackageCommand : AsyncCommand<Settings.Publish.PackageSett
 
 	/// <inheritdoc />
 	public override async Task<int> ExecuteAsync(
-		CommandContext                   context,
+		CommandContext context,
 		Settings.Publish.PackageSettings settings,
-		CancellationToken                cancellationToken
+		CancellationToken cancellationToken
 	)
 	{
 		var file = settings.File;
 
 		_logger.LogInformation("Starting to publish '{File}'.", file);
 
-		var builder = new RequestBuilder().ToUri(settings.Repository!).WithAuth(settings.Token);
+		var builder = new RequestBuilder().ToUri(settings.Host!).WithAuth(settings.Token);
 
 		_logger.LogInformation("Publishing '{File}'", file);
 

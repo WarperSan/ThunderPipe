@@ -87,15 +87,7 @@ internal static class Program
 		config
 			.AddCommand<Commands.Validate.PackageCommand>("package")
 			.WithDescription("Check that a package and its metadata are valid before publishing")
-			.WithExample(
-				"validate",
-				"package",
-				"./my-mod",
-				"--token",
-				"your-token",
-				"--team",
-				"MyTeam"
-			);
+			.WithExample("validate", "package", "./my-mod", "MyTeam", "--token", "your-token");
 
 		config
 			.AddCommand<Commands.Validate.CommunityCommand>("community")
