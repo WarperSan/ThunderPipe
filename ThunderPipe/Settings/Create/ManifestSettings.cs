@@ -2,7 +2,8 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using Spectre.Console;
 using Spectre.Console.Cli;
-using ThunderPipe.Utils;
+using ThunderPipe.Infrastructure.TypeConverters;
+using ThunderPipe.Models.Internal;
 
 namespace ThunderPipe.Settings.Create;
 
@@ -11,46 +12,52 @@ namespace ThunderPipe.Settings.Create;
 /// </summary>
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
-public sealed class ManifestSettings : BaseSettings
+internal sealed class ManifestSettings : BaseCreateSettings
 {
+	private const string DEPENDENCY_OPTION = "--dependency";
+
 	[CommandArgument(0, "<name>")]
 	[Description("Name of the package")]
-	public required string Name { get; init; }
+	public required PackageName Name { get; init; }
 
 	[CommandArgument(1, "<version>")]
 	[Description("Version of the package")]
-	public required string Version { get; init; }
+	public required PackageVersion Version { get; init; }
 
 	[CommandOption("--description <DESCRIPTION>")]
-	[Description("Description of the package")]
+	[Description("Short description of the package")]
 	public string? Description { get; init; }
 
 	[CommandOption("--website <WEBSITE>")]
-	[Description("URL of the package's website")]
+	[Description("URL of the package's homepage or source repository")]
 	[TypeConverter(typeof(UriTypeConverter))]
 	public Uri? Website { get; set; }
 
-	[CommandOption("--dependency <DEPENDENCY>")]
-	[Description("Dependencies needed by the package")]
-	public string[]? Dependencies { get; init; }
+	[CommandOption($"{DEPENDENCY_OPTION} <DEPENDENCY>")]
+	[Description("Dependency string for a required package")]
+	public PackageDependency[]? Dependencies { get; init; }
 
 	/// <inheritdoc />
 	public override ValidationResult Validate()
 	{
-		if (string.IsNullOrEmpty(Name))
-			return ValidationResult.Error("Name cannot be empty.");
+		if (!Name.IsValid())
+			return ValidationResult.Error($"'{Name}' is not a valid package name.");
 
-		if (!RegexHelper.IsNameValid(Name))
-			return ValidationResult.Error("Name contains illegal characters.");
+		if (!Version.IsValid())
+			return ValidationResult.Error($"'{Version}' is not a valid package version.");
 
-		if (string.IsNullOrEmpty(Version))
-			return ValidationResult.Error("Version cannot be empty.");
+		if (Dependencies != null)
+		{
+			var invalidDependencies = Dependencies.Where(d => !d.IsValid()).ToArray();
 
-		if (!RegexHelper.IsVersionValid(Version))
-			return ValidationResult.Error("Version contains illegal characters.");
-
-		if (Dependencies != null && !Dependencies.All(RegexHelper.IsDependencyValid))
-			return ValidationResult.Error("Dependencies contain item(s) with illegal characters.");
+			if (invalidDependencies.Length > 0)
+			{
+				var list = string.Join(", ", invalidDependencies.Select(d => $"'{d}'"));
+				return ValidationResult.Error(
+					$"'{DEPENDENCY_OPTION}' contains invalid value(s): {list}"
+				);
+			}
+		}
 
 		return base.Validate();
 	}

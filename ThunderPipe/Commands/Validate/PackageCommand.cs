@@ -34,7 +34,7 @@ internal sealed class PackageCommand : AsyncCommand<PackageSettings>
 			settings.PackageFolder
 		);
 
-		var builder = new RequestBuilder().ToUri(settings.Repository!).WithAuth(settings.Token);
+		var builder = new RequestBuilder().ToUri(settings.Host!).WithAuth(settings.Token);
 		var client = new ValidationApiClient(builder, new HttpClient(), cancellationToken);
 
 		var iconPath = Path.GetFullPath(settings.IconPath!, settings.PackageFolder);

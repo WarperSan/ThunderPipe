@@ -2,6 +2,9 @@ using ThunderPipe.Clients;
 using ThunderPipe.Tests.Helpers;
 using ThunderPipe.Tests.MockedObjects;
 using ThunderPipe.Utils;
+using ValidateIcon = ThunderPipe.Models.API.ValidateIcon;
+using ValidateManifest = ThunderPipe.Models.API.ValidateManifest;
+using ValidateReadme = ThunderPipe.Models.API.ValidateReadme;
 
 namespace ThunderPipe.Tests.UnitTests.Clients;
 
@@ -16,9 +19,7 @@ public class ValidationApiClientTests
 		var mockedHttp = new MockHttpMessageHandler();
 		var fileSystem = new TestFileSystem();
 
-		mockedHttp
-			.When("*")
-			.RespondJSON(new Models.API.ValidateIcon.Response { DataErrors = [ERROR] });
+		mockedHttp.When("*").RespondJSON(new ValidateIcon.Response { DataErrors = [ERROR] });
 
 		fileSystem.SetContent(PATH, await ImageHelper.CreateImage(1, 1));
 
@@ -43,9 +44,7 @@ public class ValidationApiClientTests
 		var mockedHttp = new MockHttpMessageHandler();
 		var fileSystem = new TestFileSystem();
 
-		mockedHttp
-			.When("*")
-			.RespondJSON(new Models.API.ValidateIcon.Response { ValidationErrors = [ERROR] });
+		mockedHttp.When("*").RespondJSON(new ValidateIcon.Response { ValidationErrors = [ERROR] });
 
 		fileSystem.SetContent(PATH, await ImageHelper.CreateImage(1, 1));
 
@@ -76,7 +75,7 @@ public class ValidationApiClientTests
 		mockedHttp
 			.When("*")
 			.RespondJSON(
-				new Models.API.ValidateIcon.Response
+				new ValidateIcon.Response
 				{
 					DataErrors = [ERROR_1, ERROR_2],
 					ValidationErrors = [ERROR_3, ERROR_4],
@@ -109,7 +108,7 @@ public class ValidationApiClientTests
 		var mockedHttp = new MockHttpMessageHandler();
 		var fileSystem = new TestFileSystem();
 
-		mockedHttp.When("*").RespondJSON(new Models.API.ValidateIcon.Response { Valid = false });
+		mockedHttp.When("*").RespondJSON(new ValidateIcon.Response { Valid = false });
 
 		fileSystem.SetContent(PATH, await ImageHelper.CreateImage(1, 1));
 
@@ -140,7 +139,7 @@ public class ValidationApiClientTests
 		var mockedHttp = new MockHttpMessageHandler();
 		var fileSystem = new TestFileSystem();
 
-		mockedHttp.When("*").RespondJSON(new Models.API.ValidateIcon.Response());
+		mockedHttp.When("*").RespondJSON(new ValidateIcon.Response());
 
 		fileSystem.SetContent(PATH, await ImageHelper.CreateImage(1, 1));
 
@@ -173,9 +172,7 @@ public class ValidationApiClientTests
 
 		mockedHttp
 			.When("*")
-			.RespondJSON(
-				new Models.API.ValidateIcon.Response { DataErrors = ["Error"], Valid = true }
-			);
+			.RespondJSON(new ValidateIcon.Response { DataErrors = ["Error"], Valid = true });
 
 		fileSystem.SetContent(PATH, await ImageHelper.CreateImage(1, 1));
 
@@ -206,7 +203,7 @@ public class ValidationApiClientTests
 		var mockedHttp = new MockHttpMessageHandler();
 		var fileSystem = new TestFileSystem();
 
-		mockedHttp.When("*").RespondJSON(new Models.API.ValidateIcon.Response { Valid = true });
+		mockedHttp.When("*").RespondJSON(new ValidateIcon.Response { Valid = true });
 
 		fileSystem.SetContent(PATH, await ImageHelper.CreateImage(1, 1));
 
@@ -231,9 +228,7 @@ public class ValidationApiClientTests
 		var mockedHttp = new MockHttpMessageHandler();
 		var fileSystem = new TestFileSystem();
 
-		mockedHttp
-			.When("*")
-			.RespondJSON(new Models.API.ValidateManifest.Response { DataErrors = [ERROR] });
+		mockedHttp.When("*").RespondJSON(new ValidateManifest.Response { DataErrors = [ERROR] });
 
 		fileSystem.SetContent(PATH, "{}");
 
@@ -261,7 +256,7 @@ public class ValidationApiClientTests
 
 		mockedHttp
 			.When("*")
-			.RespondJSON(new Models.API.ValidateManifest.Response { ValidationErrors = [ERROR] });
+			.RespondJSON(new ValidateManifest.Response { ValidationErrors = [ERROR] });
 
 		fileSystem.SetContent(PATH, "{}");
 
@@ -289,7 +284,7 @@ public class ValidationApiClientTests
 
 		mockedHttp
 			.When("*")
-			.RespondJSON(new Models.API.ValidateManifest.Response { NamespaceErrors = [ERROR] });
+			.RespondJSON(new ValidateManifest.Response { NamespaceErrors = [ERROR] });
 
 		fileSystem.SetContent(PATH, "{}");
 
@@ -323,7 +318,7 @@ public class ValidationApiClientTests
 		mockedHttp
 			.When("*")
 			.RespondJSON(
-				new Models.API.ValidateManifest.Response
+				new ValidateManifest.Response
 				{
 					DataErrors = [ERROR_1, ERROR_2],
 					ValidationErrors = [ERROR_3, ERROR_4],
@@ -358,9 +353,7 @@ public class ValidationApiClientTests
 		var mockedHttp = new MockHttpMessageHandler();
 		var fileSystem = new TestFileSystem();
 
-		mockedHttp
-			.When("*")
-			.RespondJSON(new Models.API.ValidateManifest.Response { Valid = false });
+		mockedHttp.When("*").RespondJSON(new ValidateManifest.Response { Valid = false });
 
 		fileSystem.SetContent(PATH, "{}");
 
@@ -392,7 +385,7 @@ public class ValidationApiClientTests
 		var mockedHttp = new MockHttpMessageHandler();
 		var fileSystem = new TestFileSystem();
 
-		mockedHttp.When("*").RespondJSON(new Models.API.ValidateManifest.Response());
+		mockedHttp.When("*").RespondJSON(new ValidateManifest.Response());
 
 		fileSystem.SetContent(PATH, "{}");
 
@@ -426,9 +419,7 @@ public class ValidationApiClientTests
 
 		mockedHttp
 			.When("*")
-			.RespondJSON(
-				new Models.API.ValidateManifest.Response { DataErrors = ["Error"], Valid = true }
-			);
+			.RespondJSON(new ValidateManifest.Response { DataErrors = ["Error"], Valid = true });
 
 		fileSystem.SetContent(PATH, "{}");
 
@@ -460,7 +451,7 @@ public class ValidationApiClientTests
 		var mockedHttp = new MockHttpMessageHandler();
 		var fileSystem = new TestFileSystem();
 
-		mockedHttp.When("*").RespondJSON(new Models.API.ValidateManifest.Response { Valid = true });
+		mockedHttp.When("*").RespondJSON(new ValidateManifest.Response { Valid = true });
 
 		fileSystem.SetContent(PATH, "{}");
 
@@ -484,9 +475,7 @@ public class ValidationApiClientTests
 		var mockedHttp = new MockHttpMessageHandler();
 		var fileSystem = new TestFileSystem();
 
-		mockedHttp
-			.When("*")
-			.RespondJSON(new Models.API.ValidateReadme.Response { DataErrors = [ERROR] });
+		mockedHttp.When("*").RespondJSON(new ValidateReadme.Response { DataErrors = [ERROR] });
 
 		fileSystem.SetContent(PATH, "this is a great README");
 
@@ -513,7 +502,7 @@ public class ValidationApiClientTests
 
 		mockedHttp
 			.When("*")
-			.RespondJSON(new Models.API.ValidateReadme.Response { ValidationErrors = [ERROR] });
+			.RespondJSON(new ValidateReadme.Response { ValidationErrors = [ERROR] });
 
 		fileSystem.SetContent(PATH, "aww :(");
 
@@ -544,7 +533,7 @@ public class ValidationApiClientTests
 		mockedHttp
 			.When("*")
 			.RespondJSON(
-				new Models.API.ValidateReadme.Response
+				new ValidateReadme.Response
 				{
 					DataErrors = [ERROR_1, ERROR_2],
 					ValidationErrors = [ERROR_3, ERROR_4],
@@ -577,7 +566,7 @@ public class ValidationApiClientTests
 		var mockedHttp = new MockHttpMessageHandler();
 		var fileSystem = new TestFileSystem();
 
-		mockedHttp.When("*").RespondJSON(new Models.API.ValidateReadme.Response { Valid = false });
+		mockedHttp.When("*").RespondJSON(new ValidateReadme.Response { Valid = false });
 
 		fileSystem.SetContent(PATH, "oh?");
 
@@ -608,7 +597,7 @@ public class ValidationApiClientTests
 		var mockedHttp = new MockHttpMessageHandler();
 		var fileSystem = new TestFileSystem();
 
-		mockedHttp.When("*").RespondJSON(new Models.API.ValidateReadme.Response());
+		mockedHttp.When("*").RespondJSON(new ValidateReadme.Response());
 
 		fileSystem.SetContent(PATH, "oh?");
 
@@ -641,9 +630,7 @@ public class ValidationApiClientTests
 
 		mockedHttp
 			.When("*")
-			.RespondJSON(
-				new Models.API.ValidateReadme.Response { DataErrors = ["Error"], Valid = true }
-			);
+			.RespondJSON(new ValidateReadme.Response { DataErrors = ["Error"], Valid = true });
 
 		fileSystem.SetContent(PATH, "oh?");
 
@@ -674,7 +661,7 @@ public class ValidationApiClientTests
 		var mockedHttp = new MockHttpMessageHandler();
 		var fileSystem = new TestFileSystem();
 
-		mockedHttp.When("*").RespondJSON(new Models.API.ValidateReadme.Response { Valid = true });
+		mockedHttp.When("*").RespondJSON(new ValidateReadme.Response { Valid = true });
 
 		fileSystem.SetContent(PATH, "oh?");
 

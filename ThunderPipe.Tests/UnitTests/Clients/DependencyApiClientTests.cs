@@ -1,5 +1,6 @@
 using ThunderPipe.Clients;
 using ThunderPipe.Models.API.GetDependency;
+using ThunderPipe.Models.Internal;
 using ThunderPipe.Utils;
 
 namespace ThunderPipe.Tests.UnitTests.Clients;
@@ -34,7 +35,12 @@ public class DependencyApiClientTests
 		);
 
 		// Act
-		var requested = new[] { SLUG_1, SLUG_2, SLUG_3 };
+		var requested = new[]
+		{
+			new PackageDependency(SLUG_1),
+			new PackageDependency(SLUG_2),
+			new PackageDependency(SLUG_3),
+		};
 		var missing = await client.GetMissing(requested);
 
 		// Assert
@@ -68,11 +74,16 @@ public class DependencyApiClientTests
 		);
 
 		// Act
-		var requested = new[] { SLUG_1, SLUG_2, SLUG_3 };
+		var requested = new[]
+		{
+			new PackageDependency(SLUG_1),
+			new PackageDependency(SLUG_2),
+			new PackageDependency(SLUG_3),
+		};
 		var missing = await client.GetMissing(requested);
 
 		// Assert
-		var expected = new[] { SLUG_2, SLUG_3 };
+		var expected = new[] { new PackageDependency(SLUG_2), new PackageDependency(SLUG_3) };
 
 		Assert.Equal(missing.Count, expected.Length);
 
@@ -125,11 +136,16 @@ public class DependencyApiClientTests
 		);
 
 		// Act
-		var requested = new[] { SLUG_1, SLUG_2, SLUG_3 };
+		var requested = new[]
+		{
+			new PackageDependency(SLUG_1),
+			new PackageDependency(SLUG_2),
+			new PackageDependency(SLUG_3),
+		};
 		var missing = await client.GetMissing(requested);
 
 		// Assert
-		var expected = new[] { SLUG_1, SLUG_2 };
+		var expected = new[] { new PackageDependency(SLUG_1), new PackageDependency(SLUG_2) };
 
 		Assert.Equal(missing.Count, expected.Length);
 

@@ -49,7 +49,7 @@ internal sealed class ManifestCommand : AsyncCommand<ManifestSettings>
 		CancellationToken cancellationToken
 	)
 	{
-		var path = Path.Combine(settings.Directory!, "manifest.json");
+		var path = Path.Combine(settings.OutputDirectory!, "manifest.json");
 
 		var data = new ManifestModel
 		{
@@ -57,7 +57,7 @@ internal sealed class ManifestCommand : AsyncCommand<ManifestSettings>
 			Description = settings.Description ?? "",
 			Version = settings.Version,
 			Website = settings.Website?.ToString() ?? "",
-			Dependencies = settings.Dependencies ?? [],
+			Dependencies = settings.Dependencies?.Select(d => d.ToString()).ToArray() ?? [],
 		};
 
 		var json = JsonConvert.SerializeObject(data, Formatting.Indented);

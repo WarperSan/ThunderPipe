@@ -7,10 +7,10 @@ namespace ThunderPipe.Settings;
 /// <summary>
 /// Settings used by any command
 /// </summary>
-public abstract class BaseCommandSettings : CommandSettings
+internal abstract class BaseCommandSettings : CommandSettings
 {
 	[CommandOption("--log-level")]
-	[Description("Minimum logging level")]
+	[Description("Minimum level of messages to display")]
 #if DEBUG
 	[DefaultValue(LogLevel.Debug)]
 #else

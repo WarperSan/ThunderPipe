@@ -27,9 +27,9 @@ dotnet tool install ThunderPipe --add-source <path-to-download>
 ```
 
 > [!IMPORTANT]
-> The commands shown in further sections will omit the `dotnet tool run` part, due to being installed globally. This can be achieved by adding the `--global` flag in the installation command.
+> The commands shown in further sections will omit the `dotnet tool run` part, due to [being installed globally](https://learn.microsoft.com/en-us/dotnet/core/tools/global-tools-how-to-use#use-the-tool-as-a-global-tool-traditional-installation). This can be achieved by adding the `--global` flag in the installation command.
 
-## Usage
+## Commands
 
 ### Publishing a Package
 
@@ -46,52 +46,6 @@ ThunderPipe publish <file> <team> <community> --token <your-token>
 | `<community>`  | Slug of the community                          |
 | `<your-token>` | API token of the service account to use        |
 
-### Validating a Community
-
-Checks if your community slug matches with an existing community.
-
-```bash
-ThunderPipe validate community <community>
-```
-
-| Argument      | Description           |
-|---------------|-----------------------|
-| `<community>` | Slug of the community |
-
-Modding communities often provide a template that you can use that includes this value. However, if you need to find it yourself, you can look at this [API endpoint](https://thunderstore.io/api/experimental/community/) for the `identifier` you are looking for.
-
-### Validating Categories
-
-Checks if your categories' slugs match existing categories in your community.
-
-```bash
-ThunderPipe validate categories <community> \
-	--category <category1> \
-	--category <category2>
-```
-
-| Argument      | Description            |
-|---------------|------------------------|
-| `<community>` | Slug of the community  |
-| `<category#>` | Slug for each category |
-
-Modding communities often provide a lookup table to see the slug of every category. However, if you need to find it yourself, you can look at this [API endpoint](https://thunderstore.io/api/experimental/community/<COMMUNITY>/category/) for the `slug` you are looking for.
-
-> [!NOTE]
-> If you use the endpoint, make sure to replace `<COMMUNITY>` with the slug of the community you are within.
-
-### Validating Dependencies
-
-Checks if your dependencies' strings match existing packages.
-
-```bash
-ThunderPipe validate dependencies <dependencies>
-```
-
-| Argument         | Description                            |
-|------------------|----------------------------------------|
-| `<dependencies>` | Dependency strings for each dependency |
-
 ### Validating a Package
 
 Checks if your package meets [Thunderstore's requirements](https://thunderstore.io/package/create/docs/) before you attempt to publish it.
@@ -104,9 +58,26 @@ ThunderPipe validate package <package-folder>
 |--------------------|---------------------------------------------------|
 | `<package-folder>` | Path to the folder containing the package's files |
 
-## Documentation
+### Create a Manifest
 
-You can find more information on the [wiki](https://github.com/WarperSan/ThunderPipe/wiki).
+Creates a `manifest.json` file that meets [Thunderstore's requirements](https://thunderstore.io/package/create/docs/).
+
+```bash
+ThunderPipe create manifest <name> <version>
+```
+
+| Argument    | Description            |
+|-------------|------------------------|
+| `<name>`    | Name of the package    |
+| `<version>` | Version of the package |
+
+## GitHub Action
+
+[upload-thunderstore-package](https://github.com/WarperSan/upload-thunderstore-package) is a GitHub Action that wraps ThunderPipe to automate the full publish pipeline. Under the hood, the action automates the full validation, the build, the packaging and the publishing.
+
+## Wiki
+
+If you want more in-depth information about this tool, you can visit the [wiki](https://github.com/WarperSan/ThunderPipe/wiki).
 
 ## Contributing
 
