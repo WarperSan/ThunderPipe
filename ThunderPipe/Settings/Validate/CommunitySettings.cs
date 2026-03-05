@@ -10,10 +10,10 @@ namespace ThunderPipe.Settings.Validate;
 /// </summary>
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
-public sealed class CommunitySettings : BaseSettings
+internal sealed class CommunitySettings : BaseValidateSettings
 {
 	[CommandArgument(0, "<community>")]
-	[Description("Slug of the community to look up")]
+	[Description("Slug of the community to validate")]
 	public required string Community { get; init; }
 
 	/// <inheritdoc />
