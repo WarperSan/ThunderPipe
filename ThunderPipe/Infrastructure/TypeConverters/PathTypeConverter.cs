@@ -11,7 +11,7 @@ internal sealed class PathTypeConverter : TypeConverter
 	/// <inheritdoc />
 	public override bool CanConvertFrom(ITypeDescriptorContext? context, Type sourceType)
 	{
-		return sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
+		return sourceType == typeof(string) && base.CanConvertFrom(context, sourceType);
 	}
 
 	/// <inheritdoc />
@@ -23,6 +23,9 @@ internal sealed class PathTypeConverter : TypeConverter
 	{
 		if (value is not string path)
 			return base.ConvertFrom(context, culture, value);
+
+		if (string.IsNullOrEmpty(path))
+			return path;
 
 		path = Environment.ExpandEnvironmentVariables(path);
 
