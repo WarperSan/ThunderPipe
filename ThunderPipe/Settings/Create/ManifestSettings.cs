@@ -34,7 +34,7 @@ internal sealed class ManifestSettings : BaseCreateSettings
 	public Uri? Website { get; set; }
 
 	[CommandOption($"{DEPENDENCY_OPTION} <DEPENDENCY>")]
-	[Description("Other package needed by the package")]
+	[Description("Dependency string for a required package")]
 	public PackageDependency[]? Dependencies { get; init; }
 
 	/// <inheritdoc />
