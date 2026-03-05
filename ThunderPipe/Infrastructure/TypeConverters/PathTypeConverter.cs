@@ -24,7 +24,7 @@ internal sealed class PathTypeConverter : TypeConverter
 		if (value is not string path)
 			return base.ConvertFrom(context, culture, value);
 
-		if (string.IsNullOrEmpty(path))
+		if (string.IsNullOrWhiteSpace(path))
 			return path;
 
 		path = Environment.ExpandEnvironmentVariables(path);

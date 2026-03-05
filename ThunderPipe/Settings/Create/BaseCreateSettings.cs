@@ -21,7 +21,7 @@ internal abstract class BaseCreateSettings : BaseCommandSettings
 	/// <inheritdoc />
 	public override ValidationResult Validate()
 	{
-		if (string.IsNullOrEmpty(OutputDirectory))
+		if (string.IsNullOrWhiteSpace(OutputDirectory))
 			return ValidationResult.Error($"'{OUTPUT_DIRECTORY_OPTION}' cannot be empty.");
 
 		OutputDirectory = Path.GetFullPath(OutputDirectory);
