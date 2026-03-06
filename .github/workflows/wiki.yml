@@ -8,9 +8,15 @@ jobs:
 
         steps:
             - uses: actions/checkout@v1
+            - name: Setup .NET
+              uses: actions/setup-dotnet@v4
+
+            - name: Build
+              run: dotnet build
+
             - run: |
                 mkdir "Documentation"
-                echo "Hello" >> "Documentation/test.md"
+                echo "$(dotnet run --project "./ThunderPipe/ThunderPipe.csproj" -- --help)" >> "Documentation/test.md"
             # Additional steps to generate documentation in "Documentation" directory
             - name: Upload Documentation to Wiki
               uses: SwiftDocOrg/github-wiki-publish-action@v1
