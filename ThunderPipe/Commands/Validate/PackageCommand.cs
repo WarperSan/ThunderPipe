@@ -81,7 +81,7 @@ internal sealed class PackageCommand : AsyncCommand<PackageSettings>
 			output.Append("- ");
 			output.AppendJoin("\n- ", errors);
 
-			_logger.LogError(output.ToString());
+			_logger.LogError("{Output}", output.ToString());
 			return 1;
 		}
 
