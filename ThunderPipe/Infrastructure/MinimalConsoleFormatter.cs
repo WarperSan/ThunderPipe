@@ -21,16 +21,10 @@ internal sealed class MinimalConsoleFormatter : ConsoleFormatter
 	)
 	{
 		var message = logEntry.Formatter(logEntry.State, logEntry.Exception);
+		var color = GetLogLevelConsoleColor(logEntry.LogLevel);
+		var level = GetLogLevelString(logEntry.LogLevel);
 
-		if (logEntry.LogLevel != LogLevel.None)
-		{
-			textWriter.Write("[");
-			textWriter.Write(GetLogLevelConsoleColor(logEntry.LogLevel));
-			textWriter.Write(GetLogLevelString(logEntry.LogLevel));
-			textWriter.Write("\x1b[39m\x1b[22m] ");
-		}
-
-		textWriter.WriteLine(message);
+		textWriter.WriteLine($"[{color}{level}\x1b[39m\x1b[22m] {message}");
 	}
 
 	private static string GetLogLevelString(LogLevel logLevel) =>
