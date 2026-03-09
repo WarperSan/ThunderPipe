@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 using Spectre.Console.Cli;
 using ThunderPipe.Infrastructure;
 using ThunderPipe.Services.Implementations;
@@ -27,7 +28,14 @@ internal static class Program
 
 		services.AddLogging(builder =>
 		{
-			builder.AddConsole();
+			builder.AddConsole(options =>
+			{
+				options.FormatterName = nameof(MinimalConsoleFormatter);
+			});
+			builder.AddConsoleFormatter<MinimalConsoleFormatter, ConsoleFormatterOptions>(options =>
+			{
+				options.IncludeScopes = false;
+			});
 			builder.AddFilter(level => level >= LogInterceptor.Level);
 		});
 
