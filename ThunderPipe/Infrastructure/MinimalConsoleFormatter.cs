@@ -30,12 +30,12 @@ internal sealed class MinimalConsoleFormatter : ConsoleFormatter
 	private static string GetLogLevelString(LogLevel logLevel) =>
 		logLevel switch
 		{
-			LogLevel.Trace => "trce",
-			LogLevel.Debug => "dbug",
-			LogLevel.Information => "info",
-			LogLevel.Warning => "warn",
-			LogLevel.Error => "fail",
-			LogLevel.Critical => "crit",
+			LogLevel.Trace => "Trace",
+			LogLevel.Debug => "Debug",
+			LogLevel.Information => "Info",
+			LogLevel.Warning => "Warning",
+			LogLevel.Error => "Error",
+			LogLevel.Critical => "Critical",
 			_ => throw new ArgumentOutOfRangeException(nameof(logLevel)),
 		};
 
