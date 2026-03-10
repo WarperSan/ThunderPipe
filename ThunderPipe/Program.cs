@@ -50,6 +50,9 @@ internal static class Program
 			config.SetApplicationName(nameof(ThunderPipe));
 			config.SetApplicationVersion(Metadata.VERSION);
 			config.SetInterceptor(new LogInterceptor());
+			config.SetExceptionHandler(
+				(exception, resolver) => HandleException(exception, resolver)
+			);
 
 			config.Settings.CaseSensitivity = CaseSensitivity.None;
 			config.Settings.StrictParsing = false;
@@ -167,5 +170,21 @@ internal static class Program
 			.AddCommand<Commands.Fetch.LatestVersionCommand>("version")
 			.WithDescription("Print the latest published version number of a package")
 			.WithExample("fetch", "version", "MyTeam", "MyMod");
+	}
+
+	/// <summary>
+	/// Handles incoming <see cref="Exception"/>
+	/// </summary>
+	/// <returns>Error code to return</returns>
+	private static byte HandleException(Exception exception, ITypeResolver? resolver)
+	{
+		if (resolver?.Resolve(typeof(ILoggerFactory)) is ILoggerFactory factory)
+		{
+			var logger = factory.CreateLogger(exception.GetType());
+
+			logger.LogError(exception, "{Message}", exception.Message);
+		}
+
+		return 1;
 	}
 }
