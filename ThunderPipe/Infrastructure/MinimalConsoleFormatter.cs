@@ -46,7 +46,7 @@ internal sealed class MinimalConsoleFormatter : ConsoleFormatter
 			LogLevel.Debug => "\x1b[37m",
 			LogLevel.Information => "\x1b[32m",
 			LogLevel.Warning => "\x1b[1m\x1b[33m",
-			LogLevel.Error => "\x1b[30m",
+			LogLevel.Error => "\x1b[31m",
 			LogLevel.Critical => "\x1b[1m\x1b[37m",
 			_ => throw new ArgumentOutOfRangeException(nameof(logLevel)),
 		};
