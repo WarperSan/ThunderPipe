@@ -14,6 +14,6 @@
 
 	<!-- Content includes -->
 	<ItemGroup>
-		<Content Include="Sdk/*" Pack="true" PackagePath="Sdk/" />
+		<Content Include="Sdk/*" Pack="true" PackagePath="Sdk/"/>
 	</ItemGroup>
 </Project>
