@@ -25,7 +25,9 @@ internal sealed class CategoriesCommand : AsyncCommand<CategoriesSettings>
 	)
 	{
 		var builder = new RequestBuilder().ToUri(settings.Host!);
-		using var client = new CategoryApiClient(builder, new HttpClient(), cancellationToken);
+		using var client = new CategoryApiClient();
+		client.SetBuilder(builder);
+		client.SetCancellationToken(cancellationToken);
 
 		var missingCategories = await client.GetMissing(settings.Categories!, settings.Community);
 

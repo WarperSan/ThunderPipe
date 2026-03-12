@@ -7,10 +7,6 @@ namespace ThunderPipe.Clients;
 /// </summary>
 internal sealed class CategoryApiClient : ThunderstoreClient
 {
-	/// <inheritdoc />
-	public CategoryApiClient(RequestBuilder builder, HttpClient client, CancellationToken ct)
-		: base(builder, client, ct) { }
-
 	/// <summary>
 	/// Finds the missing categories in the given community
 	/// </summary>

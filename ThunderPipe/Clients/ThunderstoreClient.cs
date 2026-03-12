@@ -21,7 +21,7 @@ internal abstract class ThunderstoreClient : IDisposable
 	/// <summary>
 	/// Token used to cancel operations
 	/// </summary>
-	protected CancellationToken CancellationToken;
+	protected CancellationToken CancellationToken = CancellationToken.None;
 
 	/// <summary>
 	/// Sets the <see cref="HttpClient"/> instance of this client
@@ -53,6 +53,11 @@ internal abstract class ThunderstoreClient : IDisposable
 	}
 
 	#endregion
+
+	protected ThunderstoreClient()
+	{
+		SetClient(new HttpClient());
+	}
 
 	#region Requests
 
@@ -104,6 +109,5 @@ internal abstract class ThunderstoreClient : IDisposable
 	public void Dispose()
 	{
 		_client?.Dispose();
-		_client = null;
 	}
 }
