@@ -1,0 +1,15 @@
+<Project>
+	<Target Name="ThunderPipeInstall">
+		<PropertyGroup>
+			<ThunderPipeVersion>1.0.1</ThunderPipeVersion>
+		</PropertyGroup>
+
+		<Exec Command="dotnet tool install ThunderPipe --global --version $(ThunderPipeVersion)" />
+	</Target>
+
+	<Target Name="ThunderPipePack" DependsOnTargets="ThunderPipeInstall;Build">
+		<Message Text="$(ThunderPipeHost)" Importance="High" />
+	</Target>
+	<Target Name="ThunderPipeValidate"></Target>
+	<Target Name="ThunderPipePublish"></Target>
+</Project>

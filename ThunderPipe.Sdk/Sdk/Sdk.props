@@ -1,0 +1,8 @@
+<Project>
+	<PropertyGroup>
+		<ThunderPipeOutputDir>$(MSBuildProjectDirectory)/artifacts/thunderstore/</ThunderPipeOutputDir>
+		<ThunderPipeToken></ThunderPipeToken>
+
+		<ThunderPipeHost>https://thunderstore.io/</ThunderPipeHost>
+	</PropertyGroup>
+</Project>
