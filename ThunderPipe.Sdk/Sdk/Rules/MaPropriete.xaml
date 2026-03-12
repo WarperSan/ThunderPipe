@@ -1,0 +1,6 @@
+<Rule Name="MaConfiguration" DisplayName="Mon SDK Perso"
+      xmlns="http://schemas.microsoft.com">
+	<StringProperty Name="MaProprietePerso"
+	                DisplayName="Nom de la propriété"
+	                Description="Cette description apparaîtra dans l'infobulle IntelliSense." />
+</Rule>
