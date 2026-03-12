@@ -16,12 +16,12 @@ internal abstract class ThunderstoreClient : IDisposable
 	/// <summary>
 	/// Default <see cref="RequestBuilder"/> for this client
 	/// </summary>
-	protected RequestBuilder Builder = new();
+	protected RequestBuilder Builder { get; private set; } = new();
 
 	/// <summary>
 	/// Token used to cancel operations
 	/// </summary>
-	protected CancellationToken CancellationToken = CancellationToken.None;
+	protected CancellationToken CancellationToken { get; private set; } = CancellationToken.None;
 
 	/// <summary>
 	/// Sets the <see cref="HttpClient"/> instance of this client
