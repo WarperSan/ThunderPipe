@@ -17,8 +17,8 @@ internal sealed class LatestVersionCommand : AsyncCommand<Settings.Fetch.LatestV
 	{
 		var builder = new RequestBuilder().ToUri(settings.Host!);
 		using var client = new PackageApiClient();
-		client.SetBuilder(builder);
-		client.SetCancellationToken(cancellationToken);
+		client.Builder = builder;
+		client.CancellationToken = cancellationToken;
 
 		var version = await client.GetVersion(settings.Team, settings.Name);
 		Console.WriteLine(version);

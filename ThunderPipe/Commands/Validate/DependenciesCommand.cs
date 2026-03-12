@@ -26,8 +26,8 @@ internal sealed class DependenciesCommand : AsyncCommand<DependenciesSettings>
 	{
 		var builder = new RequestBuilder().ToUri(settings.Host!);
 		using var client = new DependencyApiClient();
-		client.SetBuilder(builder);
-		client.SetCancellationToken(cancellationToken);
+		client.Builder = builder;
+		client.CancellationToken = cancellationToken;
 
 		var missingDependencies = await client.GetMissing(settings.Dependencies);
 

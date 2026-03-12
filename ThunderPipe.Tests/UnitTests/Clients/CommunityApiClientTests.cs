@@ -53,8 +53,8 @@ public class CommunityApiClientTests
 		var builder = new RequestBuilder().ToUri(new Uri(URL_1));
 
 		using var client = new CommunityApiClient();
-		client.SetBuilder(builder);
-		client.SetClient(mockHttp.ToHttpClient());
+		client.Builder = builder;
+		client.Client = mockHttp.ToHttpClient();
 
 		// Act
 		var doesCommunityExist = await client.Exists(SLUG_3);
@@ -95,8 +95,8 @@ public class CommunityApiClientTests
 		var builder = new RequestBuilder().ToUri(new Uri(URL_1));
 
 		using var client = new CommunityApiClient();
-		client.SetBuilder(builder);
-		client.SetClient(mockHttp.ToHttpClient());
+		client.Builder = builder;
+		client.Client = mockHttp.ToHttpClient();
 
 		// Act
 		var wasCommunityFound = await client.Exists("test");
@@ -148,8 +148,8 @@ public class CommunityApiClientTests
 		var builder = new RequestBuilder().ToUri(new Uri(URL_1));
 
 		using var client = new CommunityApiClient();
-		client.SetBuilder(builder);
-		client.SetClient(mockHttp.ToHttpClient());
+		client.Builder = builder;
+		client.Client = mockHttp.ToHttpClient();
 
 		// Act
 		var wasCommunityFound = await client.Exists("test");
@@ -179,8 +179,8 @@ public class CommunityApiClientTests
 		var builder = new RequestBuilder().ToUri(new Uri(URL_1));
 
 		using var client = new CommunityApiClient();
-		client.SetBuilder(builder);
-		client.SetClient(mockHttp.ToHttpClient());
+		client.Builder = builder;
+		client.Client = mockHttp.ToHttpClient();
 
 		// Act
 		var wasCommunityFound = await client.Exists("test2");

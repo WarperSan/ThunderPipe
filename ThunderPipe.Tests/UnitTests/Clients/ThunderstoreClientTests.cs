@@ -29,8 +29,8 @@ public class ThunderstoreClientTests
 		var builder = new RequestBuilder().ToUri(new Uri(URL));
 
 		using var client = new TestClient();
-		client.SetBuilder(builder);
-		client.SetClient(mockHttp.ToHttpClient());
+		client.Builder = builder;
+		client.Client = mockHttp.ToHttpClient();
 
 		try
 		{
@@ -59,8 +59,8 @@ public class ThunderstoreClientTests
 		var builder = new RequestBuilder().ToUri(new Uri(URL));
 
 		using var client = new TestClient();
-		client.SetBuilder(builder);
-		client.SetClient(mockHttp.ToHttpClient());
+		client.Builder = builder;
+		client.Client = mockHttp.ToHttpClient();
 
 		try
 		{
@@ -89,8 +89,8 @@ public class ThunderstoreClientTests
 		var builder = new RequestBuilder().ToUri(new Uri(URL));
 
 		using var client = new TestClient();
-		client.SetBuilder(builder);
-		client.SetClient(mockHttp.ToHttpClient());
+		client.Builder = builder;
+		client.Client = mockHttp.ToHttpClient();
 
 		try
 		{

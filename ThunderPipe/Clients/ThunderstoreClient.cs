@@ -1,4 +1,5 @@
 using System.Net.Http.Headers;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using ThunderPipe.Utils;
 
@@ -11,52 +12,46 @@ internal abstract class ThunderstoreClient : IDisposable
 {
 	#region Properties
 
-	private HttpClient? _client;
+	private HttpClient _client;
+	private RequestBuilder _builder;
 
 	/// <summary>
 	/// Default <see cref="RequestBuilder"/> for this client
 	/// </summary>
-	protected RequestBuilder Builder { get; private set; } = new();
+	public RequestBuilder Builder
+	{
+		protected get => _builder;
+		set => _builder = new RequestBuilder(value);
+	}
 
 	/// <summary>
 	/// Token used to cancel operations
 	/// </summary>
-	protected CancellationToken CancellationToken { get; private set; } = CancellationToken.None;
+	public CancellationToken CancellationToken { protected get; set; }
 
 	/// <summary>
-	/// Sets the <see cref="HttpClient"/> instance of this client
+	/// <see cref="HttpClient"/> instance used for operators
 	/// </summary>
-	public void SetClient(HttpClient client)
+	public HttpClient Client
 	{
-		_client = client;
+		set
+		{
+			_client = value;
 
-		_client.DefaultRequestHeaders.UserAgent.Add(
-			new ProductInfoHeaderValue(Metadata.GUID, Metadata.VERSION)
-		);
-		_client.Timeout = TimeSpan.FromMinutes(5);
-	}
-
-	/// <summary>
-	/// Sets the <see cref="CancellationToken"/> of this client
-	/// </summary>
-	public void SetCancellationToken(CancellationToken ct)
-	{
-		CancellationToken = ct;
-	}
-
-	/// <summary>
-	/// Sets the <see cref="RequestBuilder"/> of this client
-	/// </summary>
-	public void SetBuilder(RequestBuilder builder)
-	{
-		Builder = new RequestBuilder(builder);
+			_client.DefaultRequestHeaders.UserAgent.Add(
+				new ProductInfoHeaderValue(Metadata.GUID, Metadata.VERSION)
+			);
+			_client.Timeout = TimeSpan.FromMinutes(5);
+		}
 	}
 
 	#endregion
 
 	protected ThunderstoreClient()
 	{
-		SetClient(new HttpClient());
+		Builder = new RequestBuilder();
+		CancellationToken = CancellationToken.None;
+		Client = new HttpClient();
 	}
 
 	#region Requests
@@ -66,9 +61,6 @@ internal abstract class ThunderstoreClient : IDisposable
 	/// </summary>
 	protected async Task<HttpResponseMessage> SendRequest(HttpRequestMessage request)
 	{
-		if (_client == null)
-			throw new NullReferenceException($"Expected '{nameof(_client)}' to be initialized");
-
 		return await _client.SendAsync(request, CancellationToken);
 	}
 
@@ -108,6 +100,6 @@ internal abstract class ThunderstoreClient : IDisposable
 	/// <inheritdoc />
 	public void Dispose()
 	{
-		_client?.Dispose();
+		_client.Dispose();
 	}
 }
