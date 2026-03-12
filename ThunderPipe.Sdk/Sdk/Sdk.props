@@ -3,6 +3,6 @@
 		<ThunderPipeOutputDir>$(MSBuildProjectDirectory)/artifacts/thunderstore/</ThunderPipeOutputDir>
 		<ThunderPipeToken></ThunderPipeToken>
 
-		<ThunderPipeHost>https://thunderstore.io/</ThunderPipeHost>
+		<ThunderstoreHost>https://thunderstore.io/</ThunderstoreHost>
 	</PropertyGroup>
 </Project>
