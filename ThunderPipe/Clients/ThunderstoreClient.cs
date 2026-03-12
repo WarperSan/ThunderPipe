@@ -9,24 +9,27 @@ namespace ThunderPipe.Clients;
 /// </summary>
 internal abstract class ThunderstoreClient : IDisposable
 {
-	private readonly HttpClient _client;
+	#region Properties
+
+	private HttpClient? _client;
 
 	/// <summary>
 	/// Default <see cref="RequestBuilder"/> for this client
 	/// </summary>
-	protected readonly RequestBuilder Builder;
+	protected RequestBuilder Builder = new();
 
 	/// <summary>
 	/// Token used to cancel operations
 	/// </summary>
-	protected readonly CancellationToken CancellationToken;
+	protected CancellationToken CancellationToken;
 
-	protected ThunderstoreClient(RequestBuilder builder, HttpClient client, CancellationToken ct)
+	/// <summary>
+	/// Sets the <see cref="HttpClient"/> instance of this client
+	/// </summary>
+	public void SetClient(HttpClient client)
 	{
-		Builder = new RequestBuilder(builder);
-		CancellationToken = ct;
-
 		_client = client;
+
 		_client.DefaultRequestHeaders.UserAgent.Add(
 			new ProductInfoHeaderValue(Metadata.GUID, Metadata.VERSION)
 		);
@@ -34,10 +37,33 @@ internal abstract class ThunderstoreClient : IDisposable
 	}
 
 	/// <summary>
+	/// Sets the <see cref="CancellationToken"/> of this client
+	/// </summary>
+	public void SetCancellationToken(CancellationToken ct)
+	{
+		CancellationToken = ct;
+	}
+
+	/// <summary>
+	/// Sets the <see cref="RequestBuilder"/> of this client
+	/// </summary>
+	public void SetBuilder(RequestBuilder builder)
+	{
+		Builder = new RequestBuilder(builder);
+	}
+
+	#endregion
+
+	#region Requests
+
+	/// <summary>
 	/// Sends the given request
 	/// </summary>
 	protected async Task<HttpResponseMessage> SendRequest(HttpRequestMessage request)
 	{
+		if (_client == null)
+			throw new NullReferenceException($"Expected '{nameof(_client)}' to be initialized");
+
 		return await _client.SendAsync(request, CancellationToken);
 	}
 
@@ -72,9 +98,12 @@ internal abstract class ThunderstoreClient : IDisposable
 		return json;
 	}
 
+	#endregion
+
 	/// <inheritdoc />
 	public void Dispose()
 	{
-		_client.Dispose();
+		_client?.Dispose();
+		_client = null;
 	}
 }
