@@ -32,12 +32,16 @@ internal static class Program
 			{
 				options.FormatterName = nameof(MinimalConsoleFormatter);
 			});
+
 			builder.AddConsoleFormatter<MinimalConsoleFormatter, ConsoleFormatterOptions>(options =>
 			{
 				options.IncludeScopes = false;
 			});
 			builder.AddFilter(level => level >= LogInterceptor.Level);
 		});
+		services.AddSingleton<ILogger>(sp =>
+			sp.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(ThunderPipe))
+		);
 
 		services.AddSingleton<IFileSystem>(new FileSystem());
 
@@ -50,6 +54,7 @@ internal static class Program
 			config.SetApplicationName(nameof(ThunderPipe));
 			config.SetApplicationVersion(Metadata.VERSION);
 			config.SetInterceptor(new LogInterceptor());
+
 			config.SetExceptionHandler(
 				(exception, resolver) => HandleException(exception, resolver)
 			);
