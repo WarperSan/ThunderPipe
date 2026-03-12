@@ -37,6 +37,7 @@ internal sealed class PackageCommand : BaseCommand<Settings.Publish.PackageSetti
 		using var client = new PublishApiClient();
 		client.Builder = builder;
 		client.CancellationToken = cancellationToken;
+		client.Logger = Logger;
 
 		var uploadSession = await client.InitiateMultipartUpload(file, _fileSystem);
 

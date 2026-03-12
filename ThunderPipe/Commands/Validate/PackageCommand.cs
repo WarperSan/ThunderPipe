@@ -38,6 +38,7 @@ internal sealed class PackageCommand : BaseCommand<PackageSettings>
 		var client = new ValidationApiClient();
 		client.Builder = builder;
 		client.CancellationToken = cancellationToken;
+		client.Logger = Logger;
 
 		var iconPath = Path.GetFullPath(settings.IconPath!, settings.PackageFolder);
 		var manifestPath = Path.GetFullPath(settings.ManifestPath!, settings.PackageFolder);
