@@ -1,15 +1,25 @@
 <Project>
 	<Target Name="ThunderPipeInstall">
 		<PropertyGroup>
-			<ThunderPipeVersion>1.0.1</ThunderPipeVersion>
+			<ThunderPipeVersion>1.0.2</ThunderPipeVersion>
 		</PropertyGroup>
 
-		<Exec Command="dotnet tool install ThunderPipe --global --version $(ThunderPipeVersion)" />
+		<Exec Command="dotnet tool update ThunderPipe --global --version $(ThunderPipeVersion)"/>
+	</Target>
+
+	<Target Name="ThunderPipeProcessInputs">
+		<PropertyGroup>
+			<FormattedCategories Condition="'@(ThunderstoreCategory)' != ''">@(ThunderstoreCategory->'"%(Identity)"', ' ')</FormattedCategories>
+		</PropertyGroup>
+	</Target>
+
+	<Target Name="ThunderPipeValidate" DependsOnTargets="ThunderPipeInstall;ThunderPipeProcessInputs">
+		<Exec Command="ThunderPipe validate community &quot;$(ThunderStoreCommunity)&quot; --host $(ThunderstoreHost)"/>
+		<Exec Command="ThunderPipe validate categories $(FormattedCategories) --host $(ThunderstoreHost)"/>
 	</Target>
 
 	<Target Name="ThunderPipePack" DependsOnTargets="ThunderPipeInstall;Build">
-		<Message Text="$(ThunderPipeHost)" Importance="High" />
+		<Message Text="$(ThunderPipeHost)" Importance="High"/>
 	</Target>
-	<Target Name="ThunderPipeValidate"></Target>
 	<Target Name="ThunderPipePublish"></Target>
 </Project>
