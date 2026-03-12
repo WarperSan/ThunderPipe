@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+			targetNamespace="http://github.com/thunderpipe/schemas/test.xsd"
+			elementFormDefault="qualified">
+	<xsd:element name="PurchaseOrder" type="xsd:string"/>
+</xsd:schema>
