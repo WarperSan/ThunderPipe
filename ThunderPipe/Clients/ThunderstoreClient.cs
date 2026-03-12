@@ -12,8 +12,8 @@ internal abstract class ThunderstoreClient : IDisposable
 {
 	#region Properties
 
-	private HttpClient _client;
-	private RequestBuilder _builder;
+	private HttpClient _client = null!;
+	private RequestBuilder _builder = null!;
 
 	/// <summary>
 	/// Default <see cref="RequestBuilder"/> for this client
@@ -30,7 +30,7 @@ internal abstract class ThunderstoreClient : IDisposable
 	public CancellationToken CancellationToken { protected get; set; }
 
 	/// <summary>
-	/// <see cref="HttpClient"/> instance used for operators
+	/// <see cref="HttpClient"/> instance used for requests
 	/// </summary>
 	public HttpClient Client
 	{
