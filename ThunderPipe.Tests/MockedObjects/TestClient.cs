@@ -1,5 +1,4 @@
 using ThunderPipe.Clients;
-using ThunderPipe.Utils;
 
 namespace ThunderPipe.Tests.MockedObjects;
 
@@ -8,10 +7,6 @@ namespace ThunderPipe.Tests.MockedObjects;
 /// </summary>
 internal class TestClient : ThunderstoreClient
 {
-	/// <inheritdoc />
-	public TestClient(RequestBuilder builder, HttpClient client, CancellationToken ct)
-		: base(builder, client, ct) { }
-
 	/// <summary>
 	/// Sends a request and tries to ensure the response is a success
 	/// </summary>

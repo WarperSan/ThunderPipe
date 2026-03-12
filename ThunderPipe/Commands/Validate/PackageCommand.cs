@@ -11,14 +11,14 @@ using ThunderPipe.Utils;
 namespace ThunderPipe.Commands.Validate;
 
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
-internal sealed class PackageCommand : AsyncCommand<PackageSettings>
+internal sealed class PackageCommand : BaseCommand<PackageSettings>
 {
-	private readonly ILogger<PackageCommand> _logger;
 	private readonly IFileSystem _fileSystem;
 
-	public PackageCommand(ILogger<PackageCommand> logger, IFileSystem fileSystem)
+	/// <inheritdoc />
+	public PackageCommand(ILogger logger, IFileSystem fileSystem)
+		: base(logger)
 	{
-		_logger = logger;
 		_fileSystem = fileSystem;
 	}
 
@@ -29,13 +29,16 @@ internal sealed class PackageCommand : AsyncCommand<PackageSettings>
 		CancellationToken cancellationToken
 	)
 	{
-		_logger.LogInformation(
+		Logger.LogInformation(
 			"Starting to validate '{SettingsPackageFolder}'",
 			settings.PackageFolder
 		);
 
 		var builder = new RequestBuilder().ToUri(settings.Host!).WithAuth(settings.Token);
-		var client = new ValidationApiClient(builder, new HttpClient(), cancellationToken);
+		var client = new ValidationApiClient();
+		client.Builder = builder;
+		client.CancellationToken = cancellationToken;
+		client.Logger = Logger;
 
 		var iconPath = Path.GetFullPath(settings.IconPath!, settings.PackageFolder);
 		var manifestPath = Path.GetFullPath(settings.ManifestPath!, settings.PackageFolder);
@@ -65,7 +68,7 @@ internal sealed class PackageCommand : AsyncCommand<PackageSettings>
 
 		if (validations.Count == 0)
 		{
-			_logger.LogError("No validation rule was applied.");
+			Logger.LogError("No validation rule was applied.");
 			return 1;
 		}
 
@@ -81,11 +84,11 @@ internal sealed class PackageCommand : AsyncCommand<PackageSettings>
 			output.Append("- ");
 			output.AppendJoin("\n- ", errors);
 
-			_logger.LogError("{Output}", output.ToString());
+			Logger.LogError("{Output}", output.ToString());
 			return 1;
 		}
 
-		_logger.LogInformation("All files are valid!");
+		Logger.LogInformation("All files are valid!");
 		return 0;
 	}
 

@@ -28,7 +28,9 @@ public class ThunderstoreClientTests
 
 		var builder = new RequestBuilder().ToUri(new Uri(URL));
 
-		using var client = new TestClient(builder, mockHttp.ToHttpClient(), CancellationToken.None);
+		using var client = new TestClient();
+		client.Builder = builder;
+		client.Client = mockHttp.ToHttpClient();
 
 		try
 		{
@@ -56,7 +58,9 @@ public class ThunderstoreClientTests
 
 		var builder = new RequestBuilder().ToUri(new Uri(URL));
 
-		using var client = new TestClient(builder, mockHttp.ToHttpClient(), CancellationToken.None);
+		using var client = new TestClient();
+		client.Builder = builder;
+		client.Client = mockHttp.ToHttpClient();
 
 		try
 		{
@@ -84,7 +88,9 @@ public class ThunderstoreClientTests
 
 		var builder = new RequestBuilder().ToUri(new Uri(URL));
 
-		using var client = new TestClient(builder, mockHttp.ToHttpClient(), CancellationToken.None);
+		using var client = new TestClient();
+		client.Builder = builder;
+		client.Client = mockHttp.ToHttpClient();
 
 		try
 		{
@@ -102,7 +108,7 @@ public class ThunderstoreClientTests
 	[Fact]
 	public async Task Dispose_WhenDisposed_ThrowException()
 	{
-		var client = new TestClient(new RequestBuilder(), new HttpClient(), CancellationToken.None);
+		var client = new TestClient();
 
 		client.Dispose();
 

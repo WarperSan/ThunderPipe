@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Extensions.Logging;
 using Spectre.Console.Cli;
 using ThunderPipe.Clients;
 using ThunderPipe.Utils;
@@ -6,8 +7,12 @@ using ThunderPipe.Utils;
 namespace ThunderPipe.Commands.Fetch;
 
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
-internal sealed class LatestVersionCommand : AsyncCommand<Settings.Fetch.LatestVersionSettings>
+internal sealed class LatestVersionCommand : BaseCommand<Settings.Fetch.LatestVersionSettings>
 {
+	/// <inheritdoc />
+	public LatestVersionCommand(ILogger logger)
+		: base(logger) { }
+
 	/// <inheritdoc />
 	public override async Task<int> ExecuteAsync(
 		CommandContext context,
@@ -16,7 +21,10 @@ internal sealed class LatestVersionCommand : AsyncCommand<Settings.Fetch.LatestV
 	)
 	{
 		var builder = new RequestBuilder().ToUri(settings.Host!);
-		using var client = new PackageApiClient(builder, new HttpClient(), cancellationToken);
+		using var client = new PackageApiClient();
+		client.Builder = builder;
+		client.CancellationToken = cancellationToken;
+		client.Logger = Logger;
 
 		var version = await client.GetVersion(settings.Team, settings.Name);
 		Console.WriteLine(version);

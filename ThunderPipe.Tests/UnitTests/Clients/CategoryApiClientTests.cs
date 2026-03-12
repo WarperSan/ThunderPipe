@@ -52,11 +52,9 @@ public class CategoryApiClientTests
 
 		var builder = new RequestBuilder().ToUri(new Uri(URL_1));
 
-		using var client = new CategoryApiClient(
-			builder,
-			mockHttp.ToHttpClient(),
-			CancellationToken.None
-		);
+		using var client = new CategoryApiClient();
+		client.Builder = builder;
+		client.Client = mockHttp.ToHttpClient();
 
 		// Act
 		var requested = new[] { SLUG_1, SLUG_2, SLUG_3 };
@@ -75,11 +73,9 @@ public class CategoryApiClientTests
 		var mockHttp = new MockHttpMessageHandler();
 		var builder = new RequestBuilder().ToUri(new Uri(URL_1));
 
-		using var client = new CategoryApiClient(
-			builder,
-			mockHttp.ToHttpClient(),
-			CancellationToken.None
-		);
+		using var client = new CategoryApiClient();
+		client.Builder = builder;
+		client.Client = mockHttp.ToHttpClient();
 
 		// Act
 		var missing = await client.GetMissing([], "test");
@@ -119,11 +115,9 @@ public class CategoryApiClientTests
 
 		var builder = new RequestBuilder().ToUri(new Uri(URL_1));
 
-		using var client = new CategoryApiClient(
-			builder,
-			mockHttp.ToHttpClient(),
-			CancellationToken.None
-		);
+		using var client = new CategoryApiClient();
+		client.Builder = builder;
+		client.Client = mockHttp.ToHttpClient();
 
 		// Act
 		var requested = new[] { "test" };
@@ -178,11 +172,9 @@ public class CategoryApiClientTests
 
 		var builder = new RequestBuilder().ToUri(new Uri(URL_1));
 
-		using var client = new CategoryApiClient(
-			builder,
-			mockHttp.ToHttpClient(),
-			CancellationToken.None
-		);
+		using var client = new CategoryApiClient();
+		client.Builder = builder;
+		client.Client = mockHttp.ToHttpClient();
 
 		// Act
 		var requested = new[] { "temp" };
@@ -215,11 +207,9 @@ public class CategoryApiClientTests
 
 		var builder = new RequestBuilder().ToUri(new Uri(URL_1));
 
-		using var client = new CategoryApiClient(
-			builder,
-			mockHttp.ToHttpClient(),
-			CancellationToken.None
-		);
+		using var client = new CategoryApiClient();
+		client.Builder = builder;
+		client.Client = mockHttp.ToHttpClient();
 
 		// Act
 		var requested = new[] { "temp", "test2" };
