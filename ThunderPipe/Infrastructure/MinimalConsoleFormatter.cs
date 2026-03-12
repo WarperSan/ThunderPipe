@@ -24,7 +24,7 @@ internal sealed class MinimalConsoleFormatter : ConsoleFormatter
 		var color = GetLogLevelConsoleColor(logEntry.LogLevel);
 		var level = GetLogLevelString(logEntry.LogLevel);
 
-		textWriter.WriteLine($"[{color}{level}\x1b[39m\x1b[22m] {message}");
+		textWriter.WriteLine($"[{color}{level}\x1b[0m] {message}");
 	}
 
 	private static string GetLogLevelString(LogLevel logLevel) =>
@@ -42,12 +42,12 @@ internal sealed class MinimalConsoleFormatter : ConsoleFormatter
 	private static string GetLogLevelConsoleColor(LogLevel logLevel) =>
 		logLevel switch
 		{
-			LogLevel.Trace => "\x1b[37m",
+			LogLevel.Trace => "\x1b[90m",
 			LogLevel.Debug => "\x1b[37m",
 			LogLevel.Information => "\x1b[32m",
-			LogLevel.Warning => "\x1b[1m\x1b[33m",
+			LogLevel.Warning => "\x1b[1;33m",
 			LogLevel.Error => "\x1b[31m",
-			LogLevel.Critical => "\x1b[1m\x1b[37m",
+			LogLevel.Critical => "\x1b[1;97;41m",
 			_ => throw new ArgumentOutOfRangeException(nameof(logLevel)),
 		};
 }

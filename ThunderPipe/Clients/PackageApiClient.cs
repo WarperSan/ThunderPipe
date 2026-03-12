@@ -7,10 +7,6 @@ namespace ThunderPipe.Clients;
 /// </summary>
 internal sealed class PackageApiClient : ThunderstoreClient
 {
-	/// <inheritdoc />
-	public PackageApiClient(RequestBuilder builder, HttpClient client, CancellationToken ct)
-		: base(builder, client, ct) { }
-
 	/// <summary>
 	/// Gets the latest version of the package by the given team by the given name
 	/// </summary>

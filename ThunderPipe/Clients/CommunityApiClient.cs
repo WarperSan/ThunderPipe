@@ -7,10 +7,6 @@ namespace ThunderPipe.Clients;
 /// </summary>
 internal sealed class CommunityApiClient : ThunderstoreClient
 {
-	/// <inheritdoc />
-	public CommunityApiClient(RequestBuilder builder, HttpClient client, CancellationToken ct)
-		: base(builder, client, ct) { }
-
 	/// <summary>
 	/// Checks if a community with the given slug exists
 	/// </summary>

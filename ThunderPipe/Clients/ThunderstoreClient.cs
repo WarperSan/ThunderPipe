@@ -1,4 +1,5 @@
 using System.Net.Http.Headers;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using ThunderPipe.Utils;
 
@@ -9,36 +10,68 @@ namespace ThunderPipe.Clients;
 /// </summary>
 internal abstract class ThunderstoreClient : IDisposable
 {
-	private readonly HttpClient _client;
+	#region Properties
+
+	private HttpClient _client = null!;
+	private RequestBuilder _builder = null!;
 
 	/// <summary>
 	/// Default <see cref="RequestBuilder"/> for this client
 	/// </summary>
-	protected readonly RequestBuilder Builder;
+	public RequestBuilder Builder
+	{
+		protected get => _builder;
+		set => _builder = new RequestBuilder(value);
+	}
 
 	/// <summary>
 	/// Token used to cancel operations
 	/// </summary>
-	protected readonly CancellationToken CancellationToken;
+	public CancellationToken CancellationToken { protected get; set; }
 
-	protected ThunderstoreClient(RequestBuilder builder, HttpClient client, CancellationToken ct)
+	/// <summary>
+	/// <see cref="HttpClient"/> instance used for requests
+	/// </summary>
+	public HttpClient Client
 	{
-		Builder = new RequestBuilder(builder);
-		CancellationToken = ct;
+		set
+		{
+			_client = value;
 
-		_client = client;
-		_client.DefaultRequestHeaders.UserAgent.Add(
-			new ProductInfoHeaderValue(Metadata.GUID, Metadata.VERSION)
-		);
-		_client.Timeout = TimeSpan.FromMinutes(5);
+			_client.DefaultRequestHeaders.UserAgent.Add(
+				new ProductInfoHeaderValue(Metadata.GUID, Metadata.VERSION)
+			);
+			_client.Timeout = TimeSpan.FromMinutes(5);
+		}
 	}
+
+	/// <summary>
+	/// <see cref="ILogger"/> instead used for operations
+	/// </summary>
+	public ILogger? Logger { protected get; set; }
+
+	#endregion
+
+	protected ThunderstoreClient()
+	{
+		Builder = new RequestBuilder();
+		CancellationToken = CancellationToken.None;
+		Client = new HttpClient();
+		Logger = null;
+	}
+
+	#region Requests
 
 	/// <summary>
 	/// Sends the given request
 	/// </summary>
 	protected async Task<HttpResponseMessage> SendRequest(HttpRequestMessage request)
 	{
-		return await _client.SendAsync(request, CancellationToken);
+		Logger?.LogDebug("Sending request:\n{Request}", request);
+		var response = await _client.SendAsync(request, CancellationToken);
+
+		Logger?.LogDebug("Received response:\n{Response}", response);
+		return response;
 	}
 
 	/// <summary>
@@ -48,6 +81,7 @@ internal abstract class ThunderstoreClient : IDisposable
 	{
 		var response = await SendRequest(request);
 		var content = await response.Content.ReadAsStringAsync(CancellationToken);
+		Logger?.LogDebug("Received JSON:\n{Json}", content);
 
 		T? json;
 
@@ -71,6 +105,8 @@ internal abstract class ThunderstoreClient : IDisposable
 
 		return json;
 	}
+
+	#endregion
 
 	/// <inheritdoc />
 	public void Dispose()
