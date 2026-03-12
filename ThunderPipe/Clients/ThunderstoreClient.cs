@@ -45,6 +45,11 @@ internal abstract class ThunderstoreClient : IDisposable
 		}
 	}
 
+	/// <summary>
+	/// <see cref="ILogger"/> instead used for operations
+	/// </summary>
+	public ILogger? Logger { protected get; set; }
+
 	#endregion
 
 	protected ThunderstoreClient()
@@ -52,6 +57,7 @@ internal abstract class ThunderstoreClient : IDisposable
 		Builder = new RequestBuilder();
 		CancellationToken = CancellationToken.None;
 		Client = new HttpClient();
+		Logger = null;
 	}
 
 	#region Requests
@@ -61,7 +67,11 @@ internal abstract class ThunderstoreClient : IDisposable
 	/// </summary>
 	protected async Task<HttpResponseMessage> SendRequest(HttpRequestMessage request)
 	{
-		return await _client.SendAsync(request, CancellationToken);
+		Logger?.LogDebug("Sending request:\n{Request}", request);
+		var response = await _client.SendAsync(request, CancellationToken);
+
+		Logger?.LogDebug("Received response:\n{Response}", response);
+		return response;
 	}
 
 	/// <summary>
@@ -71,6 +81,7 @@ internal abstract class ThunderstoreClient : IDisposable
 	{
 		var response = await SendRequest(request);
 		var content = await response.Content.ReadAsStringAsync(CancellationToken);
+		Logger?.LogDebug("Received JSON:\n{Json}", content);
 
 		T? json;
 
