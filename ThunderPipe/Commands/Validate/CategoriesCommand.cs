@@ -8,14 +8,11 @@ using ThunderPipe.Utils;
 namespace ThunderPipe.Commands.Validate;
 
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
-internal sealed class CategoriesCommand : AsyncCommand<CategoriesSettings>
+internal sealed class CategoriesCommand : BaseCommand<CategoriesSettings>
 {
-	private readonly ILogger<CategoriesCommand> _logger;
-
-	public CategoriesCommand(ILogger<CategoriesCommand> logger)
-	{
-		_logger = logger;
-	}
+	/// <inheritdoc />
+	public CategoriesCommand(ILogger logger)
+		: base(logger) { }
 
 	/// <inheritdoc />
 	public override async Task<int> ExecuteAsync(
@@ -39,7 +36,7 @@ internal sealed class CategoriesCommand : AsyncCommand<CategoriesSettings>
 			);
 		}
 
-		_logger.LogInformation("All categories have been found!");
+		Logger.LogInformation("All categories have been found!");
 		return 0;
 	}
 }

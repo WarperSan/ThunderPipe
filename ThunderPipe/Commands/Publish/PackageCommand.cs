@@ -9,14 +9,13 @@ using ThunderPipe.Utils;
 namespace ThunderPipe.Commands.Publish;
 
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
-internal sealed class PackageCommand : AsyncCommand<Settings.Publish.PackageSettings>
+internal sealed class PackageCommand : BaseCommand<Settings.Publish.PackageSettings>
 {
-	private readonly ILogger<PackageCommand> _logger;
 	private readonly IFileSystem _fileSystem;
 
-	public PackageCommand(ILogger<PackageCommand> logger, IFileSystem fileSystem)
+	public PackageCommand(ILogger logger, IFileSystem fileSystem)
+		: base(logger)
 	{
-		_logger = logger;
 		_fileSystem = fileSystem;
 	}
 
@@ -29,11 +28,11 @@ internal sealed class PackageCommand : AsyncCommand<Settings.Publish.PackageSett
 	{
 		var file = settings.File;
 
-		_logger.LogInformation("Starting to publish '{File}'.", file);
+		Logger.LogInformation("Starting to publish '{File}'.", file);
 
 		var builder = new RequestBuilder().ToUri(settings.Host!).WithAuth(settings.Token);
 
-		_logger.LogInformation("Publishing '{File}'", file);
+		Logger.LogInformation("Publishing '{File}'", file);
 
 		using var client = new PublishApiClient();
 		client.Builder = builder;
@@ -41,7 +40,7 @@ internal sealed class PackageCommand : AsyncCommand<Settings.Publish.PackageSett
 
 		var uploadSession = await client.InitiateMultipartUpload(file, _fileSystem);
 
-		_logger.LogInformation(
+		Logger.LogInformation(
 			"Uploading '{File}' ({GetSizeString}) in {ChunkCount} chunks.",
 			file,
 			GetSizeString(_fileSystem.GetSize(file)),
@@ -71,7 +70,7 @@ internal sealed class PackageCommand : AsyncCommand<Settings.Publish.PackageSett
 		if (!finishedUpload)
 			throw new InvalidOperationException("Failed to finish upload.");
 
-		_logger.LogInformation("Successfully finalized the upload.");
+		Logger.LogInformation("Successfully finalized the upload.");
 
 		var releasedPackage = await client.SubmitPackage(
 			settings.Team,
@@ -81,13 +80,13 @@ internal sealed class PackageCommand : AsyncCommand<Settings.Publish.PackageSett
 			uploadSession.UUID
 		);
 
-		_logger.LogInformation(
+		Logger.LogInformation(
 			"Successfully published '{VersionName}' v{VersionVersion}",
 			releasedPackage.Name,
 			releasedPackage.Version
 		);
 
-		_logger.LogInformation(
+		Logger.LogInformation(
 			"The package is now available at '{VersionDownloadURL}'.",
 			releasedPackage.DownloadURL
 		);

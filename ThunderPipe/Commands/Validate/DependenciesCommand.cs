@@ -8,14 +8,11 @@ using ThunderPipe.Utils;
 namespace ThunderPipe.Commands.Validate;
 
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
-internal sealed class DependenciesCommand : AsyncCommand<DependenciesSettings>
+internal sealed class DependenciesCommand : BaseCommand<DependenciesSettings>
 {
-	private readonly ILogger<DependenciesCommand> _logger;
-
-	public DependenciesCommand(ILogger<DependenciesCommand> logger)
-	{
-		_logger = logger;
-	}
+	/// <inheritdoc />
+	public DependenciesCommand(ILogger logger)
+		: base(logger) { }
 
 	/// <inheritdoc />
 	public override async Task<int> ExecuteAsync(
@@ -39,7 +36,7 @@ internal sealed class DependenciesCommand : AsyncCommand<DependenciesSettings>
 			);
 		}
 
-		_logger.LogInformation("All dependencies have been found!");
+		Logger.LogInformation("All dependencies have been found!");
 		return 0;
 	}
 }

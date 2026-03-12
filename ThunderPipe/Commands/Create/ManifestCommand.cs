@@ -8,14 +8,13 @@ using ThunderPipe.Settings.Create;
 namespace ThunderPipe.Commands.Create;
 
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
-internal sealed class ManifestCommand : AsyncCommand<ManifestSettings>
+internal sealed class ManifestCommand : BaseCommand<ManifestSettings>
 {
-	private readonly ILogger<ManifestCommand> _logger;
 	private readonly IFileSystem _fileSystem;
 
-	public ManifestCommand(ILogger<ManifestCommand> logger, IFileSystem fileSystem)
+	public ManifestCommand(ILogger logger, IFileSystem fileSystem)
+		: base(logger)
 	{
-		_logger = logger;
 		_fileSystem = fileSystem;
 	}
 
@@ -62,9 +61,11 @@ internal sealed class ManifestCommand : AsyncCommand<ManifestSettings>
 
 		var json = JsonConvert.SerializeObject(data, Formatting.Indented);
 
+		Logger.LogDebug("Writing content to '{Path}':\n{Content}", path, json);
+
 		await _fileSystem.WriteAllTextAsync(path, json, cancellationToken);
 
-		_logger.LogInformation("File wrote to '{Path}'.", path);
+		Logger.LogInformation("File wrote to '{Path}'.", path);
 		return 0;
 	}
 }
