@@ -1,142 +1,88 @@
 <Project>
 	<!-- Default Items -->
 	<ItemGroup>
-		<ThunderstoreFile Condition="'@(ThunderstoreFile)' == ''" Include="$(OutDir)*.dll" />
-		<_ThunderPipeOption
-			Include="--host &quot;$(ThunderstoreHost)&quot;"
-			Condition="'$(ThunderstoreHost)' != ''"
-		/>
+		<ThunderstoreFile Condition="'@(ThunderstoreFile)' == ''" Include="$(OutDir)*.dll"/>
+		<_ThunderPipeOption Include="--host &quot;$(ThunderstoreHost)&quot;" Condition="'$(ThunderstoreHost)' != ''"/>
 	</ItemGroup>
 
 	<ItemGroup Condition="'@(ThunderstorePackageFile)' == ''">
-		<ThunderstorePackageFile
-			Include="$(MSBuildProjectDirectory)/icon.png"
-			Condition="Exists('$(MSBuildProjectDirectory)/icon.png')"
-		/>
-		<ThunderstorePackageFile
-			Include="$(MSBuildProjectDirectory)/README.md"
-			Condition="Exists('$(MSBuildProjectDirectory)/README.md')"
-		/>
-		<ThunderstorePackageFile
-			Include="$(MSBuildProjectDirectory)/LICENSE?(.txt|.md)"
-			Condition="Exists('$(MSBuildProjectDirectory)/LICENSE?(.txt|.md)')"
-		/>
+		<ThunderstorePackageFile Include="$(MSBuildProjectDirectory)/icon.png" Condition="Exists('$(MSBuildProjectDirectory)/icon.png')"/>
+		<ThunderstorePackageFile Include="$(MSBuildProjectDirectory)/README.md" Condition="Exists('$(MSBuildProjectDirectory)/README.md')"/>
+		<ThunderstorePackageFile Include="$(MSBuildProjectDirectory)/LICENSE?(.txt|.md)" Condition="Exists('$(MSBuildProjectDirectory)/LICENSE?(.txt|.md)')"/>
 	</ItemGroup>
 
 	<!-- Default Properties -->
 	<PropertyGroup>
+
 		<ThunderstoreName Condition="'$(ThunderstoreName)' == ''">$(Product)</ThunderstoreName>
 		<ThunderstoreName Condition="'$(ThunderstoreName)' == ''">$(AssemblyName)</ThunderstoreName>
-		<ThunderstoreName Condition="'$(ThunderstoreName)' == ''"
-			>$(RootNamespace)</ThunderstoreName
-		>
+		<ThunderstoreName Condition="'$(ThunderstoreName)' == ''">$(RootNamespace)</ThunderstoreName>
 
-		<ThunderstoreVersion Condition="'$(ThunderstoreVersion)' == ''"
-			>$(Version)</ThunderstoreVersion
-		>
+		<ThunderstoreVersion Condition="'$(ThunderstoreVersion)' == ''">$(Version)</ThunderstoreVersion>
 
-		<ThunderstoreDescription Condition="'$(ThunderstoreDescription)' == ''"
-			>$(Description)</ThunderstoreDescription
-		>
+		<ThunderstoreDescription Condition="'$(ThunderstoreDescription)' == ''">$(Description)</ThunderstoreDescription>
 
 		<ThunderstoreTeam Condition="'$(ThunderstoreTeam)' == ''">$(Authors)</ThunderstoreTeam>
 
-		<ThunderstoreWebsite Condition="'$(ThunderstoreWebsite)' == ''"
-			>$(RepositoryUrl)</ThunderstoreWebsite
-		>
-		<ThunderstoreWebsite Condition="'$(ThunderstoreWebsite)' == ''"
-			>$(PackageProjectUrl)</ThunderstoreWebsite
-		>
+		<ThunderstoreWebsite Condition="'$(ThunderstoreWebsite)' == ''">$(RepositoryUrl)</ThunderstoreWebsite>
+		<ThunderstoreWebsite Condition="'$(ThunderstoreWebsite)' == ''">$(PackageProjectUrl)</ThunderstoreWebsite>
 
-		<ThunderPipePackTemporaryDir Condition="'$(ThunderPipePackTemporaryDir)' == ''"
-			>$([System.IO.Path]::Combine($([System.IO.Path]::GetTempPath()), $([System.IO.Path]::GetRandomFileName())))/</ThunderPipePackTemporaryDir
-		>
-		<ThunderPipePackOutput Condition="'$(ThunderPipePackOutput)' == ''"
-			>$(ThunderstoreTeam)-$(ThunderstoreName)-$(ThunderstoreVersion).zip</ThunderPipePackOutput
-		>
+		<ThunderPipePackTemporaryDir Condition="'$(ThunderPipePackTemporaryDir)' == ''">$([System.IO.Path]::Combine($([System.IO.Path]::GetTempPath()), $([System.IO.Path]::GetRandomFileName())))/</ThunderPipePackTemporaryDir>
+		<ThunderPipePackOutput Condition="'$(ThunderPipePackOutput)' == ''">$(ThunderstoreTeam)-$(ThunderstoreName)-$(ThunderstoreVersion).zip</ThunderPipePackOutput>
 	</PropertyGroup>
 
 	<!-- Initialises ThunderPipe and Formats properties -->
 	<Target Name="ThunderPipeInit">
 		<!-- Install ThunderPipe -->
-		<Exec
-			Condition="false"
-			Command="dotnet tool update ThunderPipe --global --version '1.0.2'"
-		/>
+		<Exec Condition="false" Command="dotnet tool update ThunderPipe --global --version '1.0.2'"/>
 
 		<!-- Format Properties -->
 		<ItemGroup>
-			<_GlobalOption
-				Include="--log-level &quot;$(ThunderPipeLogLevel)&quot;"
-				Condition="'$(ThunderPipeLogLevel)' != ''"
-			/>
+			<_GlobalOption Include="--log-level &quot;$(ThunderPipeLogLevel)&quot;" Condition="'$(ThunderPipeLogLevel)' != ''"/>
 		</ItemGroup>
 
 		<PropertyGroup>
 			<_GlobalOptions>@(_GlobalOption->'%(Identity)', ' ')</_GlobalOptions>
-			<_ThunderPipeCategories Condition="'$(ThunderstoreCategories)' != ''"
-				>"$(ThunderstoreCategories.Replace(';', '" "'))"</_ThunderPipeCategories
-			>
-			<_ThunderPipeOptions Condition="'@(_ThunderPipeOption)' != ''"
-				>@(_ThunderPipeOption->'%(Identity)', ' ')</_ThunderPipeOptions
-			>
+			<_ThunderPipeCategories Condition="'$(ThunderstoreCategories)' != ''">"$(ThunderstoreCategories.Replace(';', '" "'))"</_ThunderPipeCategories>
+			<_ThunderPipeOptions Condition="'@(_ThunderPipeOption)' != ''">@(_ThunderPipeOption->'%(Identity)', ' ')</_ThunderPipeOptions>
 		</PropertyGroup>
 	</Target>
 
 	<Target Name="ThunderPipeValidate" DependsOnTargets="ThunderPipeInit">
-		<Exec Command="ThunderPipe validate community &quot;$(ThunderStoreCommunity)&quot; $(_ThunderPipeOptions)" />
-		<Exec Command="ThunderPipe validate categories &quot;$(ThunderStoreCommunity)&quot; $(_ThunderPipeCategories) $(_ThunderPipeOptions)" />
-		<Exec Command="ThunderPipe validate dependencies $(FormattedDependencies) $(_ThunderPipeOptions)" />
+		<Exec Command="ThunderPipe validate community &quot;$(ThunderStoreCommunity)&quot; $(_ThunderPipeOptions)"/>
+		<Exec Command="ThunderPipe validate categories &quot;$(ThunderStoreCommunity)&quot; $(_ThunderPipeCategories) $(_ThunderPipeOptions)"/>
+		<Exec Command="ThunderPipe validate dependencies $(FormattedDependencies) $(_ThunderPipeOptions)"/>
 	</Target>
 
 	<Target Name="ThunderPipePack" DependsOnTargets="ThunderPipeInit;Build">
 		<!-- Create temporary directory -->
-		<MakeDir Directories="$(ThunderPipePackTemporaryDir)" />
+		<MakeDir Directories="$(ThunderPipePackTemporaryDir)"/>
 
 		<!-- Copy Package Files -->
-		<Copy
-			SourceFiles="@(ThunderstorePackageFile)"
-			DestinationFolder="$(ThunderPipePackTemporaryDir)"
-		/>
+		<Copy SourceFiles="@(ThunderstorePackageFile)" DestinationFolder="$(ThunderPipePackTemporaryDir)"/>
 
 		<!-- Copy Build Files -->
-		<Copy
-			SourceFiles="@(ThunderstoreFile)"
-			DestinationFolder="$(ThunderPipePackTemporaryDir)plugins"
-		/>
+		<Copy SourceFiles="@(ThunderstoreFile)" DestinationFolder="$(ThunderPipePackTemporaryDir)plugins"/>
 
 		<!-- Create manifest -->
 		<ItemGroup>
-			<_ManifestOption Include="--output-dir '$(ThunderPipePackTemporaryDir)'" />
-			<_ManifestOption
-				Condition="'$(ThunderstoreDescription)' != ''"
-				Include="--description '$(ThunderstoreDescription)'"
-			/>
-			<_ManifestOption
-				Condition="'$(ThunderstoreWebsite)' != ''"
-				Include="--website '$(ThunderstoreWebsite)'"
-			/>
+			<_ManifestOption Include="--output-dir '$(ThunderPipePackTemporaryDir)'"/>
+			<_ManifestOption Condition="'$(ThunderstoreDescription)' != ''" Include="--description '$(ThunderstoreDescription)'"/>
+			<_ManifestOption Condition="'$(ThunderstoreWebsite)' != ''" Include="--website '$(ThunderstoreWebsite)'"/>
 		</ItemGroup>
 
-		<Exec Command="ThunderPipe create manifest '$(ThunderstoreName)' '$(ThunderstoreVersion)' @(_ManifestOption->'%(Identity)', ' ') $(_GlobalOptions)" />
+		<Exec Command="ThunderPipe create manifest '$(ThunderstoreName)' '$(ThunderstoreVersion)' @(_ManifestOption->'%(Identity)', ' ') $(_GlobalOptions)"/>
 
 		<!-- Validate Package -->
 		<ItemGroup>
-			<_ValidatePackageOption Include="--token '$(ThunderstoreToken)'" />
-			<_ValidatePackageOption
-				Condition="'$(ThunderstoreHost)' != ''"
-				Include="--host &quot;$(ThunderstoreHost)&quot;"
-			/>
+			<_ValidatePackageOption Include="--token '$(ThunderstoreToken)'"/>
+			<_ValidatePackageOption Condition="'$(ThunderstoreHost)' != ''" Include="--host &quot;$(ThunderstoreHost)&quot;"/>
 		</ItemGroup>
 
-		<Exec Command="ThunderPipe validate package '$(ThunderPipePackTemporaryDir)' '$(ThunderstoreTeam)' @(_ValidatePackageOption->'%(Identity)', ' ') $(_GlobalOptions)" />
+		<Exec Command="ThunderPipe validate package '$(ThunderPipePackTemporaryDir)' '$(ThunderstoreTeam)' @(_ValidatePackageOption->'%(Identity)', ' ') $(_GlobalOptions)"/>
 
 		<!-- Zip Package -->
-		<ZipDirectory
-			SourceDirectory="$(ThunderPipePackTemporaryDir)"
-			DestinationFile="$(ThunderPipePackOutput)"
-			Overwrite="true"
-		/>
+		<ZipDirectory SourceDirectory="$(ThunderPipePackTemporaryDir)" DestinationFile="$(ThunderPipePackOutput)" Overwrite="true"/>
 	</Target>
 	<Target Name="ThunderPipePublish"></Target>
 </Project>
