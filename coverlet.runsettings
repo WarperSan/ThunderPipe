@@ -5,14 +5,7 @@
       <DataCollector friendlyName="XPlat Code coverage">
         <Configuration>
           <Format>opencover</Format>
-		  <Include>[ThunderPipe]*</Include>
-		  <ExcludeByFile>
-		  	**/ThunderPipe/Program.cs,
-		  	**/ThunderPipe/Commands/**/*.cs,
-		  	**/ThunderPipe/Settings/**/*.cs,
-		  	**/ThunderPipe/Models/API/**/*.cs,
-		  	**/ThunderPipe/Models/Domain/**/*.cs
-		  </ExcludeByFile>
+		  <Include>[ThunderPipe.Core]*</Include>
           <SingleHit>false</SingleHit>
           <UseSourceLink>true</UseSourceLink>
           <IncludeTestAssembly>true</IncludeTestAssembly>
