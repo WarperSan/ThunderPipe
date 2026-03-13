@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThunderPipe", "ThunderPipe\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThunderPipe.Tests", "ThunderPipe.Tests\ThunderPipe.Tests.csproj", "{D2076C3D-0872-4BAF-BDC1-8196142C3944}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThunderPipe.Core", "ThunderPipe.Core\ThunderPipe.Core.csproj", "{702DFA41-4650-4C54-B768-2BFC4615A73F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{D2076C3D-0872-4BAF-BDC1-8196142C3944}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D2076C3D-0872-4BAF-BDC1-8196142C3944}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D2076C3D-0872-4BAF-BDC1-8196142C3944}.Release|Any CPU.Build.0 = Release|Any CPU
+		{702DFA41-4650-4C54-B768-2BFC4615A73F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{702DFA41-4650-4C54-B768-2BFC4615A73F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{702DFA41-4650-4C54-B768-2BFC4615A73F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{702DFA41-4650-4C54-B768-2BFC4615A73F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
