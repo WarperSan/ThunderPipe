@@ -15,5 +15,9 @@
 	<!-- Content includes -->
 	<ItemGroup>
 		<Content Include="Sdk/*" Pack="true" PackagePath="Sdk/"/>
+		<Content Include="$(ProjectDir)../ThunderPipe.MSBuild.Tasks/bin/$(Configuration)/$(TargetFramework)/**/*"
+				 Pack="true"
+				 PackagePath="build/$(TargetFramework)/"
+		/>
 	</ItemGroup>
 </Project>
