@@ -1,3 +1,5 @@
+using System.Net;
+using Microsoft.Extensions.Logging;
 using ThunderPipe.Core.Models.API;
 using ThunderPipe.Core.Utils;
 
@@ -34,11 +36,18 @@ public sealed class DependencyApiClient : ThunderstoreClient
 				.SetPathParameter(VERSION, dependency.Version!)
 				.Build();
 
-			// TODO: Check if endpoint has changed
-			var response = await SendRequest<Models.Web.GetDependency.Response>(request);
+			var rawResponse = await SendRequest(request);
 
-			if (!response.IsActive)
+			if (!rawResponse.IsSuccessStatusCode)
+			{
+				if (rawResponse.StatusCode != HttpStatusCode.NotFound)
+					Logger?.LogDebug(
+						"Expected '{ExpectedCode}', but got: {Code}",
+						HttpStatusCode.NotFound,
+						rawResponse.StatusCode
+					);
 				continue;
+			}
 
 			dependenciesFound.Add(dependency);
 		}
