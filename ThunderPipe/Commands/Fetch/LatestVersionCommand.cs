@@ -1,8 +1,8 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 using Spectre.Console.Cli;
-using ThunderPipe.Clients;
-using ThunderPipe.Utils;
+using ThunderPipe.Core.Clients;
+using ThunderPipe.Core.Utils;
 
 namespace ThunderPipe.Commands.Fetch;
 

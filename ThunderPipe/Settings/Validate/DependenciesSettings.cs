@@ -2,7 +2,7 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using Spectre.Console;
 using Spectre.Console.Cli;
-using ThunderPipe.Models.Internal;
+using ThunderPipe.Core.Models.API;
 
 namespace ThunderPipe.Settings.Validate;
 

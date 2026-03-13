@@ -3,8 +3,8 @@ using System.Diagnostics.CodeAnalysis;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using ThunderPipe.Commands.Publish;
+using ThunderPipe.Core.Models.API;
 using ThunderPipe.Infrastructure.TypeConverters;
-using ThunderPipe.Models.Internal;
 
 namespace ThunderPipe.Settings.Publish;
 
