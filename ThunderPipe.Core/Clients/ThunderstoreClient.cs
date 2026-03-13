@@ -80,6 +80,14 @@ public abstract class ThunderstoreClient : IDisposable
 	protected async Task<T> SendRequest<T>(HttpRequestMessage request)
 	{
 		var response = await SendRequest(request);
+		return await ParseJson<T>(response);
+	}
+
+	/// <summary>
+	/// Parses the JSON content of the given response
+	/// </summary>
+	protected async Task<T> ParseJson<T>(HttpResponseMessage response)
+	{
 		var content = await response.Content.ReadAsStringAsync(CancellationToken);
 		Logger?.LogDebug("Received JSON:\n{Json}", content);
 
