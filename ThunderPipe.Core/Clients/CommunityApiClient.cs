@@ -5,7 +5,7 @@ namespace ThunderPipe.Core.Clients;
 /// <summary>
 /// Client used to call API endpoints related to communities
 /// </summary>
-internal sealed class CommunityApiClient : ThunderstoreClient
+public sealed class CommunityApiClient : ThunderstoreClient
 {
 	/// <summary>
 	/// Checks if a community with the given slug exists

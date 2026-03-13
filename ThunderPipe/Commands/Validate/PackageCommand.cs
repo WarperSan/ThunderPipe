@@ -3,10 +3,10 @@ using System.Text;
 using Microsoft.Extensions.Logging;
 using Spectre.Console;
 using Spectre.Console.Cli;
-using ThunderPipe.Clients;
-using ThunderPipe.Services.Interfaces;
+using ThunderPipe.Core.Clients;
+using ThunderPipe.Core.Services.Interfaces;
+using ThunderPipe.Core.Utils;
 using ThunderPipe.Settings.Validate;
-using ThunderPipe.Utils;
 
 namespace ThunderPipe.Commands.Validate;
 

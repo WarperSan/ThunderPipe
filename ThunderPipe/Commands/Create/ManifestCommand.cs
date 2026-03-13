@@ -2,7 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Spectre.Console.Cli;
-using ThunderPipe.Services.Interfaces;
+using ThunderPipe.Core.Services.Interfaces;
 using ThunderPipe.Settings.Create;
 
 namespace ThunderPipe.Commands.Create;

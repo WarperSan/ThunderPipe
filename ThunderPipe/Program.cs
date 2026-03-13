@@ -2,9 +2,9 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using Spectre.Console.Cli;
+using ThunderPipe.Core.Services.Implementations;
+using ThunderPipe.Core.Services.Interfaces;
 using ThunderPipe.Infrastructure;
-using ThunderPipe.Services.Implementations;
-using ThunderPipe.Services.Interfaces;
 
 namespace ThunderPipe;
 

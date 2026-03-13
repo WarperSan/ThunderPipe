@@ -13,7 +13,7 @@ namespace ThunderPipe.Core.Utils;
 /// <remarks>
 /// Based off <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.net.http/java/net/http/HttpRequest.Builder.html">this</a>
 /// </remarks>
-internal sealed class RequestBuilder
+public sealed class RequestBuilder
 {
 	public RequestBuilder()
 	{

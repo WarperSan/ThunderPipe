@@ -8,7 +8,7 @@ namespace ThunderPipe.Core.Clients;
 /// <summary>
 /// Class that handles HTTP requests to Thunderstore
 /// </summary>
-internal abstract class ThunderstoreClient : IDisposable
+public abstract class ThunderstoreClient : IDisposable
 {
 	#region Properties
 

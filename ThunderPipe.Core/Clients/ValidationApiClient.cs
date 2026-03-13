@@ -6,7 +6,7 @@ namespace ThunderPipe.Core.Clients;
 /// <summary>
 /// Client used to call validation API endpoints
 /// </summary>
-internal sealed class ValidationApiClient : ThunderstoreClient
+public sealed class ValidationApiClient : ThunderstoreClient
 {
 	/// <summary>
 	/// Checks if the icon at the given path is valid

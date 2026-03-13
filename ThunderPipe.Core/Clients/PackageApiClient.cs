@@ -5,7 +5,7 @@ namespace ThunderPipe.Core.Clients;
 /// <summary>
 /// Client used to call API endpoints related to categories
 /// </summary>
-internal sealed class PackageApiClient : ThunderstoreClient
+public sealed class PackageApiClient : ThunderstoreClient
 {
 	/// <summary>
 	/// Gets the latest version of the package by the given team by the given name

@@ -6,7 +6,7 @@ namespace ThunderPipe.Core.Clients;
 /// <summary>
 /// Client used to call API endpoints related to dependencies
 /// </summary>
-internal sealed class DependencyApiClient : ThunderstoreClient
+public sealed class DependencyApiClient : ThunderstoreClient
 {
 	/// <summary>
 	/// Finds the missing dependencies

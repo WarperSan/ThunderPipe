@@ -10,7 +10,7 @@ namespace ThunderPipe.Core.Clients;
 /// <summary>
 /// Client used to call API endpoints for publishing packages
 /// </summary>
-internal sealed class PublishApiClient : ThunderstoreClient
+public sealed class PublishApiClient : ThunderstoreClient
 {
 	/// <summary>
 	/// Initiates a multipart upload

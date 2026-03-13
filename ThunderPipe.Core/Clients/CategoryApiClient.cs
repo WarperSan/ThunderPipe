@@ -5,7 +5,7 @@ namespace ThunderPipe.Core.Clients;
 /// <summary>
 /// Client used to call API endpoints related to categories
 /// </summary>
-internal sealed class CategoryApiClient : ThunderstoreClient
+public sealed class CategoryApiClient : ThunderstoreClient
 {
 	/// <summary>
 	/// Finds the missing categories in the given community
