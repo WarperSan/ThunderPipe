@@ -1,6 +1,6 @@
 using System.ComponentModel;
 using System.Text.RegularExpressions;
-using ThunderPipe.Core.TypeConverters;
+using ThunderPipe.Core.Converters;
 
 namespace ThunderPipe.Core.Models.API;
 

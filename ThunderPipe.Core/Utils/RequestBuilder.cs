@@ -10,9 +10,6 @@ namespace ThunderPipe.Core.Utils;
 /// <summary>
 /// Class allowing to build <see cref="HttpRequestMessage"/> with ease
 /// </summary>
-/// <remarks>
-/// Based off <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.net.http/java/net/http/HttpRequest.Builder.html">this</a>
-/// </remarks>
 public sealed class RequestBuilder
 {
 	public RequestBuilder()

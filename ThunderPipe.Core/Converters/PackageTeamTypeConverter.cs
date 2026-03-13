@@ -2,12 +2,12 @@ using System.ComponentModel;
 using System.Globalization;
 using ThunderPipe.Core.Models.API;
 
-namespace ThunderPipe.Core.TypeConverters;
+namespace ThunderPipe.Core.Converters;
 
 /// <summary>
-/// Converts a <see cref="string"/> to a <see cref="PackageVersion"/>
+/// Converts a <see cref="string"/> to a <see cref="PackageTeam"/>
 /// </summary>
-internal sealed class PackageVersionTypeConverter : TypeConverter
+public sealed class PackageTeamTypeConverter : TypeConverter
 {
 	/// <inheritdoc/>
 	public override bool CanConvertFrom(ITypeDescriptorContext? context, Type sourceType)
@@ -25,6 +25,6 @@ internal sealed class PackageVersionTypeConverter : TypeConverter
 		if (value is not string name)
 			return base.ConvertFrom(context, culture, value);
 
-		return new PackageVersion(name);
+		return new PackageTeam(name);
 	}
 }

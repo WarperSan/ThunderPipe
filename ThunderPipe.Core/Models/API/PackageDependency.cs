@@ -1,5 +1,5 @@
 using System.ComponentModel;
-using ThunderPipe.Core.TypeConverters;
+using ThunderPipe.Core.Converters;
 
 namespace ThunderPipe.Core.Models.API;
 

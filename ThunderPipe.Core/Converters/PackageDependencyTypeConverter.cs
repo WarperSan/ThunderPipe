@@ -2,12 +2,12 @@ using System.ComponentModel;
 using System.Globalization;
 using ThunderPipe.Core.Models.API;
 
-namespace ThunderPipe.Core.TypeConverters;
+namespace ThunderPipe.Core.Converters;
 
 /// <summary>
 /// Converts a <see cref="string"/> to a <see cref="PackageDependency"/>
 /// </summary>
-internal sealed class PackageDependencyTypeConverter : TypeConverter
+public sealed class PackageDependencyTypeConverter : TypeConverter
 {
 	/// <inheritdoc/>
 	public override bool CanConvertFrom(ITypeDescriptorContext? context, Type sourceType)
