@@ -1,3 +1,4 @@
+using System.Net;
 using ThunderPipe.Core.Clients;
 using ThunderPipe.Core.Models.API;
 using ThunderPipe.Core.Models.Web.GetDependency;
@@ -54,6 +55,8 @@ public class DependencyApiClientTests
 		const string SLUG_1 = "ItsEmul-PEAKValuables-1.2.0";
 		const string SLUG_2 = "AtomicStudio-BetterScoutReport-0.1.6";
 		const string SLUG_3 = "SavageCore-PEAK_BritishEnglish_Translation-0.2.1";
+		const string SLUG_4 = "icebro-ButterscotchandRosesBaseMod-0.1.3";
+		const string SLUG_5 = " tristanmcpherson-R2API-5.0.5";
 
 		var mockHttp = new MockHttpMessageHandler();
 
@@ -62,6 +65,10 @@ public class DependencyApiClientTests
 		mockHttp.Expect(URL + "/*").RespondJSON(new Response { IsActive = false });
 
 		mockHttp.Expect(URL + "/*").RespondJSON(new Response { IsActive = false });
+
+		mockHttp.Expect(URL + "/*").RespondStatus(HttpStatusCode.NotFound);
+
+		mockHttp.Expect(URL + "/*").RespondStatus(HttpStatusCode.BadRequest);
 
 		var builder = new RequestBuilder().ToUri(new Uri(URL));
 
@@ -75,11 +82,19 @@ public class DependencyApiClientTests
 			new PackageDependency(SLUG_1),
 			new PackageDependency(SLUG_2),
 			new PackageDependency(SLUG_3),
+			new PackageDependency(SLUG_4),
+			new PackageDependency(SLUG_5),
 		};
 		var missing = await client.GetMissing(requested);
 
 		// Assert
-		var expected = new[] { new PackageDependency(SLUG_2), new PackageDependency(SLUG_3) };
+		var expected = new[]
+		{
+			new PackageDependency(SLUG_2),
+			new PackageDependency(SLUG_3),
+			new PackageDependency(SLUG_4),
+			new PackageDependency(SLUG_5),
+		};
 
 		Assert.Equal(missing.Count, expected.Length);
 

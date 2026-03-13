@@ -1,3 +1,4 @@
+using System.Net;
 using Newtonsoft.Json;
 
 namespace ThunderPipe.Tests;
@@ -11,5 +12,13 @@ internal static class MockedRequestExtensions
 	{
 		var json = JsonConvert.SerializeObject(content);
 		return source.Respond("application/json", json);
+	}
+
+	/// <summary>
+	/// Sets the response of the current <see cref="MockedRequest"/>, with the given status.
+	/// </summary>
+	public static MockedRequest RespondStatus(this MockedRequest source, HttpStatusCode status)
+	{
+		return source.Respond(status);
 	}
 }
