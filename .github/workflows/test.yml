@@ -3,8 +3,10 @@ name: 'Test and Coverage'
 on:
     pull_request:
         paths: &src_files
-            - '**/*.cs'
-            - '**/*.csproj'
+            - 'ThunderPipe.Core/**/*.cs'
+            - 'ThunderPipe.Core.Tests/**/*.cs'
+            - 'ThunderPipe.Core/*.csproj'
+            - 'ThunderPipe.Core.Tests/*.csproj'
             - '**/*.sln'
             - 'Directory.Build.targets'
             - 'global.json'
@@ -37,7 +39,7 @@ jobs:
             - name: 'Upload coverage to Codecov'
               uses: codecov/codecov-action@v3
               with:
-                directory: './ThunderPipe.Tests/TestResults/'
+                directory: './ThunderPipe.Core.Tests/TestResults/'
                 env_vars: OS
                 fail_ci_if_error: 'true'
                 token: ${{ secrets.CODECOV_TOKEN }}
