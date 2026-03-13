@@ -1,6 +1,7 @@
 using System.Net;
 using Microsoft.Extensions.Logging;
 using ThunderPipe.Core.Models.API;
+using ThunderPipe.Core.Models.Web.GetDependency;
 using ThunderPipe.Core.Utils;
 
 namespace ThunderPipe.Core.Clients;
@@ -48,6 +49,11 @@ public sealed class DependencyApiClient : ThunderstoreClient
 					);
 				continue;
 			}
+
+			var response = await ParseJson<Response>(rawResponse);
+
+			if (!response.IsActive)
+				continue;
 
 			dependenciesFound.Add(dependency);
 		}
