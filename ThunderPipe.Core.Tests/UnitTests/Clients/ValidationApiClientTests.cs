@@ -1,9 +1,9 @@
-using ThunderPipe.Clients;
+using ThunderPipe.Core.Clients;
 using ThunderPipe.Tests.Helpers;
 using ThunderPipe.Tests.MockedObjects;
-using ValidateIcon = ThunderPipe.Models.API.ValidateIcon;
-using ValidateManifest = ThunderPipe.Models.API.ValidateManifest;
-using ValidateReadme = ThunderPipe.Models.API.ValidateReadme;
+using ValidateIcon = ThunderPipe.Core.Models.Web.ValidateIcon;
+using ValidateManifest = ThunderPipe.Core.Models.Web.ValidateManifest;
+using ValidateReadme = ThunderPipe.Core.Models.Web.ValidateReadme;
 
 namespace ThunderPipe.Tests.UnitTests.Clients;
 

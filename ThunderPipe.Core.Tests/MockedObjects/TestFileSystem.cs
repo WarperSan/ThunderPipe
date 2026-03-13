@@ -1,5 +1,5 @@
 using System.Text;
-using ThunderPipe.Services.Interfaces;
+using ThunderPipe.Core.Services.Interfaces;
 
 namespace ThunderPipe.Tests.MockedObjects;
 

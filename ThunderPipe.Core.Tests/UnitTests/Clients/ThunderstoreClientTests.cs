@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
-using ThunderPipe.Models.API.GetCategory;
+using ThunderPipe.Core.Models.Web.GetCategory;
+using ThunderPipe.Core.Utils;
 using ThunderPipe.Tests.MockedObjects;
-using ThunderPipe.Utils;
 
 namespace ThunderPipe.Tests.UnitTests.Clients;
 

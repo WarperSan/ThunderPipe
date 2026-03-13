@@ -1,7 +1,7 @@
-using ThunderPipe.Clients;
-using ThunderPipe.Models.API.GetDependency;
-using ThunderPipe.Models.Internal;
-using ThunderPipe.Utils;
+using ThunderPipe.Core.Clients;
+using ThunderPipe.Core.Models.API;
+using ThunderPipe.Core.Models.Web.GetDependency;
+using ThunderPipe.Core.Utils;
 
 namespace ThunderPipe.Tests.UnitTests.Clients;
 

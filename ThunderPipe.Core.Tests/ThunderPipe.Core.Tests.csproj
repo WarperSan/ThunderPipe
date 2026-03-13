@@ -11,7 +11,7 @@
 
 	<!-- Dependencies -->
 	<ItemGroup>
-		<ProjectReference Include="../ThunderPipe/ThunderPipe.csproj" />
+		<ProjectReference Include="../ThunderPipe.Core/ThunderPipe.Core.csproj" />
 
 		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
 		<PackageReference Include="Spectre.Console.Cli.Testing" Version="1.0.0-alpha.0.15" />

@@ -1,4 +1,4 @@
-using ThunderPipe.Clients;
+using ThunderPipe.Core.Clients;
 
 namespace ThunderPipe.Tests.MockedObjects;
 
