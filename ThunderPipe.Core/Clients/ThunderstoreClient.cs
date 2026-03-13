@@ -119,6 +119,7 @@ public abstract class ThunderstoreClient : IDisposable
 	/// <inheritdoc />
 	public void Dispose()
 	{
+		GC.SuppressFinalize(this);
 		_client.Dispose();
 	}
 }
