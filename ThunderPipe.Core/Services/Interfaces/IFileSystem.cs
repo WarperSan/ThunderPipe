@@ -3,7 +3,7 @@ namespace ThunderPipe.Core.Services.Interfaces;
 /// <summary>
 /// Interface representing any class that handles IO operations
 /// </summary>
-internal interface IFileSystem
+public interface IFileSystem
 {
 	/// <summary>
 	/// Opens an existing file for reading

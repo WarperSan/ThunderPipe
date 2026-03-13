@@ -2,7 +2,7 @@ using ThunderPipe.Core.Services.Interfaces;
 
 namespace ThunderPipe.Core.Services.Implementations;
 
-internal sealed class FileSystem : IFileSystem
+public sealed class FileSystem : IFileSystem
 {
 	/// <inheritdoc />
 	public FileStream OpenRead(string path) => File.OpenRead(path);
