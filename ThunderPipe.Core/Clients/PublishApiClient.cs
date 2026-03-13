@@ -12,6 +12,8 @@ namespace ThunderPipe.Core.Clients;
 /// </summary>
 public sealed class PublishApiClient : ThunderstoreClient
 {
+	// TODO: Try to not return any Models.Web
+
 	/// <summary>
 	/// Initiates a multipart upload
 	/// </summary>
