@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThunderPipe.Core", "Thunder
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThunderPipe.Sdk", "ThunderPipe.Sdk\ThunderPipe.Sdk.csproj", "{CE8DA7C4-4199-4DA0-8652-26E4FCC57C0B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThunderPipe.MSBuild.Tasks", "ThunderPipe.MSBuild.Tasks\ThunderPipe.MSBuild.Tasks.csproj", "{CC575BAA-AB97-42D7-A9F6-392D83A11051}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{CE8DA7C4-4199-4DA0-8652-26E4FCC57C0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CE8DA7C4-4199-4DA0-8652-26E4FCC57C0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CE8DA7C4-4199-4DA0-8652-26E4FCC57C0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC575BAA-AB97-42D7-A9F6-392D83A11051}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC575BAA-AB97-42D7-A9F6-392D83A11051}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC575BAA-AB97-42D7-A9F6-392D83A11051}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC575BAA-AB97-42D7-A9F6-392D83A11051}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
