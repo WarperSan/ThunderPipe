@@ -1,6 +1,6 @@
 namespace ThunderPipe.Core.Models.Web.Submission;
 
-internal sealed record PackageRelease
+public sealed record PackageRelease
 {
 	/// <summary>
 	/// Display name of the package

@@ -1,6 +1,6 @@
 namespace ThunderPipe.Core.Models.Web.MultipartUpload;
 
-internal sealed record UploadPart
+public sealed record UploadPart
 {
 	/// <summary>
 	/// Identifier of the part

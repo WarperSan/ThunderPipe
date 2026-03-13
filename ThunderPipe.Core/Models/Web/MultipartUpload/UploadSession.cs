@@ -1,6 +1,6 @@
 namespace ThunderPipe.Core.Models.Web.MultipartUpload;
 
-internal sealed record UploadSession
+public sealed record UploadSession
 {
 	/// <summary>
 	/// Identifier of the upload session
