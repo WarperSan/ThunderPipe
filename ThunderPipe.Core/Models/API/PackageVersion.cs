@@ -26,4 +26,6 @@ public sealed record PackageVersion
 	public override string ToString() => _version;
 
 	public static implicit operator string(PackageVersion p) => p.ToString();
+
+	public static implicit operator PackageVersion(string version) => new(version);
 }

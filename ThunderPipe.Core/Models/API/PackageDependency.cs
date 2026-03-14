@@ -21,7 +21,7 @@ public sealed record PackageDependency
 		{
 			Team = new PackageTeam(components[0]);
 			Name = new PackageName(components[1]);
-			Version = new PackageVersion(components[2]);
+			Version = components[2];
 		}
 		else
 		{
