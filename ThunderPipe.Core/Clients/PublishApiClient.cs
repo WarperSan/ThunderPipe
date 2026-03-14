@@ -200,7 +200,7 @@ public sealed class PublishApiClient : ThunderstoreClient
 	public async Task<PackageRelease> SubmitPackage(
 		Team team,
 		Community community,
-		string[] categories,
+		Category[] categories,
 		bool hasNsfw,
 		string sessionUUID,
 		CancellationToken ct = default
@@ -210,7 +210,10 @@ public sealed class PublishApiClient : ThunderstoreClient
 		{
 			AuthorName = team,
 			Communities = [community],
-			CommunityCategories = new Dictionary<string, string[]> { [community] = categories },
+			CommunityCategories = new Dictionary<string, string[]>
+			{
+				[community] = categories.Select(c => (string)c).ToArray(),
+			},
 			HasNsfwContent = hasNsfw,
 			UploadUUID = sessionUUID,
 		};
