@@ -23,4 +23,6 @@ public sealed record Team
 	public override string ToString() => _team;
 
 	public static implicit operator string(Team p) => p.ToString();
+
+	public static implicit operator Team(string team) => new(team);
 }
