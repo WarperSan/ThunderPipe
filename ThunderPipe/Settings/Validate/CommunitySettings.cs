@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using Spectre.Console;
 using Spectre.Console.Cli;
+using ThunderPipe.Core.Models.API;
 
 namespace ThunderPipe.Settings.Validate;
 
@@ -14,13 +15,13 @@ internal sealed class CommunitySettings : BaseValidateSettings
 {
 	[CommandArgument(0, "<community>")]
 	[Description("Slug of the community to validate")]
-	public required string Community { get; init; }
+	public required Community Community { get; init; }
 
 	/// <inheritdoc />
 	public override ValidationResult Validate()
 	{
-		if (string.IsNullOrEmpty(Community))
-			return ValidationResult.Error("Community cannot be empty.");
+		if (!Community.IsValid())
+			return ValidationResult.Error($"'{Community}' is not a valid community.");
 
 		return base.Validate();
 	}

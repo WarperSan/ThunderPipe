@@ -27,7 +27,7 @@ internal sealed class CategoriesCommand : BaseCommand<CategoriesSettings>
 		client.Logger = Logger;
 
 		var missingCategories = await client.GetMissing(
-			settings.Categories!,
+			settings.Categories,
 			settings.Community,
 			cancellationToken
 		);

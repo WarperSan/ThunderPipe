@@ -1,3 +1,4 @@
+using ThunderPipe.Core.Models.API;
 using ThunderPipe.Core.Utils;
 
 namespace ThunderPipe.Core.Clients;
@@ -10,7 +11,7 @@ public sealed class CommunityApiClient : ThunderstoreClient
 	/// <summary>
 	/// Checks if a community with the given slug exists
 	/// </summary>
-	public async Task<bool> Exists(string slug, CancellationToken ct = default)
+	public async Task<bool> Exists(Community community, CancellationToken ct = default)
 	{
 		var tempBuilder = new RequestBuilder(Builder)
 			.Get()
@@ -29,9 +30,9 @@ public sealed class CommunityApiClient : ThunderstoreClient
 
 			var response = await SendRequest<Models.Web.GetCommunity.Response>(request, ct);
 
-			var community = response.Items.FirstOrDefault(i => i.Slug == slug);
+			var rawCommunity = response.Items.FirstOrDefault(i => i.Slug == community);
 
-			if (community != null)
+			if (rawCommunity != null)
 			{
 				wasCommunityFound = true;
 				break;

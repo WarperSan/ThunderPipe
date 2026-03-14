@@ -1,3 +1,4 @@
+using ThunderPipe.Core.Models.API;
 using ThunderPipe.Core.Utils;
 
 namespace ThunderPipe.Core.Clients;
@@ -12,7 +13,7 @@ public sealed class CategoryApiClient : ThunderstoreClient
 	/// </summary>
 	public async Task<ISet<string>> GetMissing(
 		string[] slugs,
-		string community,
+		Community community,
 		CancellationToken ct = default
 	)
 	{

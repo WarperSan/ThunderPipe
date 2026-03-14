@@ -28,7 +28,7 @@ internal sealed class PackageSettings : BasePublishSettings
 
 	[CommandArgument(2, "<community>")]
 	[Description("Slug of the community to publish the package to")]
-	public required string Community { get; init; }
+	public required Community Community { get; init; }
 
 	[CommandOption($"{CATEGORY_OPTION} <CATEGORY>")]
 	[Description("Category slug to label the package with")]
@@ -48,8 +48,8 @@ internal sealed class PackageSettings : BasePublishSettings
 		if (!Team.IsValid())
 			return ValidationResult.Error($"'{Team}' is not a valid package team.");
 
-		if (string.IsNullOrWhiteSpace(Community))
-			return ValidationResult.Error("Community cannot be empty.");
+		if (!Community.IsValid())
+			return ValidationResult.Error($"'{Community}' is not a valid community.");
 
 		if (Categories != null)
 		{

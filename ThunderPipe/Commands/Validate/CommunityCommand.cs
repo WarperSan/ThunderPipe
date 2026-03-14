@@ -21,20 +21,20 @@ internal sealed class CommunityCommand : BaseCommand<CommunitySettings>
 		CancellationToken cancellationToken
 	)
 	{
-		var communitySlug = settings.Community;
+		var community = settings.Community;
 		var builder = new RequestBuilder().ToUri(settings.Host!);
 		using var client = new CommunityApiClient();
 		client.Builder = builder;
 		client.Logger = Logger;
 
-		var doesCommunityExist = await client.Exists(communitySlug, cancellationToken);
+		var doesCommunityExist = await client.Exists(community, cancellationToken);
 
 		if (!doesCommunityExist)
 			throw new KeyNotFoundException(
-				$"Could not find a community with the slug '{communitySlug}'."
+				$"Could not find a community with the slug '{community}'."
 			);
 
-		Logger.LogInformation("A community was found for '{Slug}'!", communitySlug);
+		Logger.LogInformation("A community was found for '{Slug}'!", community);
 		return 0;
 	}
 }

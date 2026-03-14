@@ -1,3 +1,4 @@
+using ThunderPipe.Core.Models.API;
 using ThunderPipe.Core.Utils;
 
 namespace ThunderPipe.Core.Clients;
@@ -10,7 +11,11 @@ public sealed class PackageApiClient : ThunderstoreClient
 	/// <summary>
 	/// Gets the latest version of the package by the given team by the given name
 	/// </summary>
-	public async Task<string> GetVersion(string team, string name, CancellationToken ct = default)
+	public async Task<string> GetVersion(
+		Team team,
+		PackageName name,
+		CancellationToken ct = default
+	)
 	{
 		var package = await GetPackage(team, name, ct);
 
@@ -20,12 +25,9 @@ public sealed class PackageApiClient : ThunderstoreClient
 	/// <summary>
 	/// Gets the package by the given team by the given name
 	/// </summary>
-	/// <param name="team"></param>
-	/// <param name="name"></param>
-	/// <returns></returns>
 	private Task<Models.Web.GetPackage.Response> GetPackage(
-		string team,
-		string name,
+		Team team,
+		PackageName name,
 		CancellationToken ct
 	)
 	{

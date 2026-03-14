@@ -1,3 +1,4 @@
+using ThunderPipe.Core.Models.API;
 using ThunderPipe.Core.Services.Interfaces;
 using ThunderPipe.Core.Utils;
 
@@ -50,7 +51,7 @@ public sealed class ValidationApiClient : ThunderstoreClient
 	/// </summary>
 	public async Task<ICollection<string>> IsManifestValid(
 		string path,
-		string team,
+		Team team,
 		IFileSystem fileSystem,
 		CancellationToken ct = default
 	)

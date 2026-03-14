@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
+using ThunderPipe.Core.Models.API;
 using ThunderPipe.Core.Models.Web.MultipartUpload;
 using ThunderPipe.Core.Models.Web.Submission;
 using ThunderPipe.Core.Services.Interfaces;
@@ -197,8 +198,8 @@ public sealed class PublishApiClient : ThunderstoreClient
 	/// Submits the package
 	/// </summary>
 	public async Task<PackageRelease> SubmitPackage(
-		string author,
-		string community,
+		Team team,
+		Community community,
 		string[] categories,
 		bool hasNsfw,
 		string sessionUUID,
@@ -207,7 +208,7 @@ public sealed class PublishApiClient : ThunderstoreClient
 	{
 		var payload = new Models.Web.SubmitPackage.Request
 		{
-			AuthorName = author,
+			AuthorName = team,
 			Communities = [community],
 			CommunityCategories = new Dictionary<string, string[]> { [community] = categories },
 			HasNsfwContent = hasNsfw,
