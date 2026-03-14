@@ -25,7 +25,7 @@ public class ValidationApiClientTests
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		var errors = await client.IsIconValid(PATH, fileSystem);
+		var errors = await client.IsIconValid(PATH, fileSystem, "");
 
 		Assert.Single(errors);
 		Assert.True(errors.Contains(ERROR));
@@ -47,7 +47,7 @@ public class ValidationApiClientTests
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		var errors = await client.IsIconValid(PATH, fileSystem);
+		var errors = await client.IsIconValid(PATH, fileSystem, "");
 
 		Assert.Single(errors);
 		Assert.True(errors.Contains(ERROR));
@@ -80,7 +80,7 @@ public class ValidationApiClientTests
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		var errors = await client.IsIconValid(PATH, fileSystem);
+		var errors = await client.IsIconValid(PATH, fileSystem, "");
 
 		string[] expectedErrors = [ERROR_1, ERROR_2, ERROR_3, ERROR_4];
 
@@ -107,7 +107,7 @@ public class ValidationApiClientTests
 
 		try
 		{
-			_ = await client.IsIconValid(PATH, fileSystem);
+			_ = await client.IsIconValid(PATH, fileSystem, "");
 		}
 		catch (Exception e)
 		{
@@ -135,7 +135,7 @@ public class ValidationApiClientTests
 
 		try
 		{
-			_ = await client.IsIconValid(PATH, fileSystem);
+			_ = await client.IsIconValid(PATH, fileSystem, "");
 		}
 		catch (Exception e)
 		{
@@ -165,7 +165,7 @@ public class ValidationApiClientTests
 
 		try
 		{
-			_ = await client.IsIconValid(PATH, fileSystem);
+			_ = await client.IsIconValid(PATH, fileSystem, "");
 		}
 		catch (Exception e)
 		{
@@ -191,7 +191,7 @@ public class ValidationApiClientTests
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		var errors = await client.IsIconValid(PATH, fileSystem);
+		var errors = await client.IsIconValid(PATH, fileSystem, "");
 
 		Assert.Empty(errors);
 	}
@@ -213,7 +213,7 @@ public class ValidationApiClientTests
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		var errors = await client.IsManifestValid(PATH, TEAM, fileSystem);
+		var errors = await client.IsManifestValid(PATH, TEAM, fileSystem, "");
 
 		Assert.Single(errors);
 		Assert.True(errors.Contains(ERROR));
@@ -238,7 +238,7 @@ public class ValidationApiClientTests
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		var errors = await client.IsManifestValid(PATH, TEAM, fileSystem);
+		var errors = await client.IsManifestValid(PATH, TEAM, fileSystem, "");
 
 		Assert.Single(errors);
 		Assert.True(errors.Contains(ERROR));
@@ -263,7 +263,7 @@ public class ValidationApiClientTests
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		var errors = await client.IsManifestValid(PATH, TEAM, fileSystem);
+		var errors = await client.IsManifestValid(PATH, TEAM, fileSystem, "");
 
 		Assert.Single(errors);
 		Assert.True(errors.Contains(ERROR));
@@ -300,7 +300,7 @@ public class ValidationApiClientTests
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		var errors = await client.IsManifestValid(PATH, TEAM, fileSystem);
+		var errors = await client.IsManifestValid(PATH, TEAM, fileSystem, "");
 
 		string[] expectedErrors = [ERROR_1, ERROR_2, ERROR_3, ERROR_4, ERROR_5, ERROR_6];
 
@@ -328,7 +328,7 @@ public class ValidationApiClientTests
 
 		try
 		{
-			_ = await client.IsManifestValid(PATH, TEAM, fileSystem);
+			_ = await client.IsManifestValid(PATH, TEAM, fileSystem, "");
 		}
 		catch (Exception e)
 		{
@@ -357,7 +357,7 @@ public class ValidationApiClientTests
 
 		try
 		{
-			_ = await client.IsManifestValid(PATH, TEAM, fileSystem);
+			_ = await client.IsManifestValid(PATH, TEAM, fileSystem, "");
 		}
 		catch (Exception e)
 		{
@@ -388,7 +388,7 @@ public class ValidationApiClientTests
 
 		try
 		{
-			_ = await client.IsManifestValid(PATH, TEAM, fileSystem);
+			_ = await client.IsManifestValid(PATH, TEAM, fileSystem, "");
 		}
 		catch (Exception e)
 		{
@@ -415,7 +415,7 @@ public class ValidationApiClientTests
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		var errors = await client.IsManifestValid(PATH, TEAM, fileSystem);
+		var errors = await client.IsManifestValid(PATH, TEAM, fileSystem, "");
 
 		Assert.Empty(errors);
 	}
@@ -436,7 +436,7 @@ public class ValidationApiClientTests
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		var errors = await client.IsReadmeValid(PATH, fileSystem);
+		var errors = await client.IsReadmeValid(PATH, fileSystem, "");
 
 		Assert.Single(errors);
 		Assert.True(errors.Contains(ERROR));
@@ -460,7 +460,7 @@ public class ValidationApiClientTests
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		var errors = await client.IsReadmeValid(PATH, fileSystem);
+		var errors = await client.IsReadmeValid(PATH, fileSystem, "");
 
 		Assert.Single(errors);
 		Assert.True(errors.Contains(ERROR));
@@ -493,7 +493,7 @@ public class ValidationApiClientTests
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		var errors = await client.IsReadmeValid(PATH, fileSystem);
+		var errors = await client.IsReadmeValid(PATH, fileSystem, "");
 
 		string[] expectedErrors = [ERROR_1, ERROR_2, ERROR_3, ERROR_4];
 
@@ -520,7 +520,7 @@ public class ValidationApiClientTests
 
 		try
 		{
-			_ = await client.IsReadmeValid(PATH, fileSystem);
+			_ = await client.IsReadmeValid(PATH, fileSystem, "");
 		}
 		catch (Exception e)
 		{
@@ -548,7 +548,7 @@ public class ValidationApiClientTests
 
 		try
 		{
-			_ = await client.IsReadmeValid(PATH, fileSystem);
+			_ = await client.IsReadmeValid(PATH, fileSystem, "");
 		}
 		catch (Exception e)
 		{
@@ -578,7 +578,7 @@ public class ValidationApiClientTests
 
 		try
 		{
-			_ = await client.IsReadmeValid(PATH, fileSystem);
+			_ = await client.IsReadmeValid(PATH, fileSystem, "");
 		}
 		catch (Exception e)
 		{
@@ -604,7 +604,7 @@ public class ValidationApiClientTests
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		var errors = await client.IsReadmeValid(PATH, fileSystem);
+		var errors = await client.IsReadmeValid(PATH, fileSystem, "");
 
 		Assert.Empty(errors);
 	}
