@@ -15,6 +15,7 @@ public sealed class ValidationApiClient : ThunderstoreClient
 	public async Task<ICollection<string>> IsIconValid(
 		string path,
 		IFileSystem fileSystem,
+		string token,
 		CancellationToken ct = default
 	)
 	{
@@ -23,6 +24,7 @@ public sealed class ValidationApiClient : ThunderstoreClient
 		var payload = new Models.Web.ValidateIcon.Request { Data = Convert.ToBase64String(data) };
 		var request = new RequestBuilder(Builder)
 			.Post()
+			.WithAuth(token)
 			.ToEndpoint("api/experimental/submission/validate/icon/")
 			.WithJSON(payload)
 			.Build();
@@ -53,6 +55,7 @@ public sealed class ValidationApiClient : ThunderstoreClient
 		string path,
 		Team team,
 		IFileSystem fileSystem,
+		string token,
 		CancellationToken ct = default
 	)
 	{
@@ -66,6 +69,7 @@ public sealed class ValidationApiClient : ThunderstoreClient
 
 		var request = new RequestBuilder(Builder)
 			.Post()
+			.WithAuth(token)
 			.ToEndpoint("api/experimental/submission/validate/manifest-v1/")
 			.WithJSON(payload)
 			.Build();
@@ -98,6 +102,7 @@ public sealed class ValidationApiClient : ThunderstoreClient
 	public async Task<ICollection<string>> IsReadmeValid(
 		string path,
 		IFileSystem fileSystem,
+		string token,
 		CancellationToken ct = default
 	)
 	{
@@ -107,6 +112,7 @@ public sealed class ValidationApiClient : ThunderstoreClient
 
 		var request = new RequestBuilder(Builder)
 			.Post()
+			.WithAuth(token)
 			.ToEndpoint("api/experimental/submission/validate/readme/")
 			.WithJSON(payload)
 			.Build();
