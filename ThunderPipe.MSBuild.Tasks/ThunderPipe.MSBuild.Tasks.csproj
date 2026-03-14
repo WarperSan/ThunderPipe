@@ -4,6 +4,7 @@
 		<DebugType>embedded</DebugType>
 		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 		<RootNamespace>ThunderPipe.MSBuild.Tasks</RootNamespace>
+		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
 	<ItemGroup>
