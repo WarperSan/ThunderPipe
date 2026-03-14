@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 using ThunderPipe.Core.Converters;
 
 namespace ThunderPipe.Core.Models.API;
@@ -8,6 +9,7 @@ namespace ThunderPipe.Core.Models.API;
 /// Represents a valid package version
 /// </summary>
 [TypeConverter(typeof(PackageVersionTypeConverter))]
+[JsonConverter(typeof(PackageJsonConverter))]
 public sealed record PackageVersion
 {
 	private readonly string _version;
