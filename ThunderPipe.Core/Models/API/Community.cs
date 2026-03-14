@@ -1,0 +1,29 @@
+using System.Diagnostics.CodeAnalysis;
+using Newtonsoft.Json;
+using ThunderPipe.Core.Converters;
+
+namespace ThunderPipe.Core.Models.API;
+
+[JsonConverter(typeof(PackageJsonConverter))]
+public sealed record Community
+{
+	private readonly string _community;
+
+	public Community(string community)
+	{
+		_community = community;
+	}
+
+	/// <summary>
+	/// Checks if the underlying value is valid
+	/// </summary>
+	[SuppressMessage("Performance", "CA1822:Mark members as static")]
+	public bool IsValid() => true;
+
+	/// <inheritdoc/>
+	public override string ToString() => _community;
+
+	public static implicit operator string(Community p) => p.ToString();
+
+	public static implicit operator Community(string community) => new(community);
+}
