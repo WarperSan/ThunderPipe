@@ -3,7 +3,7 @@ using ThunderPipe.Core.Models.API;
 namespace ThunderPipe.Core.Services.Interfaces;
 
 /// <summary>
-/// Interface representing any class that handles creation operations
+/// Handles the creation of package artifacts
 /// </summary>
 public interface ICreationService
 {
