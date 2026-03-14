@@ -24,7 +24,7 @@ internal sealed class PackageSettings : BasePublishSettings
 
 	[CommandArgument(1, "<team>")]
 	[Description("Team that will own the published package")]
-	public required PackageTeam Team { get; init; }
+	public required Team Team { get; init; }
 
 	[CommandArgument(2, "<community>")]
 	[Description("Slug of the community to publish the package to")]

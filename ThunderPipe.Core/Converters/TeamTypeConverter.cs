@@ -5,9 +5,9 @@ using ThunderPipe.Core.Models.API;
 namespace ThunderPipe.Core.Converters;
 
 /// <summary>
-/// Converts a <see cref="string"/> to a <see cref="PackageTeam"/>
+/// Converts a <see cref="string"/> to a <see cref="Team"/>
 /// </summary>
-public sealed class PackageTeamTypeConverter : TypeConverter
+public sealed class TeamTypeConverter : TypeConverter
 {
 	/// <inheritdoc/>
 	public override bool CanConvertFrom(ITypeDescriptorContext? context, Type sourceType)
@@ -25,6 +25,6 @@ public sealed class PackageTeamTypeConverter : TypeConverter
 		if (value is not string name)
 			return base.ConvertFrom(context, culture, value);
 
-		return new PackageTeam(name);
+		return new Team(name);
 	}
 }

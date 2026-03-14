@@ -16,7 +16,7 @@ internal sealed class LatestVersionSettings : BaseFetchSettings
 {
 	[CommandArgument(0, "<team>")]
 	[Description("Team that owns the package")]
-	public required PackageTeam Team { get; init; }
+	public required Team Team { get; init; }
 
 	[CommandArgument(1, "<name>")]
 	[Description("Name of the package")]

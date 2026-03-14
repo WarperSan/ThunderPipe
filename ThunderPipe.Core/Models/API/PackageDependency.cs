@@ -21,7 +21,7 @@ public sealed record PackageDependency
 
 		if (components.Length == 3)
 		{
-			Team = new PackageTeam(components[0]);
+			Team = new Team(components[0]);
 			Name = components[1];
 			Version = components[2];
 		}
@@ -33,7 +33,7 @@ public sealed record PackageDependency
 		}
 	}
 
-	public PackageTeam? Team { get; }
+	public Team? Team { get; }
 	public PackageName? Name { get; }
 	public PackageVersion? Version { get; }
 

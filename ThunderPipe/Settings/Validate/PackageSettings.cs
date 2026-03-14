@@ -21,7 +21,7 @@ internal sealed class PackageSettings : BaseValidateSettings
 
 	[CommandArgument(1, "<team>")]
 	[Description("Team that will publish the package")]
-	public required PackageTeam Team { get; init; }
+	public required Team Team { get; init; }
 
 	[CommandOption("--icon-path")]
 	[Description("Relative path to the package icon")]
