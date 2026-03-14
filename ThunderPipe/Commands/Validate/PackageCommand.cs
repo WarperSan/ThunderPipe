@@ -38,7 +38,7 @@ internal sealed class PackageCommand : BaseCommand<PackageSettings>
 		var readmePath = Path.GetFullPath(settings.ReadmePath!, settings.PackageFolder);
 
 		var builder = new RequestBuilder().ToUri(settings.Host!);
-		IValidationService service = new ValidationService(builder, _fileSystem, Logger);
+		var service = new ValidationService(builder, _fileSystem, Logger);
 
 		var errors = await service.ValidatePackage(
 			settings.Team,
