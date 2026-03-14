@@ -2,6 +2,9 @@ using ThunderPipe.Core.Services.Interfaces;
 
 namespace ThunderPipe.Core.Services.Implementations;
 
+/// <summary>
+/// Implementation of <see cref="IFileSystem"/> using <see cref="System.IO"/>
+/// </summary>
 public sealed class FileSystem : IFileSystem
 {
 	/// <inheritdoc />
