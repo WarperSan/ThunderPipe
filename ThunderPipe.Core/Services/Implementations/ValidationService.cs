@@ -32,14 +32,43 @@ public sealed class ValidationService : IValidationService
 	{
 		var errors = new List<string>();
 
-		errors.AddRange(await _client.IsIconValid(iconPath, _fileSystem, token, cancellationToken));
+		try
+		{
+			errors.AddRange(
+				await _client.IsIconValid(iconPath, _fileSystem, token, cancellationToken)
+			);
+		}
+		catch (Exception e)
+		{
+			errors.Add(e.Message);
+		}
 
-		errors.AddRange(
-			await _client.IsManifestValid(manifestPath, team, _fileSystem, token, cancellationToken)
-		);
+		try
+		{
+			errors.AddRange(
+				await _client.IsManifestValid(
+					manifestPath,
+					team,
+					_fileSystem,
+					token,
+					cancellationToken
+				)
+			);
+		}
+		catch (Exception e)
+		{
+			errors.Add(e.Message);
+		}
 
-		// TODO: Check why this returns a 500
-		//errors.AddRange(await _client.IsReadmeValid(readmePath, _fileSystem, token, cancellationToken));
+		try
+		{
+			// TODO: Check why this returns a 500
+			//errors.AddRange(await _client.IsReadmeValid(readmePath, _fileSystem, token, cancellationToken));
+		}
+		catch (Exception e)
+		{
+			errors.Add(e.Message);
+		}
 
 		return errors;
 	}
