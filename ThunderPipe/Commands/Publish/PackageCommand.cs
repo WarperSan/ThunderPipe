@@ -36,10 +36,13 @@ internal sealed class PackageCommand : BaseCommand<Settings.Publish.PackageSetti
 
 		using var client = new PublishApiClient();
 		client.Builder = builder;
-		client.CancellationToken = cancellationToken;
 		client.Logger = Logger;
 
-		var uploadSession = await client.InitiateMultipartUpload(file, _fileSystem);
+		var uploadSession = await client.InitiateMultipartUpload(
+			file,
+			_fileSystem,
+			cancellationToken
+		);
 
 		Logger.LogInformation(
 			"Uploading '{File}' ({GetSizeString}) in {ChunkCount} chunks.",
@@ -52,21 +55,30 @@ internal sealed class PackageCommand : BaseCommand<Settings.Publish.PackageSetti
 
 		try
 		{
-			uploadedParts = await client.UploadParts(file, uploadSession.Parts, _fileSystem);
+			uploadedParts = await client.UploadParts(
+				file,
+				uploadSession.Parts,
+				_fileSystem,
+				cancellationToken
+			);
 		}
 		catch (Exception)
 		{
-			await client.AbortMultipartUpload(uploadSession.UUID);
+			await client.AbortMultipartUpload(uploadSession.UUID, cancellationToken);
 			throw;
 		}
 
 		if (uploadedParts.Count != uploadSession.Parts.Count)
 		{
-			await client.AbortMultipartUpload(uploadSession.UUID);
+			await client.AbortMultipartUpload(uploadSession.UUID, cancellationToken);
 			throw new InvalidOperationException("Failed to upload every parts.");
 		}
 
-		var finishedUpload = await client.FinishMultipartUpload(uploadSession.UUID, uploadedParts);
+		var finishedUpload = await client.FinishMultipartUpload(
+			uploadSession.UUID,
+			uploadedParts,
+			cancellationToken
+		);
 
 		if (!finishedUpload)
 			throw new InvalidOperationException("Failed to finish upload.");
@@ -78,7 +90,8 @@ internal sealed class PackageCommand : BaseCommand<Settings.Publish.PackageSetti
 			settings.Community,
 			settings.Categories ?? [],
 			settings.HasNsfw,
-			uploadSession.UUID
+			uploadSession.UUID,
+			cancellationToken
 		);
 
 		Logger.LogInformation(

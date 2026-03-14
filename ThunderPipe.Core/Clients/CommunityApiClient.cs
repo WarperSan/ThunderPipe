@@ -10,7 +10,7 @@ public sealed class CommunityApiClient : ThunderstoreClient
 	/// <summary>
 	/// Checks if a community with the given slug exists
 	/// </summary>
-	public async Task<bool> Exists(string slug)
+	public async Task<bool> Exists(string slug, CancellationToken ct = default)
 	{
 		var tempBuilder = new RequestBuilder(Builder)
 			.Get()
@@ -27,7 +27,7 @@ public sealed class CommunityApiClient : ThunderstoreClient
 			if (!visitedPages.Add(request.RequestUri!.AbsoluteUri))
 				break;
 
-			var response = await SendRequest<Models.Web.GetCommunity.Response>(request);
+			var response = await SendRequest<Models.Web.GetCommunity.Response>(request, ct);
 
 			var community = response.Items.FirstOrDefault(i => i.Slug == slug);
 

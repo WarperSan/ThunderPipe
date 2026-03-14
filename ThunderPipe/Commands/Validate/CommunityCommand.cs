@@ -25,10 +25,9 @@ internal sealed class CommunityCommand : BaseCommand<CommunitySettings>
 		var builder = new RequestBuilder().ToUri(settings.Host!);
 		using var client = new CommunityApiClient();
 		client.Builder = builder;
-		client.CancellationToken = cancellationToken;
 		client.Logger = Logger;
 
-		var doesCommunityExist = await client.Exists(communitySlug);
+		var doesCommunityExist = await client.Exists(communitySlug, cancellationToken);
 
 		if (!doesCommunityExist)
 			throw new KeyNotFoundException(

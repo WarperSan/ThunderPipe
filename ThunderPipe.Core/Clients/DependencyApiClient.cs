@@ -14,7 +14,10 @@ public sealed class DependencyApiClient : ThunderstoreClient
 	/// <summary>
 	/// Finds the missing dependencies
 	/// </summary>
-	public async Task<ISet<PackageDependency>> GetMissing(PackageDependency[] dependencies)
+	public async Task<ISet<PackageDependency>> GetMissing(
+		PackageDependency[] dependencies,
+		CancellationToken ct = default
+	)
 	{
 		const string NAMESPACE = "NAMESPACE";
 		const string NAME = "NAME";
@@ -37,7 +40,7 @@ public sealed class DependencyApiClient : ThunderstoreClient
 				.SetPathParameter(VERSION, dependency.Version!)
 				.Build();
 
-			var rawResponse = await SendRequest(request);
+			var rawResponse = await SendRequest(request, ct);
 
 			if (!rawResponse.IsSuccessStatusCode)
 			{
@@ -50,7 +53,7 @@ public sealed class DependencyApiClient : ThunderstoreClient
 				continue;
 			}
 
-			var response = await ParseJson<Response>(rawResponse);
+			var response = await ParseJson<Response>(rawResponse, ct);
 
 			if (!response.IsActive)
 				continue;

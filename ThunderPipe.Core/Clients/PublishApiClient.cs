@@ -20,7 +20,11 @@ public sealed class PublishApiClient : ThunderstoreClient
 	/// <remarks>
 	/// Internally, this calls the <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateMultipartUpload.html">Multipart upload initiation</a> step
 	/// </remarks>
-	public async Task<UploadSession> InitiateMultipartUpload(string path, IFileSystem fileSystem)
+	public async Task<UploadSession> InitiateMultipartUpload(
+		string path,
+		IFileSystem fileSystem,
+		CancellationToken ct = default
+	)
 	{
 		var payload = new Models.Web.InitiateMultipartUpload.Request
 		{
@@ -34,7 +38,7 @@ public sealed class PublishApiClient : ThunderstoreClient
 			.WithJSON(payload)
 			.Build();
 
-		var response = await SendRequest<Models.Web.InitiateMultipartUpload.Response>(request);
+		var response = await SendRequest<Models.Web.InitiateMultipartUpload.Response>(request, ct);
 
 		var parts = response.UploadParts.Select(p => new UploadPartDescriptor
 		{
@@ -60,7 +64,8 @@ public sealed class PublishApiClient : ThunderstoreClient
 	public async Task<IReadOnlyCollection<UploadPart>> UploadParts(
 		string file,
 		IReadOnlyCollection<UploadPartDescriptor> parts,
-		IFileSystem fileSystem
+		IFileSystem fileSystem,
+		CancellationToken ct = default
 	)
 	{
 		var uploadTasks = new List<Task<UploadPart>>();
@@ -71,13 +76,13 @@ public sealed class PublishApiClient : ThunderstoreClient
 			{
 				stream.Seek(part.Offset, SeekOrigin.Begin);
 
-				var task = UploadPart(stream, part.Id, part.Size, part.UploadURL);
+				var task = UploadPart(stream, part.Id, part.Size, part.UploadURL, ct);
 
 				uploadTasks.Add(task);
 			}
 		}
 
-		var uploadedParts = await Task.WhenAll(uploadTasks).WaitAsync(CancellationToken);
+		var uploadedParts = await Task.WhenAll(uploadTasks).WaitAsync(ct);
 
 		return uploadedParts.AsReadOnly();
 	}
@@ -88,7 +93,13 @@ public sealed class PublishApiClient : ThunderstoreClient
 	/// <remarks>
 	/// Internally, this calls the <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_UploadPart.html">Upload part</a> step
 	/// </remarks>
-	private async Task<UploadPart> UploadPart(Stream stream, int id, int size, Uri url)
+	private async Task<UploadPart> UploadPart(
+		Stream stream,
+		int id,
+		int size,
+		Uri url,
+		CancellationToken ct
+	)
 	{
 		const int BLOCK_SIZE = ushort.MaxValue;
 		var chunk = new MemoryStream();
@@ -106,7 +117,7 @@ public sealed class PublishApiClient : ThunderstoreClient
 			var bytes = reader.ReadBytes(BLOCK_SIZE);
 
 			md5.TransformBlock(bytes, 0, BLOCK_SIZE, null, 0);
-			await chunk.WriteAsync(bytes, CancellationToken);
+			await chunk.WriteAsync(bytes, ct);
 		}
 
 		var finalBytes = reader.ReadBytes(remainingSize);
@@ -116,7 +127,7 @@ public sealed class PublishApiClient : ThunderstoreClient
 			throw new NullReferenceException($"MD5 hashing failed for part #{id}.");
 
 		var hash = md5.Hash;
-		await chunk.WriteAsync(finalBytes, CancellationToken);
+		await chunk.WriteAsync(finalBytes, ct);
 		chunk.Position = 0;
 
 		var content = new StreamContent(chunk);
@@ -125,7 +136,7 @@ public sealed class PublishApiClient : ThunderstoreClient
 
 		var request = new RequestBuilder().ToUri(url).Put().WithContent(content).Build();
 
-		var response = await SendRequest(request);
+		var response = await SendRequest(request, ct);
 
 		var etag = response.Headers.ETag?.Tag;
 
@@ -138,14 +149,14 @@ public sealed class PublishApiClient : ThunderstoreClient
 	/// <summary>
 	/// Aborts the multipart upload
 	/// </summary>
-	public async Task AbortMultipartUpload(string uuid)
+	public async Task AbortMultipartUpload(string uuid, CancellationToken ct = default)
 	{
 		var request = new RequestBuilder(Builder)
 			.Post()
 			.ToEndpoint($"api/experimental/usermedia/{uuid}/abort-upload/")
 			.Build();
 
-		await SendRequest(request);
+		await SendRequest(request, ct);
 	}
 
 	/// <summary>
@@ -156,7 +167,8 @@ public sealed class PublishApiClient : ThunderstoreClient
 	/// </remarks>
 	public async Task<bool> FinishMultipartUpload(
 		string uuid,
-		IReadOnlyCollection<UploadPart> parts
+		IReadOnlyCollection<UploadPart> parts,
+		CancellationToken ct = default
 	)
 	{
 		var payload = new Models.Web.FinishMultipartUpload.Request
@@ -176,7 +188,7 @@ public sealed class PublishApiClient : ThunderstoreClient
 			.WithJSON(payload)
 			.Build();
 
-		var response = await SendRequest(request);
+		var response = await SendRequest(request, ct);
 
 		return response.IsSuccessStatusCode;
 	}
@@ -189,7 +201,8 @@ public sealed class PublishApiClient : ThunderstoreClient
 		string community,
 		string[] categories,
 		bool hasNsfw,
-		string sessionUUID
+		string sessionUUID,
+		CancellationToken ct = default
 	)
 	{
 		var payload = new Models.Web.SubmitPackage.Request
@@ -207,7 +220,7 @@ public sealed class PublishApiClient : ThunderstoreClient
 			.WithJSON(payload)
 			.Build();
 
-		var response = await SendRequest<Models.Web.SubmitPackage.Response>(request);
+		var response = await SendRequest<Models.Web.SubmitPackage.Response>(request, ct);
 
 		return new PackageRelease
 		{

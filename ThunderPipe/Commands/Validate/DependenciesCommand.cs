@@ -24,10 +24,9 @@ internal sealed class DependenciesCommand : BaseCommand<DependenciesSettings>
 		var builder = new RequestBuilder().ToUri(settings.Host!);
 		using var client = new DependencyApiClient();
 		client.Builder = builder;
-		client.CancellationToken = cancellationToken;
 		client.Logger = Logger;
 
-		var missingDependencies = await client.GetMissing(settings.Dependencies);
+		var missingDependencies = await client.GetMissing(settings.Dependencies, cancellationToken);
 
 		if (missingDependencies.Count > 0)
 		{

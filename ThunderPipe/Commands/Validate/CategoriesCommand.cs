@@ -24,10 +24,13 @@ internal sealed class CategoriesCommand : BaseCommand<CategoriesSettings>
 		var builder = new RequestBuilder().ToUri(settings.Host!);
 		using var client = new CategoryApiClient();
 		client.Builder = builder;
-		client.CancellationToken = cancellationToken;
 		client.Logger = Logger;
 
-		var missingCategories = await client.GetMissing(settings.Categories!, settings.Community);
+		var missingCategories = await client.GetMissing(
+			settings.Categories!,
+			settings.Community,
+			cancellationToken
+		);
 
 		if (missingCategories.Count > 0)
 		{

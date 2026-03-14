@@ -25,11 +25,6 @@ public abstract class ThunderstoreClient : IDisposable
 	}
 
 	/// <summary>
-	/// Token used to cancel operations
-	/// </summary>
-	public CancellationToken CancellationToken { protected get; set; }
-
-	/// <summary>
 	/// <see cref="HttpClient"/> instance used for requests
 	/// </summary>
 	public HttpClient Client
@@ -55,7 +50,6 @@ public abstract class ThunderstoreClient : IDisposable
 	protected ThunderstoreClient()
 	{
 		Builder = new RequestBuilder();
-		CancellationToken = CancellationToken.None;
 		Client = new HttpClient();
 		Logger = null;
 	}
@@ -65,10 +59,13 @@ public abstract class ThunderstoreClient : IDisposable
 	/// <summary>
 	/// Sends the given request
 	/// </summary>
-	protected async Task<HttpResponseMessage> SendRequest(HttpRequestMessage request)
+	protected async Task<HttpResponseMessage> SendRequest(
+		HttpRequestMessage request,
+		CancellationToken ct
+	)
 	{
 		Logger?.LogDebug("Sending request:\n{Request}", request);
-		var response = await _client.SendAsync(request, CancellationToken);
+		var response = await _client.SendAsync(request, ct);
 
 		Logger?.LogDebug("Received response:\n{Response}", response);
 		return response;
@@ -77,18 +74,18 @@ public abstract class ThunderstoreClient : IDisposable
 	/// <summary>
 	/// Sends the given request, and returns the JSON response
 	/// </summary>
-	protected async Task<T> SendRequest<T>(HttpRequestMessage request)
+	protected async Task<T> SendRequest<T>(HttpRequestMessage request, CancellationToken ct)
 	{
-		var response = await SendRequest(request);
-		return await ParseJson<T>(response);
+		var response = await SendRequest(request, ct);
+		return await ParseJson<T>(response, ct);
 	}
 
 	/// <summary>
 	/// Parses the JSON content of the given response
 	/// </summary>
-	protected async Task<T> ParseJson<T>(HttpResponseMessage response)
+	protected async Task<T> ParseJson<T>(HttpResponseMessage response, CancellationToken ct)
 	{
-		var content = await response.Content.ReadAsStringAsync(CancellationToken);
+		var content = await response.Content.ReadAsStringAsync(ct);
 		Logger?.LogDebug("Received JSON:\n{Json}", content);
 
 		T? json;

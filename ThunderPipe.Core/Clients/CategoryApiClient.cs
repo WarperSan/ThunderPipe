@@ -10,7 +10,11 @@ public sealed class CategoryApiClient : ThunderstoreClient
 	/// <summary>
 	/// Finds the missing categories in the given community
 	/// </summary>
-	public async Task<ISet<string>> GetMissing(string[] slugs, string community)
+	public async Task<ISet<string>> GetMissing(
+		string[] slugs,
+		string community,
+		CancellationToken ct = default
+	)
 	{
 		var tempBuilder = new RequestBuilder(Builder)
 			.Get()
@@ -27,7 +31,7 @@ public sealed class CategoryApiClient : ThunderstoreClient
 			if (!visitedPages.Add(request.RequestUri!.AbsoluteUri))
 				break;
 
-			var response = await SendRequest<Models.Web.GetCategory.Response>(request);
+			var response = await SendRequest<Models.Web.GetCategory.Response>(request, ct);
 
 			foreach (var category in response.Items)
 				slugsToFind.Remove(category.Slug);

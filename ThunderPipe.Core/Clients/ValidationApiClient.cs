@@ -11,9 +11,13 @@ public sealed class ValidationApiClient : ThunderstoreClient
 	/// <summary>
 	/// Checks if the icon at the given path is valid
 	/// </summary>
-	public async Task<ICollection<string>> IsIconValid(string path, IFileSystem fileSystem)
+	public async Task<ICollection<string>> IsIconValid(
+		string path,
+		IFileSystem fileSystem,
+		CancellationToken ct = default
+	)
 	{
-		var data = await fileSystem.ReadAllBytesAsync(path, CancellationToken);
+		var data = await fileSystem.ReadAllBytesAsync(path, ct);
 
 		var payload = new Models.Web.ValidateIcon.Request { Data = Convert.ToBase64String(data) };
 		var request = new RequestBuilder(Builder)
@@ -22,7 +26,7 @@ public sealed class ValidationApiClient : ThunderstoreClient
 			.WithJSON(payload)
 			.Build();
 
-		var response = await SendRequest<Models.Web.ValidateIcon.Response>(request);
+		var response = await SendRequest<Models.Web.ValidateIcon.Response>(request, ct);
 
 		var errors = new List<string>();
 
@@ -47,10 +51,11 @@ public sealed class ValidationApiClient : ThunderstoreClient
 	public async Task<ICollection<string>> IsManifestValid(
 		string path,
 		string team,
-		IFileSystem fileSystem
+		IFileSystem fileSystem,
+		CancellationToken ct = default
 	)
 	{
-		var data = await fileSystem.ReadAllBytesAsync(path, CancellationToken);
+		var data = await fileSystem.ReadAllBytesAsync(path, ct);
 
 		var payload = new Models.Web.ValidateManifest.Request
 		{
@@ -64,7 +69,7 @@ public sealed class ValidationApiClient : ThunderstoreClient
 			.WithJSON(payload)
 			.Build();
 
-		var response = await SendRequest<Models.Web.ValidateManifest.Response>(request);
+		var response = await SendRequest<Models.Web.ValidateManifest.Response>(request, ct);
 
 		var errors = new List<string>();
 
@@ -89,9 +94,13 @@ public sealed class ValidationApiClient : ThunderstoreClient
 	/// <summary>
 	/// Checks if the README at the given path is valid
 	/// </summary>
-	public async Task<ICollection<string>> IsReadmeValid(string path, IFileSystem fileSystem)
+	public async Task<ICollection<string>> IsReadmeValid(
+		string path,
+		IFileSystem fileSystem,
+		CancellationToken ct = default
+	)
 	{
-		var data = await fileSystem.ReadAllBytesAsync(path, CancellationToken);
+		var data = await fileSystem.ReadAllBytesAsync(path, ct);
 
 		var payload = new Models.Web.ValidateReadme.Request { Data = Convert.ToBase64String(data) };
 
@@ -101,7 +110,7 @@ public sealed class ValidationApiClient : ThunderstoreClient
 			.WithJSON(payload)
 			.Build();
 
-		var response = await SendRequest<Models.Web.ValidateReadme.Response>(request);
+		var response = await SendRequest<Models.Web.ValidateReadme.Response>(request, ct);
 
 		var errors = new List<string>();
 

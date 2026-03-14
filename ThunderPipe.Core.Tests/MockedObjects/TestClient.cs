@@ -14,7 +14,7 @@ internal class TestClient : ThunderstoreClient
 	{
 		var request = Builder.Build();
 
-		var response = await SendRequest(request);
+		var response = await SendRequest(request, CancellationToken.None);
 
 		response.EnsureSuccessStatusCode();
 	}
@@ -26,6 +26,6 @@ internal class TestClient : ThunderstoreClient
 	{
 		var request = Builder.Build();
 
-		return SendRequest<T>(request);
+		return SendRequest<T>(request, CancellationToken.None);
 	}
 }

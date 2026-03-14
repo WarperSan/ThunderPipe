@@ -5,7 +5,7 @@ using ThunderPipe.Core.Services.Interfaces;
 
 namespace ThunderPipe.Core.Services.Implementations;
 
-public class CreationService : ICreationService
+public sealed class CreationService : ICreationService
 {
 	private readonly IFileSystem _fileSystem;
 	private readonly ILogger _logger;

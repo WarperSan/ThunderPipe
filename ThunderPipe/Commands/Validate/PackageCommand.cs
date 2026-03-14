@@ -37,7 +37,6 @@ internal sealed class PackageCommand : BaseCommand<PackageSettings>
 		var builder = new RequestBuilder().ToUri(settings.Host!).WithAuth(settings.Token);
 		var client = new ValidationApiClient();
 		client.Builder = builder;
-		client.CancellationToken = cancellationToken;
 		client.Logger = Logger;
 
 		var iconPath = Path.GetFullPath(settings.IconPath!, settings.PackageFolder);
@@ -48,19 +47,25 @@ internal sealed class PackageCommand : BaseCommand<PackageSettings>
 		{
 			async () =>
 			{
-				var errors = await client.IsIconValid(iconPath, _fileSystem);
+				var errors = await client.IsIconValid(iconPath, _fileSystem, cancellationToken);
 
 				return new ValidationResult(errors.Count == 0, errors);
 			},
 			async () =>
 			{
-				var errors = await client.IsManifestValid(manifestPath, settings.Team, _fileSystem);
+				var errors = await client.IsManifestValid(
+					manifestPath,
+					settings.Team,
+					_fileSystem,
+					cancellationToken
+				);
 
 				return new ValidationResult(errors.Count == 0, errors);
 			},
 			/*async () =>
 			{
-				var errors = await client.IsReadmeValid(readmePath, _fileSystem);
+				var errors = await client.IsReadmeValid(readmePath, _fileSystem,
+			   cancellationToken);
 
 				return new ValidationResult(errors.Count == 0, errors);
 			},*/
