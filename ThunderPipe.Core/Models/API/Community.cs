@@ -4,7 +4,7 @@ using ThunderPipe.Core.Converters;
 
 namespace ThunderPipe.Core.Models.API;
 
-[JsonConverter(typeof(PackageJsonConverter))]
+[JsonConverter(typeof(PackageTypeJsonConverter))]
 public sealed record Community
 {
 	private readonly string _community;
