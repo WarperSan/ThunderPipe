@@ -1,10 +1,18 @@
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Compression;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Build.Framework;
-using Microsoft.Build.Utilities;
-using Newtonsoft.Json;
+using Microsoft.Extensions.Logging;
 using ThunderPipe.Core.Models.API;
+using ThunderPipe.Core.Services.Implementations;
+using ThunderPipe.Core.Services.Interfaces;
+using ThunderPipe.Core.Utils;
+using ThunderPipe.MSBuild.Tasks.Helpers;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
+using Task = Microsoft.Build.Utilities.Task;
 
 namespace ThunderPipe.MSBuild.Tasks;
 
@@ -29,6 +37,12 @@ public class ThunderPipePack : Task
 	/// <inheritdoc />
 	public override bool Execute()
 	{
+		var builder = new RequestBuilder();
+		var logger = new MSBuildLogger(Log);
+		var creationService = new CreationService(new FileSystem(), logger);
+
+		var validationService = new ValidationService(builder, new FileSystem(), logger);
+
 		var tempDir = CreateTemporaryDirectory(TemporaryDir);
 
 		CopyPackageFiles(PackageFiles ?? [], tempDir);
@@ -41,9 +55,17 @@ public class ThunderPipePack : Task
 			Dependencies = ParseDependencies(Dependencies ?? []),
 		};
 
-		WritePackageManifest(packageManifest, tempDir);
+		creationService
+			.CreateManifest(packageManifest, tempDir, CancellationToken.None)
+			.GetAwaiter()
+			.GetResult();
 
-		// TODO: Validate package
+		var isPackageValid = ValidatePackage(validationService, logger, "", "", tempDir)
+			.GetAwaiter()
+			.GetResult();
+
+		if (!isPackageValid)
+			return false;
 
 		if (File.Exists(Output))
 			File.Delete(Output);
@@ -125,12 +147,37 @@ public class ThunderPipePack : Task
 		return resolvedDependencies;
 	}
 
-	private static void WritePackageManifest(PackageManifest packageManifest, string destination)
+	[SuppressMessage(
+		"Performance",
+		"CA1859:Use concrete types when possible for improved performance"
+	)]
+	private static async Task<bool> ValidatePackage(
+		IValidationService service,
+		ILogger logger,
+		Team team,
+		string token,
+		string sourceDir
+	)
 	{
-		var outputFile = Path.Combine(destination, "manifest.json");
+		var errors = await service.ValidatePackage(
+			team,
+			Path.Combine(sourceDir, "icon.png"),
+			Path.Combine(sourceDir, "manifest.json"),
+			Path.Combine(sourceDir, "README.md"),
+			token,
+			CancellationToken.None
+		);
 
-		var jsonContent = JsonConvert.SerializeObject(packageManifest, Formatting.Indented);
+		if (errors.Count == 0)
+			return true;
 
-		File.WriteAllText(outputFile, jsonContent);
+		var output = new StringBuilder();
+
+		output.AppendLine("Validation failed:");
+		output.Append("- ");
+		output.AppendJoin("\n- ", errors);
+
+		logger.LogError("{Output}", output.ToString());
+		return false;
 	}
 }
