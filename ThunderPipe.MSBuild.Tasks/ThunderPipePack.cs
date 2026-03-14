@@ -20,6 +20,12 @@ namespace ThunderPipe.MSBuild.Tasks;
 public class ThunderPipePack : Task
 {
 	[Required]
+	public required string Token { get; set; }
+
+	[Required]
+	public required string Team { get; set; }
+
+	[Required]
 	public required string Name { get; set; }
 
 	[Required]
@@ -60,7 +66,7 @@ public class ThunderPipePack : Task
 			.GetAwaiter()
 			.GetResult();
 
-		var isPackageValid = ValidatePackage(validationService, logger, "", "", tempDir)
+		var isPackageValid = ValidatePackage(validationService, logger, Team, Token, tempDir)
 			.GetAwaiter()
 			.GetResult();
 
