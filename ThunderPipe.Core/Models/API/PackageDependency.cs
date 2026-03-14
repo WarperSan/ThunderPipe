@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using Newtonsoft.Json;
 using ThunderPipe.Core.Converters;
 
 namespace ThunderPipe.Core.Models.API;
@@ -7,6 +8,7 @@ namespace ThunderPipe.Core.Models.API;
 /// Represents a valid package dependency string
 /// </summary>
 [TypeConverter(typeof(PackageDependencyTypeConverter))]
+[JsonConverter(typeof(PackageJsonConverter))]
 public sealed record PackageDependency
 {
 	private readonly string _dependencyString;
