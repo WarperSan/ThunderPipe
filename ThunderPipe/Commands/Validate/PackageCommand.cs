@@ -2,7 +2,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Spectre.Console.Cli;
-using ThunderPipe.Core.Clients;
 using ThunderPipe.Core.Services.Implementations;
 using ThunderPipe.Core.Services.Interfaces;
 using ThunderPipe.Core.Utils;
@@ -34,22 +33,19 @@ internal sealed class PackageCommand : BaseCommand<PackageSettings>
 			settings.PackageFolder
 		);
 
-		var builder = new RequestBuilder().ToUri(settings.Host!).WithAuth(settings.Token);
-		var client = new ValidationApiClient();
-		client.Builder = builder;
-		client.Logger = Logger;
-
 		var iconPath = Path.GetFullPath(settings.IconPath!, settings.PackageFolder);
 		var manifestPath = Path.GetFullPath(settings.ManifestPath!, settings.PackageFolder);
 		var readmePath = Path.GetFullPath(settings.ReadmePath!, settings.PackageFolder);
 
-		IValidationService service = new ValidationService(client, _fileSystem);
+		var builder = new RequestBuilder().ToUri(settings.Host!);
+		IValidationService service = new ValidationService(builder, _fileSystem, Logger);
 
 		var errors = await service.ValidatePackage(
 			settings.Team,
 			iconPath,
 			manifestPath,
 			readmePath,
+			settings.Token,
 			cancellationToken
 		);
 
