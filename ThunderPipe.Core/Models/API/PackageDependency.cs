@@ -56,4 +56,6 @@ public sealed record PackageDependency
 	public override string ToString() => _dependencyString;
 
 	public static implicit operator string(PackageDependency p) => p.ToString();
+
+	public static implicit operator PackageDependency(string dependency) => new(dependency);
 }
