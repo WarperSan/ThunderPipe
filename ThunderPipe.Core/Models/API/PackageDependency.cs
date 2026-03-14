@@ -20,7 +20,7 @@ public sealed record PackageDependency
 		if (components.Length == 3)
 		{
 			Team = new PackageTeam(components[0]);
-			Name = new PackageName(components[1]);
+			Name = components[1];
 			Version = components[2];
 		}
 		else
