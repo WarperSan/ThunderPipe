@@ -103,13 +103,9 @@ public class ThunderPipePack : Task
 		{
 			var destinationFolder = Path.Combine(destination, ResolveFilePath(file));
 			var targetFile = file.ItemSpec;
-			var outputFile = Path.Combine(destinationFolder, targetFile);
+			var outputFile = Path.Combine(destinationFolder, Path.GetFileName(targetFile));
 
-			var outputFolder = Path.GetDirectoryName(outputFile);
-
-			if (outputFolder != null && !Directory.Exists(outputFolder))
-				Directory.CreateDirectory(outputFolder);
-
+			Directory.CreateDirectory(destinationFolder);
 			File.Copy(targetFile, outputFile, true);
 		}
 	}
