@@ -3,5 +3,4 @@
 		<MSBuildTasksAssemblyFile>../build/$(TargetFramework)/ThunderPipe.MSBuild.Tasks.dll</MSBuildTasksAssemblyFile>
 	</PropertyGroup>
 
-	<UsingTask TaskName="SimpleTask" AssemblyFile="$(MSBuildTasksAssemblyFile)"/>
 </Project>
