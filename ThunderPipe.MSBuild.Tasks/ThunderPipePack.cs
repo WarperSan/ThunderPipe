@@ -118,20 +118,18 @@ public class ThunderPipePack : Task
 
 	private static string ResolveFilePath(ITaskItem file)
 	{
-		const string PLUGINS_FOLDER = "plugins/";
 		var destination = file.GetMetadata("Destination").Trim();
 
 		if (string.IsNullOrEmpty(destination))
-			destination = PLUGINS_FOLDER;
+			return "";
 
 		if (destination == ".")
-			destination = PLUGINS_FOLDER;
+			return "";
 
-		if (destination.StartsWith('/'))
-			destination = PLUGINS_FOLDER + destination[1..];
-
-		if (!destination.EndsWith('/'))
-			destination += '/';
+		if (destination.StartsWith("./"))
+			destination = destination[2..];
+		else if (destination.StartsWith('/'))
+			destination = destination[1..];
 
 		return destination;
 	}
