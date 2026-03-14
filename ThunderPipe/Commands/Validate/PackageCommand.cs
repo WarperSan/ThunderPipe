@@ -3,6 +3,7 @@ using System.Text;
 using Microsoft.Extensions.Logging;
 using Spectre.Console.Cli;
 using ThunderPipe.Core.Clients;
+using ThunderPipe.Core.Services.Implementations;
 using ThunderPipe.Core.Services.Interfaces;
 using ThunderPipe.Core.Utils;
 using ThunderPipe.Settings.Validate;
@@ -42,20 +43,15 @@ internal sealed class PackageCommand : BaseCommand<PackageSettings>
 		var manifestPath = Path.GetFullPath(settings.ManifestPath!, settings.PackageFolder);
 		var readmePath = Path.GetFullPath(settings.ReadmePath!, settings.PackageFolder);
 
-		var errors = new List<string>();
+		IValidationService service = new ValidationService(client, _fileSystem);
 
-		errors.AddRange(await client.IsIconValid(iconPath, _fileSystem, cancellationToken));
-
-		errors.AddRange(
-			await client.IsManifestValid(
-				manifestPath,
-				settings.Team,
-				_fileSystem,
-				cancellationToken
-			)
+		var errors = await service.ValidatePackage(
+			settings.Team,
+			iconPath,
+			manifestPath,
+			readmePath,
+			cancellationToken
 		);
-
-		//errors.AddRange(await client.IsReadmeValid(readmePath, _fileSystem, cancellationToken));
 
 		if (errors.Count > 0)
 		{
