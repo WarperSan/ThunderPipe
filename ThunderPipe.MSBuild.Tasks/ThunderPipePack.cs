@@ -102,12 +102,13 @@ public class ThunderPipePack : Task
 		foreach (var file in files)
 		{
 			var destinationFolder = Path.Combine(destination, ResolveFilePath(file));
-
-			if (!Directory.Exists(destinationFolder))
-				Directory.CreateDirectory(destinationFolder);
-
 			var targetFile = file.ItemSpec;
 			var outputFile = Path.Combine(destinationFolder, targetFile);
+
+			var outputFolder = Path.GetDirectoryName(outputFile);
+
+			if (outputFolder != null && !Directory.Exists(outputFolder))
+				Directory.CreateDirectory(outputFolder);
 
 			File.Copy(targetFile, outputFile, true);
 		}
