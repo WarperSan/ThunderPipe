@@ -32,7 +32,7 @@ internal sealed class PackageSettings : BasePublishSettings
 
 	[CommandOption($"{CATEGORY_OPTION} <CATEGORY>")]
 	[Description("Category slug to label the package with")]
-	public string[]? Categories { get; init; }
+	public Category[]? Categories { get; init; }
 
 	[CommandOption("--has-nsfw|--nsfw")]
 	[Description("Mark the package as containing NSFW content")]
@@ -53,7 +53,7 @@ internal sealed class PackageSettings : BasePublishSettings
 
 		if (Categories != null)
 		{
-			var invalidCategories = Categories.Where(string.IsNullOrWhiteSpace).ToArray();
+			var invalidCategories = Categories.Where(d => !d.IsValid()).ToArray();
 
 			if (invalidCategories.Length > 0)
 			{

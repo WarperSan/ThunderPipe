@@ -6,7 +6,7 @@ using ThunderPipe.Core.Converters;
 namespace ThunderPipe.Core.Models.API;
 
 [TypeConverter(typeof(PackageVersionTypeConverter))]
-[JsonConverter(typeof(PackageJsonConverter))]
+[JsonConverter(typeof(PackageTypeJsonConverter))]
 public sealed record PackageVersion
 {
 	private readonly string _version;
