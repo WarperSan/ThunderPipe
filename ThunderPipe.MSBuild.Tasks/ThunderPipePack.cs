@@ -45,6 +45,9 @@ public class ThunderPipePack : Task
 
 		// TODO: Validate package
 
+		if (File.Exists(Output))
+			File.Delete(Output);
+
 		ZipFile.CreateFromDirectory(tempDir, Output);
 		Directory.Delete(tempDir, true);
 
