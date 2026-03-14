@@ -5,9 +5,6 @@ using ThunderPipe.Core.Converters;
 
 namespace ThunderPipe.Core.Models.API;
 
-/// <summary>
-/// Represents a valid package version
-/// </summary>
 [TypeConverter(typeof(PackageVersionTypeConverter))]
 [JsonConverter(typeof(PackageJsonConverter))]
 public sealed record PackageVersion
@@ -20,7 +17,7 @@ public sealed record PackageVersion
 	}
 
 	/// <summary>
-	/// Checks if the package version is valid
+	/// Checks if the underlying value is valid
 	/// </summary>
 	public bool IsValid() => Regex.IsMatch(_version, "^[0-9]+.[0-9]+.[0-9]+$");
 

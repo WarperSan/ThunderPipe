@@ -2,9 +2,6 @@ using Newtonsoft.Json;
 
 namespace ThunderPipe.Core.Models.API;
 
-/// <summary>
-/// Represents a valid package manifest file
-/// </summary>
 public sealed record PackageManifest
 {
 	[JsonProperty("name")]
@@ -23,7 +20,7 @@ public sealed record PackageManifest
 	public PackageDependency[] Dependencies = [];
 
 	/// <summary>
-	/// Checks if the package manifest file is valid
+	/// Checks if the underlying JSON is valid
 	/// </summary>
 	public bool IsValid()
 	{

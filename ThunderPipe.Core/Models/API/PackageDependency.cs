@@ -4,9 +4,6 @@ using ThunderPipe.Core.Converters;
 
 namespace ThunderPipe.Core.Models.API;
 
-/// <summary>
-/// Represents a valid package dependency string
-/// </summary>
 [TypeConverter(typeof(PackageDependencyTypeConverter))]
 [JsonConverter(typeof(PackageJsonConverter))]
 public sealed record PackageDependency
@@ -38,7 +35,7 @@ public sealed record PackageDependency
 	public PackageVersion? Version { get; }
 
 	/// <summary>
-	/// Checks if the package dependency string is valid
+	/// Checks if the underlying value is valid
 	/// </summary>
 	public bool IsValid()
 	{

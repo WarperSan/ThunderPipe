@@ -4,9 +4,6 @@ using ThunderPipe.Core.Converters;
 
 namespace ThunderPipe.Core.Models.API;
 
-/// <summary>
-/// Represents a valid team
-/// </summary>
 [TypeConverter(typeof(TeamTypeConverter))]
 public sealed record Team
 {
@@ -18,7 +15,7 @@ public sealed record Team
 	}
 
 	/// <summary>
-	/// Checks if the <see cref="Team"/> is valid
+	/// Checks if the underlying value is valid
 	/// </summary>
 	public bool IsValid() => Regex.IsMatch(_team, "^(?!_)[a-zA-Z0-9_]+(?<!_)$");
 
