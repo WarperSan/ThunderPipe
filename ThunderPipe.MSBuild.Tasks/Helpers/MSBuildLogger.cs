@@ -34,7 +34,7 @@ public class MSBuildLogger : ILogger
 				_logger.LogMessage(MessageImportance.Low, message);
 				break;
 			case LogLevel.Information:
-				_logger.LogMessage(MessageImportance.Normal, message);
+				_logger.LogMessage(MessageImportance.High, message);
 				break;
 			case LogLevel.Warning:
 				_logger.LogWarning(message);
