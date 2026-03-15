@@ -74,8 +74,8 @@ public class ThunderPipePack : Task
 			.GetAwaiter()
 			.GetResult();
 
-		//if (!isPackageValid)
-		//	return false;
+		if (!isPackageValid)
+			return false;
 
 		if (File.Exists(Output))
 			File.Delete(Output);
