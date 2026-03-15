@@ -10,13 +10,20 @@ namespace ThunderPipe.Core.Clients;
 /// </summary>
 public abstract class ThunderstoreClient : IDisposable
 {
+	protected ThunderstoreClient()
+	{
+		Builder = new RequestBuilder();
+		Client = new HttpClient();
+		Logger = null;
+	}
+
 	#region Properties
 
 	private HttpClient _client = null!;
 	private RequestBuilder _builder = null!;
 
 	/// <summary>
-	/// Default <see cref="RequestBuilder"/> for this client
+	/// <see cref="RequestBuilder"/> that all requests are templated from
 	/// </summary>
 	public RequestBuilder Builder
 	{
@@ -25,7 +32,7 @@ public abstract class ThunderstoreClient : IDisposable
 	}
 
 	/// <summary>
-	/// <see cref="HttpClient"/> instance used for requests
+	/// <see cref="HttpClient"/> instance used to execute requests
 	/// </summary>
 	public HttpClient Client
 	{
@@ -36,23 +43,15 @@ public abstract class ThunderstoreClient : IDisposable
 			_client.DefaultRequestHeaders.UserAgent.Add(
 				new ProductInfoHeaderValue(Metadata.GUID, Metadata.VERSION)
 			);
-			_client.Timeout = TimeSpan.FromMinutes(5);
 		}
 	}
 
 	/// <summary>
-	/// <see cref="ILogger"/> instead used for operations
+	/// <see cref="ILogger"/> instance used to log client operations
 	/// </summary>
 	public ILogger? Logger { protected get; set; }
 
 	#endregion
-
-	protected ThunderstoreClient()
-	{
-		Builder = new RequestBuilder();
-		Client = new HttpClient();
-		Logger = null;
-	}
 
 	#region Requests
 
@@ -72,16 +71,7 @@ public abstract class ThunderstoreClient : IDisposable
 	}
 
 	/// <summary>
-	/// Sends the given request, and returns the JSON response
-	/// </summary>
-	protected async Task<T> SendRequest<T>(HttpRequestMessage request, CancellationToken ct)
-	{
-		var response = await SendRequest(request, ct);
-		return await ParseJson<T>(response, ct);
-	}
-
-	/// <summary>
-	/// Parses the JSON content of the given response
+	/// Parses the content of the given response into <see cref="T"/>
 	/// </summary>
 	protected async Task<T> ParseJson<T>(HttpResponseMessage response, CancellationToken ct)
 	{
@@ -102,13 +92,21 @@ public abstract class ThunderstoreClient : IDisposable
 			);
 		}
 
-		// ReSharper disable once ConvertIfStatementToReturnStatement
 		if (json == null)
 			throw new NullReferenceException(
 				$"Failed to parse the response's payload as '{nameof(T)}'"
 			);
 
 		return json;
+	}
+
+	/// <summary>
+	/// Sends the given request, and returns the JSON response
+	/// </summary>
+	protected async Task<T> SendRequest<T>(HttpRequestMessage request, CancellationToken ct)
+	{
+		var response = await SendRequest(request, ct);
+		return await ParseJson<T>(response, ct);
 	}
 
 	#endregion
