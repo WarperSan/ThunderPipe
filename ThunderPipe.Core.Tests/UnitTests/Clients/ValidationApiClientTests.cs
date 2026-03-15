@@ -105,17 +105,9 @@ public class ValidationApiClientTests
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		try
-		{
-			_ = await client.IsIconValid(PATH, fileSystem, "");
-		}
-		catch (Exception e)
-		{
-			Assert.IsType<InvalidOperationException>(e);
-			return;
-		}
-
-		Assert.Fail("Should have thrown an exception");
+		await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+			await client.IsIconValid(PATH, fileSystem, "")
+		);
 	}
 
 	[Fact]
@@ -133,17 +125,9 @@ public class ValidationApiClientTests
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		try
-		{
-			_ = await client.IsIconValid(PATH, fileSystem, "");
-		}
-		catch (Exception e)
-		{
-			Assert.IsType<InvalidOperationException>(e);
-			return;
-		}
-
-		Assert.Fail("Should have thrown an exception");
+		await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+			await client.IsIconValid(PATH, fileSystem, "")
+		);
 	}
 
 	[Fact]
@@ -163,17 +147,9 @@ public class ValidationApiClientTests
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		try
-		{
-			_ = await client.IsIconValid(PATH, fileSystem, "");
-		}
-		catch (Exception e)
-		{
-			Assert.IsType<InvalidOperationException>(e);
-			return;
-		}
-
-		Assert.Fail("Should have thrown an exception");
+		await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+			await client.IsIconValid(PATH, fileSystem, "")
+		);
 	}
 
 	[Fact]
@@ -326,17 +302,9 @@ public class ValidationApiClientTests
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		try
-		{
-			_ = await client.IsManifestValid(PATH, TEAM, fileSystem, "");
-		}
-		catch (Exception e)
-		{
-			Assert.IsType<InvalidOperationException>(e);
-			return;
-		}
-
-		Assert.Fail("Should have thrown an exception");
+		await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+			await client.IsManifestValid(PATH, TEAM, fileSystem, "")
+		);
 	}
 
 	[Fact]
@@ -355,17 +323,9 @@ public class ValidationApiClientTests
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		try
-		{
-			_ = await client.IsManifestValid(PATH, TEAM, fileSystem, "");
-		}
-		catch (Exception e)
-		{
-			Assert.IsType<InvalidOperationException>(e);
-			return;
-		}
-
-		Assert.Fail("Should have thrown an exception");
+		await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+			await client.IsManifestValid(PATH, TEAM, fileSystem, "")
+		);
 	}
 
 	[Fact]
@@ -386,17 +346,9 @@ public class ValidationApiClientTests
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		try
-		{
-			_ = await client.IsManifestValid(PATH, TEAM, fileSystem, "");
-		}
-		catch (Exception e)
-		{
-			Assert.IsType<InvalidOperationException>(e);
-			return;
-		}
-
-		Assert.Fail("Should have thrown an exception");
+		await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+			await client.IsManifestValid(PATH, TEAM, fileSystem, "")
+		);
 	}
 
 	[Fact]
@@ -518,17 +470,9 @@ public class ValidationApiClientTests
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		try
-		{
-			_ = await client.IsReadmeValid(PATH, fileSystem, "");
-		}
-		catch (Exception e)
-		{
-			Assert.IsType<InvalidOperationException>(e);
-			return;
-		}
-
-		Assert.Fail("Should have thrown an exception");
+		await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+			await client.IsReadmeValid(PATH, fileSystem, "")
+		);
 	}
 
 	[Fact]
@@ -546,17 +490,9 @@ public class ValidationApiClientTests
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		try
-		{
-			_ = await client.IsReadmeValid(PATH, fileSystem, "");
-		}
-		catch (Exception e)
-		{
-			Assert.IsType<InvalidOperationException>(e);
-			return;
-		}
-
-		Assert.Fail("Should have thrown an exception");
+		await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+			await client.IsReadmeValid(PATH, fileSystem, "")
+		);
 	}
 
 	[Fact]
@@ -576,17 +512,9 @@ public class ValidationApiClientTests
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		try
-		{
-			_ = await client.IsReadmeValid(PATH, fileSystem, "");
-		}
-		catch (Exception e)
-		{
-			Assert.IsType<InvalidOperationException>(e);
-			return;
-		}
-
-		Assert.Fail("Should have thrown an exception");
+		await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+			await client.IsReadmeValid(PATH, fileSystem, "")
+		);
 	}
 
 	[Fact]
