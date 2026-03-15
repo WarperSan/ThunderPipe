@@ -28,7 +28,7 @@ public class ValidationApiClientTests
 		var errors = await client.IsIconValid(PATH, fileSystem, "");
 
 		Assert.Single(errors);
-		Assert.True(errors.Contains(ERROR));
+		Assert.Contains(ERROR, errors);
 	}
 
 	[Fact]
@@ -50,7 +50,7 @@ public class ValidationApiClientTests
 		var errors = await client.IsIconValid(PATH, fileSystem, "");
 
 		Assert.Single(errors);
-		Assert.True(errors.Contains(ERROR));
+		Assert.Contains(ERROR, errors);
 	}
 
 	[Fact]
@@ -87,7 +87,7 @@ public class ValidationApiClientTests
 		Assert.Equal(expectedErrors.Length, errors.Count);
 
 		foreach (var error in expectedErrors)
-			Assert.True(errors.Contains(error));
+			Assert.Contains(error, errors);
 	}
 
 	[Fact]
@@ -216,7 +216,7 @@ public class ValidationApiClientTests
 		var errors = await client.IsManifestValid(PATH, TEAM, fileSystem, "");
 
 		Assert.Single(errors);
-		Assert.True(errors.Contains(ERROR));
+		Assert.Contains(ERROR, errors);
 	}
 
 	[Fact]
@@ -241,7 +241,7 @@ public class ValidationApiClientTests
 		var errors = await client.IsManifestValid(PATH, TEAM, fileSystem, "");
 
 		Assert.Single(errors);
-		Assert.True(errors.Contains(ERROR));
+		Assert.Contains(ERROR, errors);
 	}
 
 	[Fact]
@@ -266,7 +266,7 @@ public class ValidationApiClientTests
 		var errors = await client.IsManifestValid(PATH, TEAM, fileSystem, "");
 
 		Assert.Single(errors);
-		Assert.True(errors.Contains(ERROR));
+		Assert.Contains(ERROR, errors);
 	}
 
 	[Fact]
@@ -307,7 +307,7 @@ public class ValidationApiClientTests
 		Assert.Equal(expectedErrors.Length, errors.Count);
 
 		foreach (var error in expectedErrors)
-			Assert.True(errors.Contains(error));
+			Assert.Contains(error, errors);
 	}
 
 	[Fact]
@@ -439,7 +439,7 @@ public class ValidationApiClientTests
 		var errors = await client.IsReadmeValid(PATH, fileSystem, "");
 
 		Assert.Single(errors);
-		Assert.True(errors.Contains(ERROR));
+		Assert.Contains(ERROR, errors);
 	}
 
 	[Fact]
@@ -463,7 +463,7 @@ public class ValidationApiClientTests
 		var errors = await client.IsReadmeValid(PATH, fileSystem, "");
 
 		Assert.Single(errors);
-		Assert.True(errors.Contains(ERROR));
+		Assert.Contains(ERROR, errors);
 	}
 
 	[Fact]
@@ -500,7 +500,7 @@ public class ValidationApiClientTests
 		Assert.Equal(expectedErrors.Length, errors.Count);
 
 		foreach (var error in expectedErrors)
-			Assert.True(errors.Contains(error));
+			Assert.Contains(error, errors);
 	}
 
 	[Fact]
