@@ -42,7 +42,7 @@ public class ThunderPipePack : Task
 	public string? Host { get; set; }
 
 	[Output]
-	public required string Output { get; set; }
+	public string? Output { get; set; }
 
 	/// <inheritdoc />
 	public override bool Execute()
@@ -83,13 +83,12 @@ public class ThunderPipePack : Task
 		if (!isPackageValid)
 			return false;
 
-		var outputFile = Path.Combine(Path.GetTempPath(), $"{Team}-{Name}-{Version}.zip");
+		Output ??= Path.Combine(Path.GetTempPath(), $"{Team}-{Name}-{Version}.zip");
 
-		if (File.Exists(outputFile))
-			File.Delete(outputFile);
+		if (File.Exists(Output))
+			File.Delete(Output);
 
-		ZipFile.CreateFromDirectory(tempDir, outputFile);
-		Output = outputFile;
+		ZipFile.CreateFromDirectory(tempDir, Output);
 
 		return true;
 	}
