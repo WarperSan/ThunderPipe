@@ -81,11 +81,13 @@ public class ThunderPipePack : Task
 		if (!isPackageValid)
 			return false;
 
-		if (File.Exists(Output))
-			File.Delete(Output);
+		var outputFile = $"{Team}-{Name}-{Version}.zip";
 
-		ZipFile.CreateFromDirectory(tempDir, Output);
-		Directory.Delete(tempDir, true);
+		if (File.Exists(outputFile))
+			File.Delete(outputFile);
+
+		ZipFile.CreateFromDirectory(tempDir, outputFile);
+		Output = Path.Combine(tempDir, outputFile);
 
 		return true;
 	}
