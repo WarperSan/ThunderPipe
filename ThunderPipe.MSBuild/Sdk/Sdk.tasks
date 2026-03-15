@@ -4,4 +4,5 @@
 	</PropertyGroup>
 
 	<UsingTask TaskName="ThunderPipePack" AssemblyFile="$(MSBuildTasksAssemblyFile)"/>
+	<UsingTask TaskName="ThunderPipePublish" AssemblyFile="$(MSBuildTasksAssemblyFile)"/>
 </Project>
