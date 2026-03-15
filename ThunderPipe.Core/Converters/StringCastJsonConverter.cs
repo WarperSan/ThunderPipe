@@ -25,7 +25,7 @@ internal sealed class StringCastJsonConverter<T> : JsonConverter
 		Type objectType,
 		object? existingValue,
 		JsonSerializer serializer
-	) => throw new NotImplementedException();
+	) => throw new InvalidOperationException();
 
 	/// <inheritdoc />
 	public override bool CanConvert(Type objectType) => _converter.CanConvertTo(objectType);
