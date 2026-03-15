@@ -4,7 +4,7 @@ using ThunderPipe.Core.Converters;
 
 namespace ThunderPipe.Core.Models.API;
 
-[TypeConverter(typeof(TeamTypeConverter))]
+[TypeConverter(typeof(StringCastTypeConverter<Team>))]
 public sealed record Team
 {
 	private readonly string _team;

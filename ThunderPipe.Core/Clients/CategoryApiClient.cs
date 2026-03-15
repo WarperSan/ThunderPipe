@@ -11,8 +11,8 @@ public sealed class CategoryApiClient : ThunderstoreClient
 	/// <summary>
 	/// Finds the missing categories in the given community
 	/// </summary>
-	public async Task<ICollection<Category>> GetMissing(
-		Category[] categories,
+	public async Task<IReadOnlyCollection<Category>> GetMissing(
+		IEnumerable<Category> categories,
 		Community community,
 		CancellationToken ct = default
 	)

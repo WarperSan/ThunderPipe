@@ -4,8 +4,8 @@ using ThunderPipe.Core.Converters;
 
 namespace ThunderPipe.Core.Models.API;
 
-[TypeConverter(typeof(PackageDependencyTypeConverter))]
-[JsonConverter(typeof(PackageTypeJsonConverter))]
+[TypeConverter(typeof(StringCastTypeConverter<PackageDependency>))]
+[JsonConverter(typeof(StringCastJsonConverter<PackageDependency>))]
 public sealed record PackageDependency
 {
 	private readonly string _dependencyString;

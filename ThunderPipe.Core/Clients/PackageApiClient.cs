@@ -11,7 +11,7 @@ public sealed class PackageApiClient : ThunderstoreClient
 	/// <summary>
 	/// Gets the latest version of the package by the given team by the given name
 	/// </summary>
-	public async Task<string> GetVersion(
+	public async Task<PackageVersion> GetVersion(
 		Team team,
 		PackageName name,
 		CancellationToken ct = default

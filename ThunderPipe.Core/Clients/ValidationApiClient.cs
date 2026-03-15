@@ -12,7 +12,7 @@ public sealed class ValidationApiClient : ThunderstoreClient
 	/// <summary>
 	/// Checks if the icon at the given path is valid
 	/// </summary>
-	public async Task<ICollection<string>> IsIconValid(
+	public async Task<IReadOnlyCollection<string>> IsIconValid(
 		string path,
 		IFileSystem fileSystem,
 		string token,
@@ -51,7 +51,7 @@ public sealed class ValidationApiClient : ThunderstoreClient
 	/// <summary>
 	/// Checks if the manifest at the given path is valid for the given team
 	/// </summary>
-	public async Task<ICollection<string>> IsManifestValid(
+	public async Task<IReadOnlyCollection<string>> IsManifestValid(
 		string path,
 		Team team,
 		IFileSystem fileSystem,
@@ -99,7 +99,7 @@ public sealed class ValidationApiClient : ThunderstoreClient
 	/// <summary>
 	/// Checks if the README at the given path is valid
 	/// </summary>
-	public async Task<ICollection<string>> IsReadmeValid(
+	public async Task<IReadOnlyCollection<string>> IsReadmeValid(
 		string path,
 		IFileSystem fileSystem,
 		string token,

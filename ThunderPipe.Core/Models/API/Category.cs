@@ -4,7 +4,7 @@ using ThunderPipe.Core.Converters;
 
 namespace ThunderPipe.Core.Models.API;
 
-[JsonConverter(typeof(PackageTypeJsonConverter))]
+[JsonConverter(typeof(StringCastJsonConverter<Category>))]
 public sealed record Category
 {
 	private readonly string _category;

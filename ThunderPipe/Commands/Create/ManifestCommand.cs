@@ -11,14 +11,12 @@ namespace ThunderPipe.Commands.Create;
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 internal sealed class ManifestCommand : BaseCommand<ManifestSettings>
 {
-	private readonly IFileSystem _fileSystem;
 	private readonly ICreationService _service;
 
 	public ManifestCommand(ILogger logger, IFileSystem fileSystem)
 		: base(logger)
 	{
-		_fileSystem = fileSystem;
-		_service = new CreationService(_fileSystem, logger);
+		_service = new CreationService(fileSystem, logger);
 	}
 
 	/// <inheritdoc />
