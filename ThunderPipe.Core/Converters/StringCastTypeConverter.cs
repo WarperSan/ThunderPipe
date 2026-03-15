@@ -46,7 +46,7 @@ public sealed class StringCastTypeConverter<T> : TypeConverter
 		[NotNullWhen(true)] Type? destinationType
 	)
 	{
-		return destinationType == typeof(string) && ConvertFromMethod != null;
+		return destinationType == typeof(string) && ConvertToMethod != null;
 	}
 
 	/// <inheritdoc />
