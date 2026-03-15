@@ -83,7 +83,8 @@ public class ThunderPipePack : Task
 		if (!isPackageValid)
 			return false;
 
-		Output ??= Path.Combine(Path.GetTempPath(), $"{Team}-{Name}-{Version}.zip");
+		if (string.IsNullOrWhiteSpace(Output))
+			Output = Path.Combine(Path.GetTempPath(), $"{Team}-{Name}-{Version}.zip");
 
 		if (File.Exists(Output))
 			File.Delete(Output);
