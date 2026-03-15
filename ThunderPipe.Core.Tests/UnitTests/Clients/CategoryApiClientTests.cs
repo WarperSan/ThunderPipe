@@ -128,7 +128,7 @@ public class CategoryApiClientTests
 		Assert.Equal(missing.Count, requested.Length);
 
 		foreach (var slug in requested)
-			Assert.True(missing.Contains(slug));
+			Assert.Contains(slug, missing);
 	}
 
 	[Fact]
@@ -185,7 +185,7 @@ public class CategoryApiClientTests
 		Assert.Equal(missing.Count, requested.Length);
 
 		foreach (var slug in requested)
-			Assert.True(missing.Contains(slug));
+			Assert.Contains(slug, missing);
 	}
 
 	[Fact]
@@ -220,6 +220,6 @@ public class CategoryApiClientTests
 		Assert.Equal(missing.Count, requested.Length);
 
 		foreach (var slug in requested)
-			Assert.True(missing.Contains(slug));
+			Assert.Contains(slug, missing);
 	}
 }
