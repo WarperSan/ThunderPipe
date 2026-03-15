@@ -74,6 +74,7 @@ public sealed class PublicationService : IPublicationService
 		var finishedUpload = await _client.FinishMultipartUpload(
 			uploadSession.UUID,
 			uploadedParts,
+			token,
 			cancellationToken
 		);
 
@@ -88,6 +89,7 @@ public sealed class PublicationService : IPublicationService
 			categories,
 			hasNsfw,
 			uploadSession.UUID,
+			token,
 			cancellationToken
 		);
 	}

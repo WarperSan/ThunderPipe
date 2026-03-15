@@ -173,6 +173,7 @@ public sealed class PublishApiClient : ThunderstoreClient
 	public async Task<bool> FinishMultipartUpload(
 		string uuid,
 		IReadOnlyCollection<UploadPart> parts,
+		string token,
 		CancellationToken ct = default
 	)
 	{
@@ -189,6 +190,7 @@ public sealed class PublishApiClient : ThunderstoreClient
 
 		var request = new RequestBuilder(Builder)
 			.Post()
+			.WithAuth(token)
 			.ToEndpoint($"api/experimental/usermedia/{uuid}/finish-upload/")
 			.WithJSON(payload)
 			.Build();
@@ -207,6 +209,7 @@ public sealed class PublishApiClient : ThunderstoreClient
 		IDictionary<Community, IEnumerable<Category>> categories,
 		bool hasNsfw,
 		string sessionUUID,
+		string token,
 		CancellationToken ct = default
 	)
 	{
@@ -226,6 +229,7 @@ public sealed class PublishApiClient : ThunderstoreClient
 
 		var request = new RequestBuilder(Builder)
 			.Post()
+			.WithAuth(token)
 			.ToEndpoint("api/experimental/submission/submit/")
 			.WithJSON(payload)
 			.Build();
