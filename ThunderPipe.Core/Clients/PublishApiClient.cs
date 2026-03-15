@@ -2,7 +2,6 @@ using System.Security.Cryptography;
 using System.Text;
 using ThunderPipe.Core.Models.API;
 using ThunderPipe.Core.Models.Web.MultipartUpload;
-using ThunderPipe.Core.Models.Web.Submission;
 using ThunderPipe.Core.Services.Interfaces;
 using ThunderPipe.Core.Utils;
 
@@ -24,6 +23,7 @@ public sealed class PublishApiClient : ThunderstoreClient
 	public async Task<UploadSession> InitiateMultipartUpload(
 		string path,
 		IFileSystem fileSystem,
+		string token,
 		CancellationToken ct = default
 	)
 	{
@@ -35,6 +35,7 @@ public sealed class PublishApiClient : ThunderstoreClient
 
 		var request = new RequestBuilder(Builder)
 			.Post()
+			.WithAuth(token)
 			.ToEndpoint("api/experimental/usermedia/initiate-upload/")
 			.WithJSON(payload)
 			.Build();
@@ -150,10 +151,15 @@ public sealed class PublishApiClient : ThunderstoreClient
 	/// <summary>
 	/// Aborts the multipart upload
 	/// </summary>
-	public async Task AbortMultipartUpload(string uuid, CancellationToken ct = default)
+	public async Task AbortMultipartUpload(
+		string uuid,
+		string token,
+		CancellationToken ct = default
+	)
 	{
 		var request = new RequestBuilder(Builder)
 			.Post()
+			.WithAuth(token)
 			.ToEndpoint($"api/experimental/usermedia/{uuid}/abort-upload/")
 			.Build();
 
@@ -197,10 +203,10 @@ public sealed class PublishApiClient : ThunderstoreClient
 	/// <summary>
 	/// Submits the package
 	/// </summary>
-	public async Task<PackageRelease> SubmitPackage(
+	public async Task<Package> SubmitPackage(
 		Team team,
-		Community community,
-		Category[] categories,
+		IEnumerable<Community> communities,
+		IDictionary<Community, IEnumerable<Category>> categories,
 		bool hasNsfw,
 		string sessionUUID,
 		CancellationToken ct = default
@@ -209,11 +215,13 @@ public sealed class PublishApiClient : ThunderstoreClient
 		var payload = new Models.Web.SubmitPackage.Request
 		{
 			AuthorName = team,
-			Communities = [community],
-			CommunityCategories = new Dictionary<string, string[]>
-			{
-				[community] = categories.Select(c => (string)c).ToArray(),
-			},
+			Communities = communities.Select(c => (string)c).ToArray(),
+			CommunityCategories = categories
+				.Select(c => new KeyValuePair<string, string[]>(
+					c.Key,
+					c.Value.Select(category => (string)category).ToArray()
+				))
+				.ToDictionary(),
 			HasNsfwContent = hasNsfw,
 			UploadUUID = sessionUUID,
 		};
@@ -226,11 +234,10 @@ public sealed class PublishApiClient : ThunderstoreClient
 
 		var response = await SendRequest<Models.Web.SubmitPackage.Response>(request, ct);
 
-		return new PackageRelease
-		{
-			Name = response.Version.Name,
-			Version = new Version(response.Version.Version),
-			DownloadURL = new Uri(response.Version.DownloadURL),
-		};
+		return new Package(
+			response.Version.Name,
+			response.Version.Version,
+			response.Version.DownloadURL
+		);
 	}
 }
