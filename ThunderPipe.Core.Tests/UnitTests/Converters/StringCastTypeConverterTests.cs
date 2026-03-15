@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using ThunderPipe.Core.Converters;
 
 namespace ThunderPipe.Tests.UnitTests.Converters;
@@ -50,6 +51,22 @@ public class StringCastTypeConverterTests
 
 		/// <inheritdoc/>
 		public override string ToString() => _value;
+	}
+
+	[TypeConverter(typeof(StringCastTypeConverter<TypeWithConverter>))]
+	public sealed record TypeWithConverter
+	{
+		private readonly string _value;
+
+		public TypeWithConverter(string value)
+		{
+			_value = value;
+		}
+
+		/// <inheritdoc/>
+		public override string ToString() => _value;
+
+		public static implicit operator string(TypeWithConverter value) => value.ToString();
 	}
 
 	[Fact]
@@ -107,15 +124,7 @@ public class StringCastTypeConverterTests
 
 		var converter = new StringCastTypeConverter<TypeWithNoCast>();
 
-		try
-		{
-			_ = converter.ConvertFrom(EXPECTED);
-			Assert.Fail("Should have thrown");
-		}
-		catch (Exception e)
-		{
-			Assert.IsType<NotSupportedException>(e);
-		}
+		Assert.Throws<NotSupportedException>(() => converter.ConvertFrom(EXPECTED));
 	}
 
 	[Fact]
@@ -179,14 +188,8 @@ public class StringCastTypeConverterTests
 
 		var converter = new StringCastTypeConverter<TypeWithNoCast>();
 
-		try
-		{
-			var c = converter.ConvertTo(data, typeof(string)) as string;
-			Assert.Fail("Should have thrown");
-		}
-		catch (Exception e)
-		{
-			Assert.IsType<NotSupportedException>(e);
-		}
+		Assert.Throws<NotSupportedException>(() =>
+			converter.ConvertTo(data, typeof(string)) as string
+		);
 	}
 }

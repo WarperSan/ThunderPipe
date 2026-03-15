@@ -22,10 +22,9 @@ public sealed class StringCastTypeConverter<T> : TypeConverter
 	/// <inheritdoc/>
 	public override bool CanConvertFrom(ITypeDescriptorContext? context, Type sourceType)
 	{
-		if (sourceType == typeof(string))
-			return ConvertFromMethod != null;
-
-		return base.CanConvertFrom(context, sourceType);
+		// ReSharper disable once ArrangeRedundantParentheses
+		return (sourceType == typeof(string) && ConvertFromMethod != null)
+			|| base.CanConvertFrom(context, sourceType);
 	}
 
 	/// <inheritdoc/>
@@ -36,7 +35,7 @@ public sealed class StringCastTypeConverter<T> : TypeConverter
 	)
 	{
 		if (ConvertFromMethod == null)
-			throw new NotSupportedException($"Cannot convert '{typeof(string)}' to '{typeof(T)}'.");
+			return base.ConvertFrom(context, culture, value);
 
 		return ConvertFromMethod.Invoke(null, [value]);
 	}
@@ -47,10 +46,7 @@ public sealed class StringCastTypeConverter<T> : TypeConverter
 		[NotNullWhen(true)] Type? destinationType
 	)
 	{
-		if (destinationType == typeof(string))
-			return ConvertToMethod != null;
-
-		return base.CanConvertTo(context, destinationType);
+		return destinationType == typeof(string) && ConvertFromMethod != null;
 	}
 
 	/// <inheritdoc />
