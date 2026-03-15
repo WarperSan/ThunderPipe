@@ -99,7 +99,7 @@ public class DependencyApiClientTests
 		Assert.Equal(missing.Count, expected.Length);
 
 		foreach (var slug in expected)
-			Assert.True(missing.Contains(slug));
+			Assert.Contains(slug, missing);
 	}
 
 	[Fact]
@@ -157,6 +157,6 @@ public class DependencyApiClientTests
 		Assert.Equal(missing.Count, expected.Length);
 
 		foreach (var slug in expected)
-			Assert.True(missing.Contains(slug));
+			Assert.Contains(slug, missing);
 	}
 }

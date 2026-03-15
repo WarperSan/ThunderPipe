@@ -14,8 +14,8 @@ public sealed class DependencyApiClient : ThunderstoreClient
 	/// <summary>
 	/// Finds the missing dependencies
 	/// </summary>
-	public async Task<ISet<PackageDependency>> GetMissing(
-		PackageDependency[] dependencies,
+	public async Task<IReadOnlyCollection<PackageDependency>> GetMissing(
+		IEnumerable<PackageDependency> dependencies,
 		CancellationToken ct = default
 	)
 	{
@@ -61,6 +61,6 @@ public sealed class DependencyApiClient : ThunderstoreClient
 			dependenciesFound.Add(dependency);
 		}
 
-		return dependencies.Except(dependenciesFound).ToHashSet();
+		return dependencies.Except(dependenciesFound).ToArray();
 	}
 }
