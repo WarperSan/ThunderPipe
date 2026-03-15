@@ -49,13 +49,35 @@ public class StringCastTypeConverterTests
 	}
 
 	[Fact]
-	public void Convert_WhenHasImplicitCast_ReturnCastedValue()
+	public void CanConvertFrom_WhenHasImplicitCast_ReturnTrue()
+	{
+		var converter = new StringCastTypeConverter<TypeWithImplicitCast>();
+
+		Assert.True(converter.CanConvertFrom(typeof(string)));
+	}
+
+	[Fact]
+	public void CanConvertFrom_WhenHasExplicitCast_ReturnTrue()
+	{
+		var converter = new StringCastTypeConverter<TypeWithExplicitCast>();
+
+		Assert.True(converter.CanConvertFrom(typeof(string)));
+	}
+
+	[Fact]
+	public void CanConvertFrom_WhenHasNoCast_ReturnFalse()
+	{
+		var converter = new StringCastTypeConverter<TypeWithNoCast>();
+
+		Assert.False(converter.CanConvertFrom(typeof(string)));
+	}
+
+	[Fact]
+	public void ConvertFrom_WhenHasImplicitCast_ReturnCastedValue()
 	{
 		const string EXPECTED = "contradiction ally squash thin";
 
 		var converter = new StringCastTypeConverter<TypeWithImplicitCast>();
-
-		Assert.True(converter.CanConvertFrom(typeof(string)));
 
 		var convertedData = converter.ConvertFrom(EXPECTED) as TypeWithImplicitCast;
 		Assert.NotNull(convertedData);
@@ -63,13 +85,11 @@ public class StringCastTypeConverterTests
 	}
 
 	[Fact]
-	public void Convert_WhenHasExplicitCast_ReturnCastedValue()
+	public void ConvertFrom_WhenHasExplicitCast_ReturnCastedValue()
 	{
 		const string EXPECTED = "contradiction ally squash thin";
 
 		var converter = new StringCastTypeConverter<TypeWithExplicitCast>();
-
-		Assert.True(converter.CanConvertFrom(typeof(string)));
 
 		var convertedData = converter.ConvertFrom(EXPECTED) as TypeWithExplicitCast;
 		Assert.NotNull(convertedData);
@@ -77,21 +97,11 @@ public class StringCastTypeConverterTests
 	}
 
 	[Fact]
-	public void Convert_WhenHasNoCast_ReturnCantConvertFrom()
-	{
-		var converter = new StringCastTypeConverter<TypeWithNoCast>();
-
-		Assert.False(converter.CanConvertFrom(typeof(string)));
-	}
-
-	[Fact]
-	public void Convert_WhenHasNoCastButForced_ThrowException()
+	public void ConvertFrom_WhenHasNoCast_ThrowException()
 	{
 		const string EXPECTED = "contradiction ally squash thin";
 
 		var converter = new StringCastTypeConverter<TypeWithNoCast>();
-
-		Assert.False(converter.CanConvertFrom(typeof(string)));
 
 		try
 		{
