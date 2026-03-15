@@ -17,6 +17,8 @@ public class StringCastTypeConverterTests
 		public override string ToString() => _value;
 
 		public static implicit operator TypeWithImplicitCast(string value) => new(value);
+
+		public static implicit operator string(TypeWithImplicitCast value) => value.ToString();
 	}
 
 	public sealed record TypeWithExplicitCast
@@ -32,6 +34,8 @@ public class StringCastTypeConverterTests
 		public override string ToString() => _value;
 
 		public static explicit operator TypeWithExplicitCast(string value) => new(value);
+
+		public static explicit operator string(TypeWithExplicitCast value) => value.ToString();
 	}
 
 	// ReSharper disable once ClassNeverInstantiated.Global
@@ -106,6 +110,78 @@ public class StringCastTypeConverterTests
 		try
 		{
 			_ = converter.ConvertFrom(EXPECTED);
+			Assert.Fail("Should have thrown");
+		}
+		catch (Exception e)
+		{
+			Assert.IsType<NotSupportedException>(e);
+		}
+	}
+
+	[Fact]
+	public void CanConvertTo_WhenHasImplicitCast_ReturnTrue()
+	{
+		var converter = new StringCastTypeConverter<TypeWithImplicitCast>();
+
+		Assert.True(converter.CanConvertTo(typeof(string)));
+	}
+
+	[Fact]
+	public void CanConvertTo_WhenHasExplicitCast_ReturnTrue()
+	{
+		var converter = new StringCastTypeConverter<TypeWithExplicitCast>();
+
+		Assert.True(converter.CanConvertTo(typeof(string)));
+	}
+
+	[Fact]
+	public void CanConvertTo_WhenHasNoCast_ReturnFalse()
+	{
+		var converter = new StringCastTypeConverter<TypeWithNoCast>();
+
+		Assert.False(converter.CanConvertTo(typeof(string)));
+	}
+
+	[Fact]
+	public void ConvertTo_WhenHasImplicitCast_ReturnCastedValue()
+	{
+		const string EXPECTED = "contradiction ally squash thin";
+
+		object data = new TypeWithImplicitCast(EXPECTED);
+
+		var converter = new StringCastTypeConverter<TypeWithImplicitCast>();
+
+		var convertedData = converter.ConvertTo(data, typeof(string)) as string;
+		Assert.NotNull(convertedData);
+		Assert.Equal(EXPECTED, convertedData);
+	}
+
+	[Fact]
+	public void ConvertTo_WhenHasExplicitCast_ReturnCastedValue()
+	{
+		const string EXPECTED = "contradiction ally squash thin";
+
+		object data = new TypeWithExplicitCast(EXPECTED);
+
+		var converter = new StringCastTypeConverter<TypeWithExplicitCast>();
+
+		var convertedData = converter.ConvertTo(data, typeof(string)) as string;
+		Assert.NotNull(convertedData);
+		Assert.Equal(EXPECTED, convertedData);
+	}
+
+	[Fact]
+	public void ConvertTo_WhenHasNoCast_ThrowException()
+	{
+		const string EXPECTED = "contradiction ally squash thin";
+
+		object data = new TypeWithNoCast(EXPECTED);
+
+		var converter = new StringCastTypeConverter<TypeWithNoCast>();
+
+		try
+		{
+			var c = converter.ConvertTo(data, typeof(string)) as string;
 			Assert.Fail("Should have thrown");
 		}
 		catch (Exception e)
