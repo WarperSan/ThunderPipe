@@ -1,7 +1,11 @@
 <Project>
 	<Import Project="Sdk.tasks"/>
 
-	<ItemGroup>
+	<ItemGroup Condition="'@(ThunderstorePackageFile)' == ''">
+		<ThunderstorePackageFile Include="icon.png"/>
+		<ThunderstorePackageFile Include="README.md"/>
+		<ThunderstorePackageFile Include="LICENSE"/>
+		<ThunderstorePackageFile Include="CHANGELOG.md" Condition="Exists('CHANGELOG.md')"/>
 	</ItemGroup>
 
 	<PropertyGroup>
@@ -18,6 +22,12 @@
 		<ThunderstoreWebsite Condition="'$(ThunderstoreWebsite)' == ''">$(RepositoryUrl)</ThunderstoreWebsite>
 		<ThunderstoreWebsite Condition="'$(ThunderstoreWebsite)' == ''">$(PackageProjectUrl)</ThunderstoreWebsite>
 
+		<ThunderstoreNSFW Condition="'$(ThunderstoreNSFW)' == ''">false</ThunderstoreNSFW>
+
 		<ThunderstoreHost Condition="'$(ThunderstoreHost)' == ''">https://thunderstore.io/</ThunderstoreHost>
 	</PropertyGroup>
+
+	<ItemGroup Condition="'@(ThunderstoreFile)' == ''">
+		<ThunderstoreFile Include="$(OutputPath)*.dll" Destination="plugins/"/>
+	</ItemGroup>
 </Project>
