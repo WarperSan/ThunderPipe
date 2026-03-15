@@ -5,6 +5,8 @@ using System.Reflection;
 
 namespace ThunderPipe.Core.Converters;
 
+// TODO: Make it so TypeDescriptor sees this type in MSBuild.Tasks
+
 /// <summary>
 /// Converts <see cref="string"/> to and from <see cref="T"/> if a cast has been defined
 /// </summary>
