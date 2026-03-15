@@ -24,7 +24,7 @@ public sealed class PublicationService : IPublicationService
 	}
 
 	/// <inheritdoc />
-	public async Task<Uri> PublishPackage(
+	public async Task<Package> PublishPackage(
 		string file,
 		Team team,
 		IEnumerable<Community> communities,
@@ -82,7 +82,7 @@ public sealed class PublicationService : IPublicationService
 
 		_logger.LogInformation("Successfully finalized the upload.");
 
-		var releasedPackage = await _client.SubmitPackage(
+		return await _client.SubmitPackage(
 			team,
 			communities,
 			categories,
@@ -90,8 +90,6 @@ public sealed class PublicationService : IPublicationService
 			uploadSession.UUID,
 			cancellationToken
 		);
-
-		return releasedPackage.DownloadURL;
 	}
 
 	/// <summary>
