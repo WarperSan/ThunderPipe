@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -66,7 +67,8 @@ public class ThunderPipePack : Task
 			Version = Version,
 			Description = Description ?? "",
 			Website = Website ?? "",
-			Dependencies = ParseDependencies(Dependencies ?? []),
+			Dependencies =
+				Dependencies?.Select(d => (PackageDependency)(d.ItemSpec ?? "")).ToArray() ?? [],
 		};
 
 		creationService
@@ -81,13 +83,13 @@ public class ThunderPipePack : Task
 		if (!isPackageValid)
 			return false;
 
-		var outputFile = $"{Team}-{Name}-{Version}.zip";
+		var outputFile = Path.Combine(Path.GetTempPath(), $"{Team}-{Name}-{Version}.zip");
 
 		if (File.Exists(outputFile))
 			File.Delete(outputFile);
 
 		ZipFile.CreateFromDirectory(tempDir, outputFile);
-		Output = Path.Combine(tempDir, outputFile);
+		Output = outputFile;
 
 		return true;
 	}
@@ -142,20 +144,6 @@ public class ThunderPipePack : Task
 			destination = destination[1..];
 
 		return destination;
-	}
-
-	private static PackageDependency[] ParseDependencies(ITaskItem[] dependencies)
-	{
-		var resolvedDependencies = new PackageDependency[dependencies.Length];
-
-		for (var i = 0; i < resolvedDependencies.Length; i++)
-		{
-			var dependency = dependencies[i].ItemSpec ?? "";
-
-			resolvedDependencies[i] = dependency;
-		}
-
-		return resolvedDependencies;
 	}
 
 	[SuppressMessage(
