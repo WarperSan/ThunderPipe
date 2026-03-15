@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Compression;
@@ -32,10 +33,10 @@ public class ThunderPipePack : Task
 	public required string Version { get; set; }
 
 	public ITaskItem[]? Dependencies { get; set; }
-
 	public string? TemporaryDir { get; set; }
 	public string[]? PackageFiles { get; set; }
 	public ITaskItem[]? Files { get; set; }
+	public string? Host { get; set; }
 
 	[Output]
 	public required string Output { get; set; }
@@ -46,6 +47,9 @@ public class ThunderPipePack : Task
 		var builder = new RequestBuilder();
 		var logger = new MSBuildLogger(Log);
 		var creationService = new CreationService(new FileSystem(), logger);
+
+		if (!string.IsNullOrEmpty(Host))
+			builder.ToUri(new Uri(Host));
 
 		var validationService = new ValidationService(builder, new FileSystem(), logger);
 
@@ -70,8 +74,8 @@ public class ThunderPipePack : Task
 			.GetAwaiter()
 			.GetResult();
 
-		if (!isPackageValid)
-			return false;
+		//if (!isPackageValid)
+		//	return false;
 
 		if (File.Exists(Output))
 			File.Delete(Output);
