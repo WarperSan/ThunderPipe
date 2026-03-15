@@ -32,6 +32,8 @@ public class ThunderPipePack : Task
 	[Required]
 	public required string Version { get; set; }
 
+	public string? Description { get; set; }
+	public string? Website { get; set; }
 	public ITaskItem[]? Dependencies { get; set; }
 	public string? TemporaryDir { get; set; }
 	public string[]? PackageFiles { get; set; }
@@ -62,6 +64,8 @@ public class ThunderPipePack : Task
 		{
 			Name = Name,
 			Version = Version,
+			Description = Description ?? "",
+			Website = Website ?? "",
 			Dependencies = ParseDependencies(Dependencies ?? []),
 		};
 
