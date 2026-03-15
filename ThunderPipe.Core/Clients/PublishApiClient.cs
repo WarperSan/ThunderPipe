@@ -12,6 +12,8 @@ namespace ThunderPipe.Core.Clients;
 /// </summary>
 public sealed class PublishApiClient : ThunderstoreClient
 {
+	// TODO: Try to limit the amount of Models.Web returned
+
 	/// <summary>
 	/// Initiates a multipart upload
 	/// </summary>
@@ -63,7 +65,7 @@ public sealed class PublishApiClient : ThunderstoreClient
 	/// </remarks>
 	public async Task<IReadOnlyCollection<UploadPart>> UploadParts(
 		string file,
-		IReadOnlyCollection<UploadPartDescriptor> parts,
+		IEnumerable<UploadPartDescriptor> parts,
 		IFileSystem fileSystem,
 		CancellationToken ct = default
 	)
@@ -172,7 +174,7 @@ public sealed class PublishApiClient : ThunderstoreClient
 	/// </remarks>
 	public async Task<bool> FinishMultipartUpload(
 		string uuid,
-		IReadOnlyCollection<UploadPart> parts,
+		IEnumerable<UploadPart> parts,
 		string token,
 		CancellationToken ct = default
 	)
@@ -213,16 +215,16 @@ public sealed class PublishApiClient : ThunderstoreClient
 		CancellationToken ct = default
 	)
 	{
+		var categoriesPerCommunity = categories.ToDictionary(
+			kvp => (string)kvp.Key,
+			kvp => kvp.Value.Select(c => (string)c).ToArray()
+		);
+
 		var payload = new Models.Web.SubmitPackage.Request
 		{
 			AuthorName = team,
 			Communities = communities.Select(c => (string)c).ToArray(),
-			CommunityCategories = categories
-				.Select(c => new KeyValuePair<string, string[]>(
-					c.Key,
-					c.Value.Select(category => (string)category).ToArray()
-				))
-				.ToDictionary(),
+			CommunityCategories = categoriesPerCommunity.ToDictionary(),
 			HasNsfwContent = hasNsfw,
 			UploadUUID = sessionUUID,
 		};
