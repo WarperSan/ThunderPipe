@@ -1,11 +1,10 @@
-using System.ComponentModel;
 using ThunderPipe.Core.Converters;
 
 namespace ThunderPipe.Tests.UnitTests.Converters;
 
 public class StringCastTypeConverterTests
 {
-	public sealed record TypeWithImplicitCast
+	private sealed record TypeWithImplicitCast
 	{
 		private readonly string _value;
 
@@ -22,7 +21,7 @@ public class StringCastTypeConverterTests
 		public static implicit operator string(TypeWithImplicitCast value) => value.ToString();
 	}
 
-	public sealed record TypeWithExplicitCast
+	private sealed record TypeWithExplicitCast
 	{
 		private readonly string _value;
 
@@ -40,7 +39,7 @@ public class StringCastTypeConverterTests
 	}
 
 	// ReSharper disable once ClassNeverInstantiated.Global
-	public sealed record TypeWithNoCast
+	private sealed record TypeWithNoCast
 	{
 		private readonly string _value;
 
@@ -51,22 +50,6 @@ public class StringCastTypeConverterTests
 
 		/// <inheritdoc/>
 		public override string ToString() => _value;
-	}
-
-	[TypeConverter(typeof(StringCastTypeConverter<TypeWithConverter>))]
-	public sealed record TypeWithConverter
-	{
-		private readonly string _value;
-
-		public TypeWithConverter(string value)
-		{
-			_value = value;
-		}
-
-		/// <inheritdoc/>
-		public override string ToString() => _value;
-
-		public static implicit operator string(TypeWithConverter value) => value.ToString();
 	}
 
 	[Fact]
