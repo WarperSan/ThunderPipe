@@ -1,34 +1,23 @@
 <Project>
-	<Import Project="Sdk.tasks" />
+	<Import Project="Sdk.tasks"/>
 
-	<ItemGroup></ItemGroup>
+	<ItemGroup>
+	</ItemGroup>
 
 	<PropertyGroup>
 		<ThunderstoreName Condition="'$(ThunderstoreName)' == ''">$(Product)</ThunderstoreName>
 		<ThunderstoreName Condition="'$(ThunderstoreName)' == ''">$(AssemblyName)</ThunderstoreName>
-		<ThunderstoreName Condition="'$(ThunderstoreName)' == ''"
-			>$(RootNamespace)</ThunderstoreName
-		>
+		<ThunderstoreName Condition="'$(ThunderstoreName)' == ''">$(RootNamespace)</ThunderstoreName>
 
-		<ThunderstoreVersion Condition="'$(ThunderstoreVersion)' == ''"
-			>$(Version)</ThunderstoreVersion
-		>
+		<ThunderstoreVersion Condition="'$(ThunderstoreVersion)' == ''">$(Version)</ThunderstoreVersion>
 
-		<ThunderstoreDescription Condition="'$(ThunderstoreDescription)' == ''"
-			>$(Description)</ThunderstoreDescription
-		>
+		<ThunderstoreDescription Condition="'$(ThunderstoreDescription)' == ''">$(Description)</ThunderstoreDescription>
 
 		<ThunderstoreTeam Condition="'$(ThunderstoreTeam)' == ''">$(Authors)</ThunderstoreTeam>
 
-		<ThunderstoreWebsite Condition="'$(ThunderstoreWebsite)' == ''"
-			>$(RepositoryUrl)</ThunderstoreWebsite
-		>
-		<ThunderstoreWebsite Condition="'$(ThunderstoreWebsite)' == ''"
-			>$(PackageProjectUrl)</ThunderstoreWebsite
-		>
+		<ThunderstoreWebsite Condition="'$(ThunderstoreWebsite)' == ''">$(RepositoryUrl)</ThunderstoreWebsite>
+		<ThunderstoreWebsite Condition="'$(ThunderstoreWebsite)' == ''">$(PackageProjectUrl)</ThunderstoreWebsite>
 
-		<ThunderstoreHost Condition="'$(ThunderstoreHost)' == ''"
-			>https://thunderstore.io/</ThunderstoreHost
-		>
+		<ThunderstoreHost Condition="'$(ThunderstoreHost)' == ''">https://thunderstore.io/</ThunderstoreHost>
 	</PropertyGroup>
 </Project>
