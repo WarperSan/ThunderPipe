@@ -6,7 +6,7 @@ using ThunderPipe.Core.Converters;
 namespace ThunderPipe.Core.Models.API;
 
 [TypeConverter(typeof(StringCastTypeConverter<PackageName>))]
-[JsonConverter(typeof(PackageTypeJsonConverter))]
+[JsonConverter(typeof(StringCastJsonConverter<PackageName>))]
 public sealed record PackageName
 {
 	private readonly string _name;
