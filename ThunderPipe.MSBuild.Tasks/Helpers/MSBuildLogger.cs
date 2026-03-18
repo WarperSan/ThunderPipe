@@ -7,6 +7,9 @@ using ILogger = Microsoft.Extensions.Logging.ILogger;
 namespace ThunderPipe.MSBuild.Tasks.Helpers;
 
 // ReSharper disable once InconsistentNaming
+/// <summary>
+/// Class that adds <see cref="ILogger"/> to a <see cref="TaskLoggingHelper"/> instance
+/// </summary>
 public class MSBuildLogger : ILogger
 {
 	private readonly TaskLoggingHelper _logger;
