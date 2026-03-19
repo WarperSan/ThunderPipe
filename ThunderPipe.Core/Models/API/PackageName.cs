@@ -10,7 +10,7 @@ namespace ThunderPipe.Core.Models.API;
 /// </summary>
 [TypeConverter(typeof(StringCastTypeConverter<PackageName>))]
 [JsonConverter(typeof(StringCastJsonConverter<PackageName>))]
-public sealed record PackageName
+public sealed partial record PackageName
 {
 	private readonly string _name;
 
@@ -22,9 +22,12 @@ public sealed record PackageName
 	/// <summary>
 	/// Checks if the underlying value is valid
 	/// </summary>
-	public bool IsValid() => Regex.IsMatch(_name, "^[a-zA-Z0-9_]+$");
+	public bool IsValid() => NameRegex().IsMatch(_name);
 
 	public static implicit operator string(PackageName p) => p._name;
 
 	public static implicit operator PackageName(string name) => new(name);
+
+	[GeneratedRegex("^[a-zA-Z0-9_]+$")]
+	private static partial Regex NameRegex();
 }

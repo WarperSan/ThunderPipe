@@ -10,7 +10,7 @@ namespace ThunderPipe.Core.Models.API;
 /// </summary>
 [TypeConverter(typeof(StringCastTypeConverter<PackageVersion>))]
 [JsonConverter(typeof(StringCastJsonConverter<PackageVersion>))]
-public sealed record PackageVersion
+public sealed partial record PackageVersion
 {
 	private readonly string _version;
 
@@ -22,9 +22,12 @@ public sealed record PackageVersion
 	/// <summary>
 	/// Checks if the underlying value is valid
 	/// </summary>
-	public bool IsValid() => Regex.IsMatch(_version, "^[0-9]+.[0-9]+.[0-9]+$");
+	public bool IsValid() => VersionRegex().IsMatch(_version);
 
 	public static implicit operator string(PackageVersion p) => p._version;
 
 	public static implicit operator PackageVersion(string version) => new(version);
+
+	[GeneratedRegex("^[0-9]+.[0-9]+.[0-9]+$")]
+	private static partial Regex VersionRegex();
 }

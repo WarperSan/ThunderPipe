@@ -8,7 +8,7 @@ namespace ThunderPipe.Core.Models.API;
 /// Object that represents a Thunderstore team
 /// </summary>
 [TypeConverter(typeof(StringCastTypeConverter<Team>))]
-public sealed record Team
+public sealed partial record Team
 {
 	private readonly string _team;
 
@@ -20,9 +20,12 @@ public sealed record Team
 	/// <summary>
 	/// Checks if the underlying value is valid
 	/// </summary>
-	public bool IsValid() => Regex.IsMatch(_team, "^(?!_)[a-zA-Z0-9_]+(?<!_)$");
+	public bool IsValid() => TeamRegex().IsMatch(_team);
 
 	public static implicit operator string(Team p) => p._team;
 
 	public static implicit operator Team(string team) => new(team);
+
+	[GeneratedRegex("^(?!_)[a-zA-Z0-9_]+(?<!_)$")]
+	private static partial Regex TeamRegex();
 }
