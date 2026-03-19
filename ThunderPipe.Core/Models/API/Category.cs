@@ -20,10 +20,7 @@ public sealed record Category
 	[SuppressMessage("Performance", "CA1822:Mark members as static")]
 	public bool IsValid() => true;
 
-	/// <inheritdoc/>
-	public override string ToString() => _category;
-
-	public static implicit operator string(Category p) => p.ToString();
+	public static implicit operator string(Category p) => p._category;
 
 	public static implicit operator Category(string category) => new(category);
 }

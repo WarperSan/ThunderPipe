@@ -20,10 +20,7 @@ public sealed record Community
 	[SuppressMessage("Performance", "CA1822:Mark members as static")]
 	public bool IsValid() => true;
 
-	/// <inheritdoc/>
-	public override string ToString() => _community;
-
-	public static implicit operator string(Community p) => p.ToString();
+	public static implicit operator string(Community p) => p._community;
 
 	public static implicit operator Community(string community) => new(community);
 }

@@ -21,10 +21,7 @@ public sealed record PackageName
 	/// </summary>
 	public bool IsValid() => Regex.IsMatch(_name, "^[a-zA-Z0-9_]+$");
 
-	/// <inheritdoc/>
-	public override string ToString() => _name;
-
-	public static implicit operator string(PackageName p) => p.ToString();
+	public static implicit operator string(PackageName p) => p._name;
 
 	public static implicit operator PackageName(string name) => new(name);
 }

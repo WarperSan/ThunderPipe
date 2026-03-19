@@ -51,10 +51,7 @@ public sealed record PackageDependency
 		return Team.IsValid() && Name.IsValid() && Version.IsValid();
 	}
 
-	/// <inheritdoc/>
-	public override string ToString() => _dependencyString;
-
-	public static implicit operator string(PackageDependency p) => p.ToString();
+	public static implicit operator string(PackageDependency p) => p._dependencyString;
 
 	public static implicit operator PackageDependency(string dependency) => new(dependency);
 }

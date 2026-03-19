@@ -19,10 +19,7 @@ public sealed record Team
 	/// </summary>
 	public bool IsValid() => Regex.IsMatch(_team, "^(?!_)[a-zA-Z0-9_]+(?<!_)$");
 
-	/// <inheritdoc/>
-	public override string ToString() => _team;
-
-	public static implicit operator string(Team p) => p.ToString();
+	public static implicit operator string(Team p) => p._team;
 
 	public static implicit operator Team(string team) => new(team);
 }
