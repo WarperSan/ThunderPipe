@@ -5,28 +5,17 @@ namespace ThunderPipe.Core.Models.API;
 public sealed record PackageManifest
 {
 	[JsonProperty("name")]
-	public required PackageName Name;
+	public required PackageName Name { get; init; }
 
 	[JsonProperty("version_number")]
-	public required PackageVersion Version;
+	public required PackageVersion Version { get; init; }
 
 	[JsonProperty("description")]
-	public string Description = "";
+	public string Description { get; init; } = "";
 
 	[JsonProperty("website_url")]
-	public string Website = "";
+	public string Website { get; init; } = "";
 
 	[JsonProperty("dependencies")]
-	public PackageDependency[] Dependencies = [];
-
-	/// <summary>
-	/// Checks if the underlying JSON is valid
-	/// </summary>
-	public bool IsValid()
-	{
-		if (Dependencies.Any(d => !d.IsValid()))
-			return false;
-
-		return Name.IsValid() && Version.IsValid();
-	}
+	public PackageDependency[] Dependencies { get; init; } = [];
 }
