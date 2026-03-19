@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using ThunderPipe.Core.Converters;
 
@@ -8,7 +9,7 @@ namespace ThunderPipe.Core.Models.API;
 /// Object that represents an instance of a Thunderstore community
 /// </summary>
 [JsonConverter(typeof(StringCastJsonConverter<Community>))]
-public sealed record Community
+public sealed partial record Community
 {
 	private readonly string _community;
 
@@ -20,11 +21,12 @@ public sealed record Community
 	/// <summary>
 	/// Checks if the underlying value is valid
 	/// </summary>
-	[SuppressMessage("Performance", "CA1822:Mark members as static")]
-	// ReSharper disable once MemberCanBeMadeStatic.Global
-	public bool IsValid() => true;
+	public bool IsValid() => CommunityRegex().IsMatch(_community);
 
 	public static implicit operator string(Community p) => p._community;
 
 	public static implicit operator Community(string community) => new(community);
+
+	[GeneratedRegex("^[a-zA-Z_]+$")]
+	private static partial Regex CommunityRegex();
 }
