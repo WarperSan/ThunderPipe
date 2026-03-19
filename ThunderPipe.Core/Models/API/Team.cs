@@ -4,6 +4,9 @@ using ThunderPipe.Core.Converters;
 
 namespace ThunderPipe.Core.Models.API;
 
+/// <summary>
+/// Object that represents a Thunderstore team
+/// </summary>
 [TypeConverter(typeof(StringCastTypeConverter<Team>))]
 public sealed record Team
 {

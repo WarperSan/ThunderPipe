@@ -4,6 +4,9 @@ using ThunderPipe.Core.Converters;
 
 namespace ThunderPipe.Core.Models.API;
 
+/// <summary>
+/// Object that represents a package's dependency string
+/// </summary>
 [TypeConverter(typeof(StringCastTypeConverter<PackageDependency>))]
 [JsonConverter(typeof(StringCastJsonConverter<PackageDependency>))]
 public sealed record PackageDependency

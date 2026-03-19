@@ -4,6 +4,9 @@ using ThunderPipe.Core.Converters;
 
 namespace ThunderPipe.Core.Models.API;
 
+/// <summary>
+/// Object that represents an instance of a Thunderstore category
+/// </summary>
 [JsonConverter(typeof(StringCastJsonConverter<Category>))]
 public sealed record Category
 {
@@ -18,6 +21,7 @@ public sealed record Category
 	/// Checks if the underlying value is valid
 	/// </summary>
 	[SuppressMessage("Performance", "CA1822:Mark members as static")]
+	// ReSharper disable once MemberCanBeMadeStatic.Global
 	public bool IsValid() => true;
 
 	public static implicit operator string(Category p) => p._category;

@@ -9,7 +9,7 @@ namespace ThunderPipe.Core.Clients;
 public sealed class CommunityApiClient : ThunderstoreClient
 {
 	/// <summary>
-	/// Checks if a community with the given slug exists
+	/// Checks if the given community exists
 	/// </summary>
 	public async Task<bool> Exists(Community community, CancellationToken ct = default)
 	{
