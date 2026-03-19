@@ -72,9 +72,7 @@ public sealed class StringCastTypeConverter<T> : TypeConverter
 	{
 		var methods = typeof(T).GetMethods(BindingFlags.Public | BindingFlags.Static);
 
-		return methods.FirstOrDefault(IsConversion);
-
-		bool IsConversion(MethodInfo method)
+		return methods.FirstOrDefault(method =>
 		{
 			if (method.ReturnType != target)
 				return false;
@@ -83,6 +81,6 @@ public sealed class StringCastTypeConverter<T> : TypeConverter
 				return false;
 
 			return method.Name is "op_Implicit" or "op_Explicit";
-		}
+		});
 	}
 }
