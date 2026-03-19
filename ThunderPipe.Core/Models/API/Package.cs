@@ -2,9 +2,9 @@ namespace ThunderPipe.Core.Models.API;
 
 public sealed record Package
 {
-	public PackageName Name { get; init; }
-	public PackageVersion Version { get; init; }
-	public Uri DownloadURL { get; init; }
+	public PackageName Name { get; }
+	public PackageVersion Version { get; }
+	public Uri DownloadURL { get; }
 
 	internal Package(string name, string version, string downloadUrl)
 	{
