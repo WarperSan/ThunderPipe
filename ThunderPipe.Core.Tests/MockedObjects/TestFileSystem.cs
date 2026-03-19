@@ -11,7 +11,7 @@ public class TestFileSystem : IFileSystem
 	#region IFileSystem
 
 	/// <inheritdoc />
-	public FileStream OpenRead(string path) => throw new NotImplementedException();
+	public Stream OpenRead(string path) => throw new NotImplementedException();
 
 	/// <inheritdoc />
 	public Task<byte[]> ReadAllBytesAsync(string path, CancellationToken cancellationToken)
