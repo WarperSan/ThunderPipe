@@ -22,6 +22,7 @@ public class PackageVersionTests
 	[InlineData("1.0.0-beta")]
 	[InlineData("12.0.0-alpha")]
 	[InlineData("1.5.5e")]
+	[InlineData("1a5.5e")]
 	public void IsValid_WhenInvalid_ReturnFalse(string version)
 	{
 		var packageVersion = new PackageVersion(version);
