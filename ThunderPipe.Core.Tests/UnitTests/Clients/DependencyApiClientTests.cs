@@ -4,7 +4,7 @@ using ThunderPipe.Core.Models.API;
 using ThunderPipe.Core.Models.Web.GetDependency;
 using ThunderPipe.Core.Utils;
 
-namespace ThunderPipe.Tests.UnitTests.Clients;
+namespace ThunderPipe.Core.Tests.UnitTests.Clients;
 
 // TODO: Get 100% coverage on DependencyApiClient
 public class DependencyApiClientTests

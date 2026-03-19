@@ -1,6 +1,6 @@
 using ThunderPipe.Core.Converters;
 
-namespace ThunderPipe.Tests.UnitTests.Converters;
+namespace ThunderPipe.Core.Tests.UnitTests.Converters;
 
 public class StringCastTypeConverterTests
 {

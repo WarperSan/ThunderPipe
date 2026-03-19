@@ -1,6 +1,6 @@
 using ThunderPipe.Core.Clients;
 
-namespace ThunderPipe.Tests.MockedObjects;
+namespace ThunderPipe.Core.Tests.MockedObjects;
 
 /// <summary>
 /// Version of <see cref="ThunderstoreClient"/> that has methods to test certain behaviors

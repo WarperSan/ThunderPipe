@@ -2,7 +2,7 @@ using ThunderPipe.Core.Clients;
 using ThunderPipe.Core.Models.Web.GetPackage;
 using ThunderPipe.Core.Utils;
 
-namespace ThunderPipe.Tests.UnitTests.Clients;
+namespace ThunderPipe.Core.Tests.UnitTests.Clients;
 
 public class PackageApiClientTests
 {

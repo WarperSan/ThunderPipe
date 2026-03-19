@@ -5,7 +5,7 @@ using ThunderPipe.Core.Utils;
 
 // ReSharper disable InconsistentNaming
 
-namespace ThunderPipe.Tests.UnitTests.Utils;
+namespace ThunderPipe.Core.Tests.UnitTests.Utils;
 
 // TODO: Redo all tests to match proper syntax
 // TODO: Get 100% coverage on RequestBuilder

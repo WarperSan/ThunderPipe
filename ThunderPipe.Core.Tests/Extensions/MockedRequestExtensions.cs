@@ -1,7 +1,7 @@
 using System.Net;
 using Newtonsoft.Json;
 
-namespace ThunderPipe.Tests;
+namespace ThunderPipe.Core.Tests;
 
 internal static class MockedRequestExtensions
 {
