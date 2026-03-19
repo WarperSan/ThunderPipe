@@ -2,20 +2,22 @@ using Microsoft.Extensions.Logging;
 using Spectre.Console.Cli;
 using ThunderPipe.Settings;
 
-namespace ThunderPipe.Infrastructure;
+namespace ThunderPipe.Infrastructure.Logging;
 
 internal sealed class LogInterceptor : ICommandInterceptor
 {
-#if DEBUG
+	#if DEBUG
 	public const LogLevel MINIMUM_LEVEL = LogLevel.Debug;
-#else
+	#else
 	public const LogLevel MINIMUM_LEVEL = LogLevel.Information;
-#endif
+	#endif
 
-	/// <summary>
-	/// Current minimum log level
-	/// </summary>
-	public static LogLevel Level { get; private set; } = MINIMUM_LEVEL;
+	private readonly LogLevelContext _context;
+
+	public LogInterceptor(LogLevelContext context)
+	{
+		_context = context;
+	}
 
 	/// <inheritdoc/>
 	public void Intercept(CommandContext context, CommandSettings settings)
@@ -23,6 +25,6 @@ internal sealed class LogInterceptor : ICommandInterceptor
 		if (settings is not BaseCommandSettings baseSettings)
 			return;
 
-		Level = baseSettings.LogLevel;
+		_context.Level = baseSettings.LogLevel;
 	}
 }
