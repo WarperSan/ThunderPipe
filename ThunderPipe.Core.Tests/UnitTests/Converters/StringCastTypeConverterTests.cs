@@ -181,7 +181,7 @@ public class StringCastTypeConverterTests
 	}
 
 	[Fact]
-	public void ConvertTo_WhenHasNoCast_ThrowException()
+	public void ConvertTo_WhenHasNoCast_UseToString()
 	{
 		const string EXPECTED = "contradiction ally squash thin";
 
@@ -189,8 +189,6 @@ public class StringCastTypeConverterTests
 
 		var converter = new StringCastTypeConverter<TypeWithNoCast>();
 
-		Assert.Throws<NotSupportedException>(() =>
-			converter.ConvertTo(data, typeof(string)) as string
-		);
+		Assert.Equal(data.ToString(), converter.ConvertTo(data, typeof(string)));
 	}
 }

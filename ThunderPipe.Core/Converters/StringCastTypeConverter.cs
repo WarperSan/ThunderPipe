@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using System.Reflection;
+using System.Linq.Expressions;
 
 namespace ThunderPipe.Core.Converters;
 
@@ -12,14 +12,8 @@ namespace ThunderPipe.Core.Converters;
 /// </summary>
 public sealed class StringCastTypeConverter<T> : TypeConverter
 {
-	private static readonly MethodInfo? ConvertFromMethod = GetConvertMethod(
-		typeof(string),
-		typeof(T)
-	);
-	private static readonly MethodInfo? ConvertToMethod = GetConvertMethod(
-		typeof(T),
-		typeof(string)
-	);
+	private static readonly Func<string, T>? ConvertFromMethod = GetConvertMethod<string, T>();
+	private static readonly Func<T, string>? ConvertToMethod = GetConvertMethod<T, string>();
 
 	/// <inheritdoc/>
 	public override bool CanConvertFrom(ITypeDescriptorContext? context, Type sourceType)
@@ -36,10 +30,10 @@ public sealed class StringCastTypeConverter<T> : TypeConverter
 		object value
 	)
 	{
-		if (ConvertFromMethod == null)
+		if (value is not string valueString || ConvertFromMethod == null)
 			return base.ConvertFrom(context, culture, value);
 
-		return ConvertFromMethod.Invoke(null, [value]);
+		return ConvertFromMethod.Invoke(valueString);
 	}
 
 	/// <inheritdoc />
@@ -59,28 +53,27 @@ public sealed class StringCastTypeConverter<T> : TypeConverter
 		Type destinationType
 	)
 	{
-		if (ConvertToMethod == null)
-			throw new NotSupportedException($"Cannot convert '{typeof(T)}' to '{typeof(string)}'.");
+		if (value is not T valueTyped || ConvertToMethod == null)
+			return base.ConvertTo(context, culture, value, destinationType);
 
-		return ConvertToMethod.Invoke(null, [value]);
+		return ConvertToMethod.Invoke(valueTyped);
 	}
 
 	/// <summary>
 	/// Gets the convert method if any was found
 	/// </summary>
-	private static MethodInfo? GetConvertMethod(Type source, Type target)
+	private static Func<TSource, TTarget>? GetConvertMethod<TSource, TTarget>()
 	{
-		var methods = typeof(T).GetMethods(BindingFlags.Public | BindingFlags.Static);
-
-		return methods.FirstOrDefault(method =>
+		try
 		{
-			if (method.ReturnType != target)
-				return false;
+			var parameter = Expression.Parameter(typeof(TSource));
+			var body = Expression.Convert(parameter, typeof(TTarget));
 
-			if (method.GetParameters().FirstOrDefault()?.ParameterType != source)
-				return false;
-
-			return method.Name is "op_Implicit" or "op_Explicit";
-		});
+			return Expression.Lambda<Func<TSource, TTarget>>(body, parameter).Compile();
+		}
+		catch (Exception)
+		{
+			return null;
+		}
 	}
 }
