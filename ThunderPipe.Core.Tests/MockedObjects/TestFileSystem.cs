@@ -1,7 +1,7 @@
 using System.Text;
 using ThunderPipe.Core.Services.Interfaces;
 
-namespace ThunderPipe.Tests.MockedObjects;
+namespace ThunderPipe.Core.Tests.MockedObjects;
 
 /// <summary>
 /// Version of <see cref="IFileSystem"/> used for tests

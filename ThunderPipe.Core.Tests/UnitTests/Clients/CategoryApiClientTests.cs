@@ -3,7 +3,7 @@ using ThunderPipe.Core.Models.API;
 using ThunderPipe.Core.Models.Web.GetCategory;
 using ThunderPipe.Core.Utils;
 
-namespace ThunderPipe.Tests.UnitTests.Clients;
+namespace ThunderPipe.Core.Tests.UnitTests.Clients;
 
 public class CategoryApiClientTests
 {

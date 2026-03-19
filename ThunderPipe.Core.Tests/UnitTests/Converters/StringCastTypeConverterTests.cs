@@ -1,6 +1,6 @@
 using ThunderPipe.Core.Converters;
 
-namespace ThunderPipe.Tests.UnitTests.Converters;
+namespace ThunderPipe.Core.Tests.UnitTests.Converters;
 
 public class StringCastTypeConverterTests
 {
@@ -50,6 +50,16 @@ public class StringCastTypeConverterTests
 
 		/// <inheritdoc/>
 		public override string ToString() => _value;
+
+		// ReSharper disable UnusedMember.Local
+		public static TypeWithNoCast InvalidStringCast() => new("");
+
+		public static string InvalidTypeCast() => "";
+
+		public static TypeWithNoCast InvalidStringCastMethodName(string input) => new(input);
+
+		public static string InvalidTypeCastMethodName(TypeWithNoCast input) => "";
+		// ReSharper restore UnusedMember.Local
 	}
 
 	[Fact]
@@ -132,6 +142,14 @@ public class StringCastTypeConverterTests
 		var converter = new StringCastTypeConverter<TypeWithNoCast>();
 
 		Assert.False(converter.CanConvertTo(typeof(string)));
+	}
+
+	[Fact]
+	public void CanConvertTo_WhenHasNoCastForType_ReturnFalse()
+	{
+		var converter = new StringCastTypeConverter<TypeWithNoCast>();
+
+		Assert.False(converter.CanConvertTo(typeof(int)));
 	}
 
 	[Fact]
