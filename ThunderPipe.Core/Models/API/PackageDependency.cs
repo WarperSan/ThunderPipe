@@ -17,7 +17,7 @@ public sealed record PackageDependency
 	{
 		_dependencyString = dependencyString;
 
-		var components = _dependencyString.Split("-", StringSplitOptions.RemoveEmptyEntries);
+		var components = _dependencyString.Split("-", 3, StringSplitOptions.RemoveEmptyEntries);
 
 		if (components.Length == 3)
 		{
