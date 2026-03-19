@@ -71,6 +71,7 @@ public sealed class PublishApiClient : ThunderstoreClient
 	)
 	{
 		var uploadTasks = new List<Task<UploadPart>>();
+		UploadPart[] uploadedParts;
 
 		await using (var stream = fileSystem.OpenRead(file))
 		{
@@ -82,9 +83,9 @@ public sealed class PublishApiClient : ThunderstoreClient
 
 				uploadTasks.Add(task);
 			}
-		}
 
-		var uploadedParts = await Task.WhenAll(uploadTasks).WaitAsync(ct);
+			uploadedParts = await Task.WhenAll(uploadTasks).WaitAsync(ct);
+		}
 
 		return uploadedParts.AsReadOnly();
 	}
