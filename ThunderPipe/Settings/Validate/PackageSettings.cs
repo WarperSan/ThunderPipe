@@ -56,11 +56,6 @@ internal sealed class PackageSettings : BaseValidateSettings
 		if (!File.Exists(IconPath))
 			return ValidationResult.Error($"No file was found at '{IconPath}'.");
 
-		IconPath = Path.GetFullPath(IconPath!, PackageFolder);
-
-		if (!File.Exists(IconPath))
-			return ValidationResult.Error($"No file was found at '{IconPath}'.");
-
 		ManifestPath = Path.GetFullPath(ManifestPath!, PackageFolder);
 
 		if (!File.Exists(ManifestPath))
