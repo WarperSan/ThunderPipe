@@ -8,7 +8,7 @@ public interface IFileSystem
 	/// <summary>
 	/// Opens an existing file for reading
 	/// </summary>
-	public FileStream OpenRead(string path);
+	public Stream OpenRead(string path);
 
 	/// <summary>
 	/// Asynchronously opens a binary file, reads the contents of the file into a byte array, and then closes the file

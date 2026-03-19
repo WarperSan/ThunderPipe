@@ -8,7 +8,7 @@ namespace ThunderPipe.Core.Services.Implementations;
 public sealed class FileSystem : IFileSystem
 {
 	/// <inheritdoc />
-	public FileStream OpenRead(string path) => File.OpenRead(path);
+	public Stream OpenRead(string path) => File.OpenRead(path);
 
 	/// <inheritdoc />
 	public Task<byte[]> ReadAllBytesAsync(string path, CancellationToken cancellationToken) =>
