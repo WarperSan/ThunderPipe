@@ -53,6 +53,14 @@ public class ThunderPipePublish : Task
 			return false;
 		}
 
+		var hasNsfw = false;
+
+		if (HasNSFW != null && !bool.TryParse(HasNSFW, out hasNsfw))
+		{
+			logger.LogError("Could not parse '{HasNSFW}' as a boolean.", HasNSFW);
+			return false;
+		}
+
 		var communities = Communities.Select(c => (Community)c).ToArray();
 		var categories = ParseCategories(Categories ?? []);
 
@@ -62,7 +70,7 @@ public class ThunderPipePublish : Task
 				Team,
 				communities,
 				categories,
-				HasNSFW != null && bool.Parse(HasNSFW),
+				hasNsfw,
 				Token,
 				CancellationToken.None
 			)
