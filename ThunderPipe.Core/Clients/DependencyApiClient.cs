@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Net;
 using Microsoft.Extensions.Logging;
 using ThunderPipe.Core.Models.API;
@@ -27,12 +28,12 @@ public sealed class DependencyApiClient : ThunderstoreClient
 			.Get()
 			.ToEndpoint($"api/experimental/package/{{{NAMESPACE}}}/{{{NAME}}}/{{{VERSION}}}/");
 
-		var dependenciesFound = new HashSet<PackageDependency>();
+		var dependenciesFound = new ConcurrentBag<PackageDependency>();
 
-		foreach (var dependency in dependencies)
+		var tasks = dependencies.Select(async dependency =>
 		{
 			if (!dependency.IsValid())
-				continue;
+				return;
 
 			var request = new RequestBuilder(tempBuilder)
 				.SetPathParameter(NAMESPACE, dependency.Team!)
@@ -50,16 +51,18 @@ public sealed class DependencyApiClient : ThunderstoreClient
 						HttpStatusCode.NotFound,
 						rawResponse.StatusCode
 					);
-				continue;
+				return;
 			}
 
 			var response = await ParseJson<Response>(rawResponse, ct);
 
 			if (!response.IsActive)
-				continue;
+				return;
 
 			dependenciesFound.Add(dependency);
-		}
+		});
+
+		await Task.WhenAll(tasks);
 
 		return dependencies.Except(dependenciesFound).ToArray();
 	}
