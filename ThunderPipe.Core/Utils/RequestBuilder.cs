@@ -175,7 +175,7 @@ public sealed class RequestBuilder
 	/// </summary>
 	public RequestBuilder SetPathParameter(string key, string value)
 	{
-		_pathParams.TryAdd(key, value);
+		_pathParams[key] = value;
 
 		return this;
 	}

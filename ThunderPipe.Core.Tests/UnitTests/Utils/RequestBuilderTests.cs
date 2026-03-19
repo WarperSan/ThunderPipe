@@ -207,6 +207,30 @@ public class RequestBuilderTests
 	}
 
 	[Fact]
+	public void SetPathParameter_WhenSetTwice_ReplacePathParam()
+	{
+		const string KEY = "UUID";
+		const string ENDPOINT = $"/test/{{{KEY}}}/foo";
+
+		const string FIRST_VALUE = "ABC";
+		const string LAST_VALUE = "CBA";
+
+		var builder = new RequestBuilder()
+			.ToUri(new Uri("https://www.google.com"))
+			.ToEndpoint(ENDPOINT);
+
+		var expectedPath = ENDPOINT.Replace($"{{{KEY}}}", LAST_VALUE);
+
+		builder.SetPathParameter(KEY, FIRST_VALUE);
+		builder.SetPathParameter(KEY, LAST_VALUE);
+
+		var request = builder.Build();
+
+		Assert.NotNull(request.RequestUri);
+		Assert.Equal(expectedPath, request.RequestUri.AbsolutePath);
+	}
+
+	[Fact]
 	public void Copy_WhenCopied_ReturnNewInstance()
 	{
 		var originalBuilder = new RequestBuilder();
