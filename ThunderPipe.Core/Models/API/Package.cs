@@ -1,5 +1,11 @@
 namespace ThunderPipe.Core.Models.API;
 
+/// <summary>
+/// Object that represents a released package
+/// </summary>
+/// <remarks>
+/// Only this library can create instances of this class
+/// </remarks>
 public sealed record Package
 {
 	public PackageName Name { get; }
