@@ -10,14 +10,14 @@ using ThunderPipe.Settings.Validate;
 namespace ThunderPipe.Commands.Validate;
 
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
-internal sealed class PackageCommand : BaseCommand<PackageSettings>
+internal sealed class PackageCommand : AsyncCommand<PackageSettings>
 {
 	private readonly IFileSystem _fileSystem;
+	private readonly ILogger _logger;
 
-	/// <inheritdoc />
 	public PackageCommand(ILogger logger, IFileSystem fileSystem)
-		: base(logger)
 	{
+		_logger = logger;
 		_fileSystem = fileSystem;
 	}
 
@@ -28,7 +28,7 @@ internal sealed class PackageCommand : BaseCommand<PackageSettings>
 		CancellationToken cancellationToken
 	)
 	{
-		Logger.LogInformation(
+		_logger.LogInformation(
 			"Starting to validate '{SettingsPackageFolder}'",
 			settings.PackageFolder
 		);
@@ -38,7 +38,7 @@ internal sealed class PackageCommand : BaseCommand<PackageSettings>
 		var readmePath = Path.GetFullPath(settings.ReadmePath!, settings.PackageFolder);
 
 		var builder = new RequestBuilder().ToUri(settings.Host!);
-		var service = new ValidationService(builder, _fileSystem, Logger);
+		var service = new ValidationService(builder, _fileSystem, _logger);
 
 		var errors = await service.ValidatePackage(
 			settings.Team,
@@ -57,11 +57,11 @@ internal sealed class PackageCommand : BaseCommand<PackageSettings>
 			output.Append("- ");
 			output.AppendJoin("\n- ", errors);
 
-			Logger.LogError("{Output}", output.ToString());
+			_logger.LogError("{Output}", output.ToString());
 			return 1;
 		}
 
-		Logger.LogInformation("All files are valid!");
+		_logger.LogInformation("All files are valid!");
 		return 0;
 	}
 }

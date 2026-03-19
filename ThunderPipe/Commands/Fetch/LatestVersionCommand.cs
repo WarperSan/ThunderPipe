@@ -7,11 +7,14 @@ using ThunderPipe.Core.Utils;
 namespace ThunderPipe.Commands.Fetch;
 
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
-internal sealed class LatestVersionCommand : BaseCommand<Settings.Fetch.LatestVersionSettings>
+internal sealed class LatestVersionCommand : AsyncCommand<Settings.Fetch.LatestVersionSettings>
 {
-	/// <inheritdoc />
+	private readonly ILogger _logger;
+
 	public LatestVersionCommand(ILogger logger)
-		: base(logger) { }
+	{
+		_logger = logger;
+	}
 
 	/// <inheritdoc />
 	public override async Task<int> ExecuteAsync(
@@ -23,7 +26,7 @@ internal sealed class LatestVersionCommand : BaseCommand<Settings.Fetch.LatestVe
 		var builder = new RequestBuilder().ToUri(settings.Host!);
 		using var client = new PackageApiClient();
 		client.Builder = builder;
-		client.Logger = Logger;
+		client.Logger = _logger;
 
 		var version = await client.GetVersion(settings.Team, settings.Name, cancellationToken);
 		Console.WriteLine(version);

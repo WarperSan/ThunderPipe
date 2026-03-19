@@ -8,11 +8,14 @@ using ThunderPipe.Settings.Validate;
 namespace ThunderPipe.Commands.Validate;
 
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
-internal sealed class DependenciesCommand : BaseCommand<DependenciesSettings>
+internal sealed class DependenciesCommand : AsyncCommand<DependenciesSettings>
 {
-	/// <inheritdoc />
+	private readonly ILogger _logger;
+
 	public DependenciesCommand(ILogger logger)
-		: base(logger) { }
+	{
+		_logger = logger;
+	}
 
 	/// <inheritdoc />
 	public override async Task<int> ExecuteAsync(
@@ -24,7 +27,7 @@ internal sealed class DependenciesCommand : BaseCommand<DependenciesSettings>
 		var builder = new RequestBuilder().ToUri(settings.Host!);
 		using var client = new DependencyApiClient();
 		client.Builder = builder;
-		client.Logger = Logger;
+		client.Logger = _logger;
 
 		var missingDependencies = await client.GetMissing(settings.Dependencies, cancellationToken);
 
@@ -36,7 +39,7 @@ internal sealed class DependenciesCommand : BaseCommand<DependenciesSettings>
 			);
 		}
 
-		Logger.LogInformation("All dependencies have been found!");
+		_logger.LogInformation("All dependencies have been found!");
 		return 0;
 	}
 }

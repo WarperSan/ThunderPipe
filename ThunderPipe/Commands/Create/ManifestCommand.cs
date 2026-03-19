@@ -9,12 +9,11 @@ using ThunderPipe.Settings.Create;
 namespace ThunderPipe.Commands.Create;
 
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
-internal sealed class ManifestCommand : BaseCommand<ManifestSettings>
+internal sealed class ManifestCommand : AsyncCommand<ManifestSettings>
 {
 	private readonly CreationService _service;
 
 	public ManifestCommand(ILogger logger, IFileSystem fileSystem)
-		: base(logger)
 	{
 		_service = new CreationService(fileSystem, logger);
 	}
