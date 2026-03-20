@@ -22,7 +22,10 @@ public sealed partial record Category
 	/// </summary>
 	public bool IsValid() => CategoryRegex().IsMatch(_category);
 
-	public static implicit operator string(Category p) => p._category;
+	/// <inheritdoc />
+	public override string ToString() => _category;
+
+	public static implicit operator string(Category p) => p.ToString();
 
 	public static implicit operator Category(string category) => new(category);
 

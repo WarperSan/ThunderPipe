@@ -22,7 +22,10 @@ public sealed partial record Team
 	/// </summary>
 	public bool IsValid() => TeamRegex().IsMatch(_team);
 
-	public static implicit operator string(Team p) => p._team;
+	/// <inheritdoc />
+	public override string ToString() => _team;
+
+	public static implicit operator string(Team p) => p.ToString();
 
 	public static implicit operator Team(string team) => new(team);
 

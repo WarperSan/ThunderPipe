@@ -22,7 +22,10 @@ public sealed partial record Community
 	/// </summary>
 	public bool IsValid() => CommunityRegex().IsMatch(_community);
 
-	public static implicit operator string(Community p) => p._community;
+	/// <inheritdoc />
+	public override string ToString() => _community;
+
+	public static implicit operator string(Community p) => p.ToString();
 
 	public static implicit operator Community(string community) => new(community);
 
