@@ -111,7 +111,7 @@ public sealed class Response<T>
 		if (status == HttpStatusCode.BadRequest)
 			return HandleBadRequest(jToken);
 
-		return HandleError(jToken, content);
+		return HandleError(jToken);
 	}
 
 	private static TPayload ParseJson<TPayload>(string content)
@@ -178,15 +178,15 @@ public sealed class Response<T>
 		}
 	}
 
-	private static Response<T> HandleError(JToken jToken, string content)
+	private static Response<T> HandleError(JToken jToken)
 	{
 		// Parse details
-		if (jToken is JObject detailsObj && detailsObj.TryGetValue("details", out var error))
+		if (jToken is JObject detailsObj && detailsObj.TryGetValue("detail", out var error))
 		{
 			var errorString = error.Value<string>() ?? "";
 			return new Response<T>([errorString]);
 		}
 
-		throw new NotSupportedException($"Received a payload that was not supported:\n{content}");
+		throw new NotSupportedException($"Received a payload that was not supported:\n{jToken}");
 	}
 }

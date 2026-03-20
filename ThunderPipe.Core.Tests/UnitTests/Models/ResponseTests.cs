@@ -126,7 +126,7 @@ public class ResponseTests
 		string details
 	)
 	{
-		var rawResponse = CreateMessage(status, new { details = details });
+		var rawResponse = CreateMessage(status, new { detail = details });
 
 		var response = await Response<Product>.CreateResponse(rawResponse, CancellationToken.None);
 

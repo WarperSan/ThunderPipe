@@ -36,7 +36,7 @@ internal static class MockedRequestExtensions
 		string error
 	)
 	{
-		var json = JsonConvert.SerializeObject(new { details = error });
+		var json = JsonConvert.SerializeObject(new { detail = error });
 		return source.Respond(status, MediaTypeNames.Application.Json, json);
 	}
 }
