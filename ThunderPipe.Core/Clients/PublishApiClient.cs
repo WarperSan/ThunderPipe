@@ -42,7 +42,10 @@ public sealed class PublishApiClient : ThunderstoreClient
 
 		var response = await SendRequest<Models.Web.InitiateMultipartUpload.Response>(request, ct);
 
-		var parts = response.UploadParts.Select(p => new UploadPartDescriptor
+		response.LogErrors(Logger);
+		response.EnsureSuccess(out var data);
+
+		var parts = data.UploadParts.Select(p => new UploadPartDescriptor
 		{
 			Id = p.PartNumber,
 			UploadURL = new Uri(p.Url),
@@ -52,7 +55,7 @@ public sealed class PublishApiClient : ThunderstoreClient
 
 		return new UploadSession
 		{
-			UUID = response.FileMetadata.UUID,
+			UUID = data.FileMetadata.UUID,
 			Parts = parts.ToArray().AsReadOnly(),
 		};
 	}
@@ -239,10 +242,9 @@ public sealed class PublishApiClient : ThunderstoreClient
 
 		var response = await SendRequest<Models.Web.SubmitPackage.Response>(request, ct);
 
-		return new Package(
-			response.Version.Name,
-			response.Version.Version,
-			response.Version.DownloadURL
-		);
+		response.LogErrors(Logger);
+		response.EnsureSuccess(out var data);
+
+		return new Package(data.Version.Name, data.Version.Version, data.Version.DownloadURL);
 	}
 }
