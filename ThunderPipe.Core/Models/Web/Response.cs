@@ -1,3 +1,6 @@
+using System.Net;
+using Newtonsoft.Json;
+
 namespace ThunderPipe.Core.Models.Web;
 
 /// <summary>
@@ -19,5 +22,47 @@ internal sealed class Response<T>
 	public static async Task<Response<T>> CreateResponse(
 		HttpResponseMessage response,
 		CancellationToken ct
-	) { }
+	)
+	{
+		var status = response.StatusCode;
+		var content = await response.Content.ReadAsStringAsync(ct);
+
+		if (status == HttpStatusCode.OK)
+		{
+			// Parse normally
+			var data = ParseJson<T>(content);
+		}
+
+		if (status == HttpStatusCode.BadRequest)
+		{
+			// if array, parse all errors as global
+			// if object, parse every error as field specific
+		}
+
+		// Parse details
+	}
+
+	private static TPayload ParseJson<TPayload>(string content)
+	{
+		TPayload? json;
+
+		try
+		{
+			json = JsonConvert.DeserializeObject<TPayload>(content);
+		}
+		catch (JsonException e)
+		{
+			throw new InvalidOperationException(
+				$"Failed to deserialize the response: \n\n{content}",
+				e
+			);
+		}
+
+		if (json == null)
+			throw new NullReferenceException(
+				$"Failed to parse the response's payload as '{nameof(T)}'"
+			);
+
+		return json;
+	}
 }
