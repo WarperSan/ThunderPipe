@@ -10,12 +10,21 @@ namespace ThunderPipe.Core.Models.Web;
 internal sealed class Response<T>
 	where T : class
 {
-	private Response() { }
+	private Response(T data)
+	{
+		IsSuccess = true;
+		Data = data;
+	}
+
+	/// <summary>
+	/// Determines if the response has been a success
+	/// </summary>
+	public readonly bool IsSuccess;
 
 	/// <summary>
 	/// JSON content of the response if success
 	/// </summary>
-	public T? Data { get; private set; }
+	public readonly T? Data;
 
 	/// <summary>
 	/// Creates a new instance of <see cref="Response{T}"/> from the given response
@@ -32,6 +41,8 @@ internal sealed class Response<T>
 		{
 			// Parse normally
 			var data = ParseJson<T>(content);
+
+			return new Response<T>(data);
 		}
 
 		if (status == HttpStatusCode.BadRequest)
