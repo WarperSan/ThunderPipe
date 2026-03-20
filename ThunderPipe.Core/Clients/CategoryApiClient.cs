@@ -37,14 +37,17 @@ public sealed class CategoryApiClient : ThunderstoreClient
 
 			var response = await SendRequest<Models.Web.GetCategory.Response>(request, ct);
 
-			foreach (var category in response.Items)
+			response.LogErrors(Logger);
+			response.EnsureSuccess(out var data);
+
+			foreach (var category in data.Items)
 				categoriesToFind.Remove(category.Slug);
 
 			// Can't continue to crawl
-			if (response.Pagination.NextPage == null)
+			if (data.Pagination.NextPage == null)
 				break;
 
-			if (!Uri.TryCreate(response.Pagination.NextPage, UriKind.Absolute, out var uri))
+			if (!Uri.TryCreate(data.Pagination.NextPage, UriKind.Absolute, out var uri))
 				break;
 
 			tempBuilder = new RequestBuilder(Builder).Get().ToUri(uri);
