@@ -31,21 +31,17 @@ public sealed class ValidationApiClient : ThunderstoreClient
 
 		var response = await SendRequest<Models.Web.ValidateIcon.Response>(request, ct);
 
-		var errors = new List<string>();
+		if (response.IsSuccess)
+		{
+			if (response.Data != null && response.Data.Valid)
+				return [];
 
-		if (response.DataErrors != null)
-			errors.AddRange(response.DataErrors);
-
-		if (response.ValidationErrors != null)
-			errors.AddRange(response.ValidationErrors);
-
-		if (errors.Count == 0 && response.Valid is not true)
 			throw new InvalidOperationException("Icon was not marked as valid.");
+		}
 
-		if (errors.Count > 0 && response.Valid is true)
-			throw new InvalidOperationException("Icon has errors, but was marked as valid.");
+		response.LogErrors(Logger);
 
-		return errors;
+		return response.AllErrors.ToList();
 	}
 
 	/// <summary>
@@ -76,24 +72,17 @@ public sealed class ValidationApiClient : ThunderstoreClient
 
 		var response = await SendRequest<Models.Web.ValidateManifest.Response>(request, ct);
 
-		var errors = new List<string>();
+		if (response.IsSuccess)
+		{
+			if (response.Data != null && response.Data.Valid)
+				return [];
 
-		if (response.DataErrors != null)
-			errors.AddRange(response.DataErrors);
-
-		if (response.ValidationErrors != null)
-			errors.AddRange(response.ValidationErrors);
-
-		if (response.NamespaceErrors != null)
-			errors.AddRange(response.NamespaceErrors);
-
-		if (errors.Count == 0 && response.Valid is not true)
 			throw new InvalidOperationException("Manifest was not marked as valid.");
+		}
 
-		if (errors.Count > 0 && response.Valid is true)
-			throw new InvalidOperationException("Manifest has errors, but was marked as valid.");
+		response.LogErrors(Logger);
 
-		return errors;
+		return response.AllErrors.ToList();
 	}
 
 	/// <summary>
@@ -119,20 +108,16 @@ public sealed class ValidationApiClient : ThunderstoreClient
 
 		var response = await SendRequest<Models.Web.ValidateReadme.Response>(request, ct);
 
-		var errors = new List<string>();
+		if (response.IsSuccess)
+		{
+			if (response.Data != null && response.Data.Valid)
+				return [];
 
-		if (response.DataErrors != null)
-			errors.AddRange(response.DataErrors);
-
-		if (response.ValidationErrors != null)
-			errors.AddRange(response.ValidationErrors);
-
-		if (errors.Count == 0 && response.Valid is not true)
 			throw new InvalidOperationException("README was not marked as valid.");
+		}
 
-		if (errors.Count > 0 && response.Valid is true)
-			throw new InvalidOperationException("README has errors, but was marked as valid.");
+		response.LogErrors(Logger);
 
-		return errors;
+		return response.AllErrors.ToList();
 	}
 }

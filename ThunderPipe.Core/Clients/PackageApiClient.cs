@@ -25,7 +25,7 @@ public sealed class PackageApiClient : ThunderstoreClient
 	/// <summary>
 	/// Gets the package by the given team by the given name
 	/// </summary>
-	private Task<Models.Web.GetPackage.Response> GetPackage(
+	private async Task<Models.Web.GetPackage.Response> GetPackage(
 		Team team,
 		PackageName name,
 		CancellationToken ct
@@ -36,6 +36,11 @@ public sealed class PackageApiClient : ThunderstoreClient
 			.ToEndpoint($"api/experimental/package/{team}/{name}/")
 			.Build();
 
-		return SendRequest<Models.Web.GetPackage.Response>(request, ct);
+		var response = await SendRequest<Models.Web.GetPackage.Response>(request, ct);
+
+		response.LogErrors(Logger);
+		response.EnsureSuccess(out var data);
+
+		return data;
 	}
 }

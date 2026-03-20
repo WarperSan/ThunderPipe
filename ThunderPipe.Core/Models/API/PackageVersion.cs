@@ -24,7 +24,10 @@ public sealed partial record PackageVersion
 	/// </summary>
 	public bool IsValid() => VersionRegex().IsMatch(_version);
 
-	public static implicit operator string(PackageVersion p) => p._version;
+	/// <inheritdoc />
+	public override string ToString() => _version;
+
+	public static implicit operator string(PackageVersion p) => p.ToString();
 
 	public static implicit operator PackageVersion(string version) => new(version);
 

@@ -1,6 +1,6 @@
 using System.Net.Http.Headers;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
+using ThunderPipe.Core.Models.Web;
 using ThunderPipe.Core.Utils;
 
 namespace ThunderPipe.Core.Clients;
@@ -71,42 +71,19 @@ public abstract class ThunderstoreClient : IDisposable
 	}
 
 	/// <summary>
-	/// Parses the content of the given response into <see cref="T"/>
+	/// Sends the given request, and parses the returning JSON
 	/// </summary>
-	protected async Task<T> ParseJson<T>(HttpResponseMessage response, CancellationToken ct)
+	protected async Task<Response<T>> SendRequest<T>(
+		HttpRequestMessage request,
+		CancellationToken ct
+	)
+		where T : class
 	{
+		var response = await SendRequest(request, ct);
 		var content = await response.Content.ReadAsStringAsync(ct);
 		Logger?.LogDebug("Received JSON:\n{Json}", content);
 
-		T? json;
-
-		try
-		{
-			json = JsonConvert.DeserializeObject<T>(content);
-		}
-		catch (JsonException e)
-		{
-			throw new InvalidOperationException(
-				$"Failed to deserialize the response: \n\n{content}",
-				e
-			);
-		}
-
-		if (json == null)
-			throw new NullReferenceException(
-				$"Failed to parse the response's payload as '{nameof(T)}'"
-			);
-
-		return json;
-	}
-
-	/// <summary>
-	/// Sends the given request, and returns the JSON response
-	/// </summary>
-	protected async Task<T> SendRequest<T>(HttpRequestMessage request, CancellationToken ct)
-	{
-		var response = await SendRequest(request, ct);
-		return await ParseJson<T>(response, ct);
+		return Response<T>.CreateResponse(response, content);
 	}
 
 	#endregion

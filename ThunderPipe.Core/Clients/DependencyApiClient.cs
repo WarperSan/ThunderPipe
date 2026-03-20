@@ -41,22 +41,14 @@ public sealed class DependencyApiClient : ThunderstoreClient
 				.SetPathParameter(VERSION, dependency.Version!)
 				.Build();
 
-			var rawResponse = await SendRequest(request, ct);
+			var response = await SendRequest<Response>(request, ct);
 
-			if (!rawResponse.IsSuccessStatusCode)
-			{
-				if (rawResponse.StatusCode != HttpStatusCode.NotFound)
-					Logger?.LogDebug(
-						"Expected '{ExpectedCode}', but got: {Code}",
-						HttpStatusCode.NotFound,
-						rawResponse.StatusCode
-					);
+			response.LogErrors(Logger);
+
+			if (!response.IsSuccess || response.Data == null)
 				return;
-			}
 
-			var response = await ParseJson<Response>(rawResponse, ct);
-
-			if (!response.IsActive)
+			if (!response.Data.IsActive)
 				return;
 
 			dependenciesFound.Add(dependency);

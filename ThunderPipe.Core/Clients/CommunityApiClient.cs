@@ -30,7 +30,10 @@ public sealed class CommunityApiClient : ThunderstoreClient
 
 			var response = await SendRequest<Models.Web.GetCommunity.Response>(request, ct);
 
-			var rawCommunity = response.Items.FirstOrDefault(i => i.Slug == community);
+			response.LogErrors(Logger);
+			response.EnsureSuccess(out var data);
+
+			var rawCommunity = data.Items.FirstOrDefault(i => i.Slug == community);
 
 			if (rawCommunity != null)
 			{
@@ -39,10 +42,10 @@ public sealed class CommunityApiClient : ThunderstoreClient
 			}
 
 			// Can't continue to crawl
-			if (response.Pagination.NextPage == null)
+			if (data.Pagination.NextPage == null)
 				break;
 
-			if (!Uri.TryCreate(response.Pagination.NextPage, UriKind.Absolute, out var uri))
+			if (!Uri.TryCreate(data.Pagination.NextPage, UriKind.Absolute, out var uri))
 				break;
 
 			tempBuilder = new RequestBuilder(Builder).Get().ToUri(uri);

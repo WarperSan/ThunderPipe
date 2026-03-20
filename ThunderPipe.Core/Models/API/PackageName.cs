@@ -24,7 +24,10 @@ public sealed partial record PackageName
 	/// </summary>
 	public bool IsValid() => NameRegex().IsMatch(_name);
 
-	public static implicit operator string(PackageName p) => p._name;
+	/// <inheritdoc />
+	public override string ToString() => _name;
+
+	public static implicit operator string(PackageName p) => p.ToString();
 
 	public static implicit operator PackageName(string name) => new(name);
 

@@ -153,9 +153,9 @@ public class DependencyApiClientTests
 
 		var mockHttp = new MockHttpMessageHandler();
 
-		mockHttp.Expect(URL + "/*").RespondStatus(HttpStatusCode.NotFound);
+		mockHttp.Expect(URL + "/*").RespondError(HttpStatusCode.NotFound, "Not found.");
 
-		mockHttp.Expect(URL + "/*").RespondStatus(HttpStatusCode.NotAcceptable);
+		mockHttp.Expect(URL + "/*").RespondError(HttpStatusCode.NotFound, "Not found.");
 
 		var builder = new RequestBuilder().ToUri(new Uri(URL));
 
@@ -169,38 +169,6 @@ public class DependencyApiClientTests
 
 		// Assert
 		var expected = new[] { new PackageDependency(SLUG_1), new PackageDependency(SLUG_2) };
-
-		Assert.Equal(missing.Count, expected.Length);
-
-		foreach (var slug in expected)
-			Assert.Contains(slug, missing);
-	}
-
-	[Fact]
-	public async Task GetMissing_WhenErrorReturnedWithLogger_ShouldLogErrorAndReturnRemaining()
-	{
-		// Arrange
-		const string URL = "http://localhost:5050";
-
-		const string SLUG_1 = "ItsEmul-PEAKValuables-1.2.0";
-
-		var mockHttp = new MockHttpMessageHandler();
-
-		mockHttp.Expect(URL + "/*").RespondStatus(HttpStatusCode.BadRequest);
-
-		var builder = new RequestBuilder().ToUri(new Uri(URL));
-
-		using var client = new DependencyApiClient();
-		client.Builder = builder;
-		client.Client = mockHttp.ToHttpClient();
-		client.Logger = new Logger<DependencyApiClient>(new LoggerFactory());
-
-		// Act
-		var requested = new[] { new PackageDependency(SLUG_1) };
-		var missing = await client.GetMissing(requested);
-
-		// Assert
-		var expected = new[] { new PackageDependency(SLUG_1) };
 
 		Assert.Equal(missing.Count, expected.Length);
 

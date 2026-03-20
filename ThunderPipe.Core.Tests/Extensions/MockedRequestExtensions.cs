@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Mime;
 using Newtonsoft.Json;
 
 namespace ThunderPipe.Core.Tests;
@@ -11,14 +12,31 @@ internal static class MockedRequestExtensions
 	public static MockedRequest RespondJSON(this MockedRequest source, object content)
 	{
 		var json = JsonConvert.SerializeObject(content);
-		return source.Respond("application/json", json);
+		return source.Respond(MediaTypeNames.Application.Json, json);
 	}
 
 	/// <summary>
-	/// Sets the response of the current <see cref="MockedRequest"/>, with the given status.
+	/// Sets the response to the given errors
 	/// </summary>
-	public static MockedRequest RespondStatus(this MockedRequest source, HttpStatusCode status)
+	public static MockedRequest RespondErrors(
+		this MockedRequest source,
+		IDictionary<string, string[]> errors
+	)
 	{
-		return source.Respond(status);
+		var json = JsonConvert.SerializeObject(errors);
+		return source.Respond(HttpStatusCode.BadRequest, MediaTypeNames.Application.Json, json);
+	}
+
+	/// <summary>
+	/// Sets the response to the given error
+	/// </summary>
+	public static MockedRequest RespondError(
+		this MockedRequest source,
+		HttpStatusCode status,
+		string error
+	)
+	{
+		var json = JsonConvert.SerializeObject(new { detail = error });
+		return source.Respond(status, MediaTypeNames.Application.Json, json);
 	}
 }
