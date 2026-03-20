@@ -1,4 +1,6 @@
 using System.Net;
+using System.Text;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -47,6 +49,48 @@ public sealed class Response<T>
 	/// Errors returned, grouped by category
 	/// </summary>
 	public readonly IDictionary<string, IEnumerable<string>> Errors;
+
+	/// <summary>
+	/// All errors returned
+	/// </summary>
+	public IEnumerable<string> AllErrors => Errors.SelectMany(e => e.Value);
+
+	/// <summary>
+	/// Logs the errors of this instance
+	/// </summary>
+	public void LogErrors(ILogger? logger)
+	{
+		if (logger == null)
+			return;
+
+		var output = new StringBuilder();
+		output.AppendLine("Errors:");
+
+		foreach (var error in Errors)
+		{
+			output.AppendLine($"- [{error.Key}]:");
+
+			foreach (var errorValue in error.Value)
+				output.AppendLine($"    {errorValue}");
+		}
+
+		logger.LogError("{Errors}", output.ToString());
+	}
+
+	/// <summary>
+	/// Throws an exception if this response is not a success
+	/// </summary>
+	public void EnsureSuccess(out T data)
+	{
+		if (!IsSuccess)
+			throw new InvalidOperationException("Expected a successful response.");
+
+		data =
+			Data
+			?? throw new NullReferenceException(
+				"The response was a success, but the data did not load properly."
+			);
+	}
 
 	/// <summary>
 	/// Creates a new instance of <see cref="Response{T}"/> from the given response
