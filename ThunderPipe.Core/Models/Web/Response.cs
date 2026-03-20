@@ -60,54 +60,14 @@ internal sealed class Response<T>
 		var content = await response.Content.ReadAsStringAsync(ct);
 
 		if (status == HttpStatusCode.OK)
-		{
-			// Parse normally
-			var data = ParseJson<T>(content);
+			return HandleOk(content);
 
-			return new Response<T>(data);
-		}
-
-		var jObject = JObject.Parse(content);
+		var jToken = JToken.Parse(content);
 
 		if (status == HttpStatusCode.BadRequest)
-		{
-			if (jObject.Type == JTokenType.Object)
-			{
-				// if object, parse every error as field specific
-				var allErrors = new Dictionary<string, IEnumerable<string>>();
+			return HandleBadRequest(jToken);
 
-				foreach (var property in jObject.Properties())
-				{
-					var category = property.Name;
-					var errors = property.Values<string>().OfType<string>();
-
-					allErrors[category] = errors;
-				}
-
-				return new Response<T>(allErrors);
-			}
-
-			if (jObject.Type == JTokenType.Array)
-			{
-				// if array, parse all errors as global
-				var errors = jObject.Values<string>().OfType<string>();
-
-				return new Response<T>(errors);
-			}
-
-			throw new InvalidOperationException(
-				$"Cannot parse a '{status:D}' response when it's not an array or an object."
-			);
-		}
-
-		// Parse details
-		if (jObject.TryGetValue("details", out var error))
-		{
-			var errorString = error.Value<string>() ?? "";
-			return new Response<T>([errorString]);
-		}
-
-		throw new NotSupportedException($"Received a payload that was not supported:\n{content}");
+		return HandleError(jToken, content);
 	}
 
 	private static TPayload ParseJson<TPayload>(string content)
@@ -132,5 +92,57 @@ internal sealed class Response<T>
 			);
 
 		return json;
+	}
+
+	private static Response<T> HandleOk(string content)
+	{
+		var data = ParseJson<T>(content);
+
+		return new Response<T>(data);
+	}
+
+	private static Response<T> HandleBadRequest(JToken jToken)
+	{
+		switch (jToken)
+		{
+			case JObject jObject:
+			{
+				// if object, parse every error as field specific
+				var allErrors = new Dictionary<string, IEnumerable<string>>();
+
+				foreach (var property in jObject.Properties())
+				{
+					var category = property.Name;
+					var errors = property.Value.Values<string>().OfType<string>();
+
+					allErrors[category] = errors;
+				}
+
+				return new Response<T>(allErrors);
+			}
+			case JArray jArray:
+			{
+				// if array, parse all errors as global
+				var errors = jArray.Values<string>().OfType<string>();
+
+				return new Response<T>(errors);
+			}
+			default:
+				throw new InvalidOperationException(
+					$"Cannot parse a '{HttpStatusCode.BadRequest:D}' response when it's not an array or an object."
+				);
+		}
+	}
+
+	private static Response<T> HandleError(JToken jToken, string content)
+	{
+		// Parse details
+		if (jToken is JObject detailsObj && detailsObj.TryGetValue("details", out var error))
+		{
+			var errorString = error.Value<string>() ?? "";
+			return new Response<T>([errorString]);
+		}
+
+		throw new NotSupportedException($"Received a payload that was not supported:\n{content}");
 	}
 }
