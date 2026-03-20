@@ -1,4 +1,5 @@
 using ThunderPipe.Core.Clients;
+using ThunderPipe.Core.Models.Web;
 
 namespace ThunderPipe.Core.Tests.MockedObjects;
 
@@ -22,7 +23,8 @@ internal class TestClient : ThunderstoreClient
 	/// <summary>
 	/// Sends a request and tries to parse the JSON response
 	/// </summary>
-	public Task<T> TryReceiveJson<T>()
+	public Task<Response<T>> TryReceiveJson<T>()
+		where T : class
 	{
 		var request = Builder.Build();
 
