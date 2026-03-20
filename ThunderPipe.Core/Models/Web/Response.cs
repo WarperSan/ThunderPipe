@@ -63,6 +63,9 @@ public sealed class Response<T>
 		if (logger == null)
 			return;
 
+		if (Errors.Count == 0)
+			return;
+
 		var output = new StringBuilder();
 		output.AppendLine("Errors:");
 
