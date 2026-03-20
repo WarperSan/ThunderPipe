@@ -10,6 +10,8 @@ namespace ThunderPipe.Core.Models.Web;
 internal sealed class Response<T>
 	where T : class
 {
+	public const string GLOBAL_ERRORS = "global";
+
 	private Response(T data)
 	{
 		IsSuccess = true;
@@ -21,7 +23,7 @@ internal sealed class Response<T>
 	{
 		IsSuccess = false;
 		Data = null;
-		Errors = new Dictionary<string, IEnumerable<string>>() { ["global"] = errors };
+		Errors = new Dictionary<string, IEnumerable<string>>() { [GLOBAL_ERRORS] = errors };
 	}
 
 	private Response(IDictionary<string, IEnumerable<string>> errors)
