@@ -98,13 +98,9 @@ public sealed class Response<T>
 	/// <summary>
 	/// Creates a new instance of <see cref="Response{T}"/> from the given response
 	/// </summary>
-	public static async Task<Response<T>> CreateResponse(
-		HttpResponseMessage response,
-		CancellationToken ct
-	)
+	public static Response<T> CreateResponse(HttpResponseMessage response, string content)
 	{
 		var status = response.StatusCode;
-		var content = await response.Content.ReadAsStringAsync(ct);
 
 		if (status == HttpStatusCode.OK)
 			return HandleOk(content);

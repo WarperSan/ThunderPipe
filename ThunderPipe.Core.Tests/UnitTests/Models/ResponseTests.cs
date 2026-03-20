@@ -36,7 +36,8 @@ public class ResponseTests
 		};
 
 		var rawResponse = CreateMessage(HttpStatusCode.OK, expectedProduct);
-		var response = await Response<Product>.CreateResponse(rawResponse, CancellationToken.None);
+		var content = await rawResponse.Content.ReadAsStringAsync();
+		var response = Response<Product>.CreateResponse(rawResponse, content);
 
 		Assert.True(response.IsSuccess);
 		Assert.Empty(response.Errors);
@@ -64,7 +65,8 @@ public class ResponseTests
 		};
 
 		var rawResponse = CreateMessage(HttpStatusCode.BadRequest, errors);
-		var response = await Response<Product>.CreateResponse(rawResponse, CancellationToken.None);
+		var content = await rawResponse.Content.ReadAsStringAsync();
+		var response = Response<Product>.CreateResponse(rawResponse, content);
 
 		Assert.False(response.IsSuccess);
 		Assert.Null(response.Data);
@@ -90,7 +92,8 @@ public class ResponseTests
 		var errors = new[] { ERROR_1, ERROR_2, ERROR_3, ERROR_4 };
 
 		var rawResponse = CreateMessage(HttpStatusCode.BadRequest, errors);
-		var response = await Response<Product>.CreateResponse(rawResponse, CancellationToken.None);
+		var content = await rawResponse.Content.ReadAsStringAsync();
+		var response = Response<Product>.CreateResponse(rawResponse, content);
 
 		Assert.False(response.IsSuccess);
 		Assert.Null(response.Data);
@@ -107,8 +110,10 @@ public class ResponseTests
 		var rawResponse = CreateMessage(HttpStatusCode.BadRequest, 10);
 
 		await Assert.ThrowsAsync<InvalidOperationException>(async () =>
-			await Response<Product>.CreateResponse(rawResponse, CancellationToken.None)
-		);
+		{
+			var content = await rawResponse.Content.ReadAsStringAsync();
+			Response<Product>.CreateResponse(rawResponse, content);
+		});
 	}
 
 	[Theory]
@@ -128,7 +133,8 @@ public class ResponseTests
 	{
 		var rawResponse = CreateMessage(status, new { detail = details });
 
-		var response = await Response<Product>.CreateResponse(rawResponse, CancellationToken.None);
+		var content = await rawResponse.Content.ReadAsStringAsync();
+		var response = Response<Product>.CreateResponse(rawResponse, content);
 
 		Assert.False(response.IsSuccess);
 		Assert.Null(response.Data);
@@ -155,7 +161,9 @@ public class ResponseTests
 		var rawResponse = CreateMessage(status, expectedProduct);
 
 		await Assert.ThrowsAsync<NotSupportedException>(async () =>
-			await Response<Product>.CreateResponse(rawResponse, CancellationToken.None)
-		);
+		{
+			var content = await rawResponse.Content.ReadAsStringAsync();
+			Response<Product>.CreateResponse(rawResponse, content);
+		});
 	}
 }
