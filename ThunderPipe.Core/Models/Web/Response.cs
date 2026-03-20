@@ -1,5 +1,6 @@
 using System.Net;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace ThunderPipe.Core.Models.Web;
 
@@ -35,8 +36,21 @@ internal sealed class Response<T>
 
 		if (status == HttpStatusCode.BadRequest)
 		{
-			// if array, parse all errors as global
-			// if object, parse every error as field specific
+			var jObject = JObject.Parse(content);
+
+			if (jObject.Type == JTokenType.Object)
+			{
+				// if object, parse every error as field specific
+			}
+
+			if (jObject.Type == JTokenType.Array)
+			{
+				// if array, parse all errors as global
+			}
+
+			throw new InvalidOperationException(
+				$"Cannot parse a '{status:D}' response when it's not an array or an object."
+			);
 		}
 
 		// Parse details
