@@ -1,6 +1,4 @@
 using System.Collections.Concurrent;
-using System.Net;
-using Microsoft.Extensions.Logging;
 using ThunderPipe.Core.Models.API;
 using ThunderPipe.Core.Models.Web.GetDependency;
 using ThunderPipe.Core.Utils;

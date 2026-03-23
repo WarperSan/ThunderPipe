@@ -1,5 +1,4 @@
 using System.Net;
-using Microsoft.Extensions.Logging;
 using ThunderPipe.Core.Clients;
 using ThunderPipe.Core.Models.API;
 using ThunderPipe.Core.Models.Web.GetDependency;
