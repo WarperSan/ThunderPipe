@@ -228,7 +228,7 @@ public sealed class PublishApiClient : ThunderstoreClient
 		{
 			AuthorName = team,
 			Communities = communities.Select(c => (string)c).ToArray(),
-			CommunityCategories = categoriesPerCommunity.ToDictionary(),
+			CommunityCategories = categoriesPerCommunity,
 			HasNsfwContent = hasNsfw,
 			UploadUUID = sessionUUID,
 		};
