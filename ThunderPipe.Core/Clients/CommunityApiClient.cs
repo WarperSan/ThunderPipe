@@ -9,22 +9,28 @@ namespace ThunderPipe.Core.Clients;
 public sealed class CommunityApiClient : ThunderstoreClient
 {
 	/// <summary>
-	/// Checks if the given community exists
+	/// Finds the missing communities
 	/// </summary>
-	public async Task<bool> Exists(Community community, CancellationToken ct = default)
+	public async Task<IReadOnlyCollection<Community>> GetMissing(
+		IEnumerable<Community> communities,
+		CancellationToken ct = default
+	)
 	{
 		var tempBuilder = new RequestBuilder(Builder)
 			.Get()
 			.ToEndpoint("api/experimental/community/");
 
+		var communitiesToFind = new Dictionary<string, Community>();
 		var visitedPages = new HashSet<string>();
-		var wasCommunityFound = false;
 
-		while (true)
+		foreach (var community in communities)
+			communitiesToFind[community] = community;
+
+		while (communitiesToFind.Count > 0)
 		{
 			var request = tempBuilder.Build();
 
-			// Prevent loops
+			// Prevent loopstrue
 			if (!visitedPages.Add(request.RequestUri!.AbsoluteUri))
 				break;
 
@@ -33,13 +39,8 @@ public sealed class CommunityApiClient : ThunderstoreClient
 			response.LogErrors(Logger);
 			response.EnsureSuccess(out var data);
 
-			var rawCommunity = data.Items.FirstOrDefault(i => i.Slug == community);
-
-			if (rawCommunity != null)
-			{
-				wasCommunityFound = true;
-				break;
-			}
+			foreach (var community in data.Items)
+				communitiesToFind.Remove(community.Slug);
 
 			// Can't continue to crawl
 			if (data.Pagination.NextPage == null)
@@ -51,6 +52,16 @@ public sealed class CommunityApiClient : ThunderstoreClient
 			tempBuilder = new RequestBuilder(Builder).Get().ToUri(uri);
 		}
 
-		return wasCommunityFound;
+		return communitiesToFind.Values;
+	}
+
+	/// <summary>
+	/// Checks if the given community exists
+	/// </summary>
+	public async Task<bool> Exists(Community community, CancellationToken ct = default)
+	{
+		var missingCommunities = await GetMissing([community], ct);
+
+		return missingCommunities.Count == 0;
 	}
 }
