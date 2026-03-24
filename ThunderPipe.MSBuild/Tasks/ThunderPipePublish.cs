@@ -1,14 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using Microsoft.Build.Framework;
-using Microsoft.Build.Utilities;
 using Microsoft.Extensions.Logging;
 using ThunderPipe.Core.Models.API;
 using ThunderPipe.Core.Services.Implementations;
 using ThunderPipe.Core.Utils;
 using ThunderPipe.MSBuild.Tasks.Helpers;
+using Task = Microsoft.Build.Utilities.Task;
 
 namespace ThunderPipe.MSBuild.Tasks;
 

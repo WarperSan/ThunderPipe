@@ -1,11 +1,6 @@
-using System;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Build.Framework;
 using Microsoft.Extensions.Logging;
 using ThunderPipe.Core.Models.API;

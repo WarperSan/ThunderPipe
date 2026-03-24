@@ -2,11 +2,13 @@
 	<!-- Default Project Properties -->
 	<PropertyGroup>
 		<ImplicitUsings>true</ImplicitUsings>
-		<Nullable>true</Nullable>
+		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
 	<!-- Default Metadata -->
 	<PropertyGroup>
 		<Authors>WarperSan</Authors>
+		<RepositoryUrl>https://github.com/WarperSan/ThunderPipe</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
 	</PropertyGroup>
 </Project>
