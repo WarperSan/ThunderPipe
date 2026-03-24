@@ -8,6 +8,7 @@ on:
         tags:
             - "[0-9]+.[0-9]+.[0-9]+"
             - "[0-9]+.[0-9]+.[0-9]+-[0-9a-z]+"
+    workflow_dispatch:
 
 permissions:
     contents: write
@@ -17,7 +18,8 @@ jobs:
         if: github.event.base_ref == 'refs/heads/master'
         runs-on: ubuntu-latest
         outputs:
-            artifact: 'package'
+            cli-artifact: 'cli-package'
+            msbuild-artifact: 'msbuild-package'
         steps:
             - name: Update repository
               uses: actions/checkout@v4
@@ -43,12 +45,19 @@ jobs:
               env:
                   CONFIGURATION: ${{ env.DOTNET_CONFIGURATION }}
 
-            - name: Upload Build
+            - name: Upload CLI build
               uses: actions/upload-artifact@v4
               with:
-                  name: 'package'
-                  path: 'nupkg/*.nupkg'
+                  name: 'cli-package'
+                  path: 'nupkg/ThunderPipe.*.nupkg'
                   if-no-files-found: 'error'
+
+            - name: Upload MSBuild build
+              uses: actions/upload-artifact@v4
+              with:
+                name: 'msbuild-package'
+                path: 'nupkg/WarperSan.ThunderPipe.Sdk.*.nupkg'
+                if-no-files-found: 'error'
 
     deploy-to-nuget:
         needs: build-and-pack
@@ -57,18 +66,23 @@ jobs:
             - name: Update repository
               uses: actions/checkout@v4
 
-            - name: Download Build
+            - name: Download CLI build
               uses: actions/download-artifact@v5
               with:
-                  name: ${{ needs.build-and-pack.outputs.artifact }}
+                  name: ${{ needs.build-and-pack.outputs.cli-artifact }}
                   path: ./build
+
+            - name: Download MSBuild build
+              uses: actions/download-artifact@v5
+              with:
+                name: ${{ needs.build-and-pack.outputs.msbuild-artifact }}
+                path: ./build
 
             - name: Setup .NET
               uses: actions/setup-dotnet@v4
 
             - name: Deploy to NuGet
               run: |
-                echo "$(which dotnet)"
                 dotnet nuget push ./build/*.nupkg \
                   --api-key "$API_KEY" \
                   --source https://api.nuget.org/v3/index.json \
@@ -77,13 +91,14 @@ jobs:
                   API_KEY: ${{ secrets.NUGET_API_KEY }}
 
     deploy-to-github:
+        if: github.event_name != 'workflow_dispatch'
         needs: build-and-pack
         runs-on: ubuntu-latest
         steps:
             - name: Download build
               uses: actions/download-artifact@v5
               with:
-                  name: ${{ needs.build-and-pack.outputs.artifact }}
+                  name: ${{ needs.build-and-pack.outputs.cli-artifact }}
                   path: ./build
 
             - name: Release
