@@ -1,0 +1,12 @@
+<Project>
+	<!-- Default Project Properties -->
+	<PropertyGroup>
+		<ImplicitUsings>true</ImplicitUsings>
+		<Nullable>true</Nullable>
+	</PropertyGroup>
+
+	<!-- Default Metadata -->
+	<PropertyGroup>
+		<Authors>WarperSan</Authors>
+	</PropertyGroup>
+</Project>

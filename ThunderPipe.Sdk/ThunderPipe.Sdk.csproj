@@ -12,7 +12,6 @@
 		<PackageType>MSBuildSdk</PackageType>
 
 		<PackageId>WarperSan.ThunderPipe.Sdk</PackageId>
-		<Authors>WarperSan</Authors>
 		<Description>MSBuild integration for ThunderPipe</Description>
 	</PropertyGroup>
 
