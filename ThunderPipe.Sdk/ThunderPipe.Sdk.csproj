@@ -15,6 +15,10 @@
 		<Description>MSBuild integration for ThunderPipe</Description>
 	</PropertyGroup>
 
+	<ItemGroup>
+		<ProjectReference Include="../ThunderPipe.MSBuild/ThunderPipe.MSBuild.csproj"/>
+	</ItemGroup>
+
 	<!-- Content includes -->
 	<ItemGroup>
 		<Content Include="Sdk/*" Pack="true" PackagePath="Sdk/" />
