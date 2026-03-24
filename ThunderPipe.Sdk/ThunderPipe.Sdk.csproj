@@ -3,13 +3,16 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<DevelopmentDependency>true</DevelopmentDependency>
 
-		<PackageId>WarperSan.ThunderPipe.MSBuild</PackageId>
-		<Description>MSBuild integration for ThunderPipe</Description>
 		<Version>1.0.0</Version>
-
-		<PackageType>MSBuildSdk</PackageType>
+	</PropertyGroup>
+	
+	<!-- Nuget Properties -->
+	<PropertyGroup>
 		<IsPackable>true</IsPackable>
-		<NoPackageAnalysis>true</NoPackageAnalysis>
+		<PackageType>MSBuildSdk</PackageType>
+		
+		<PackageId>WarperSan.ThunderPipe.Sdk</PackageId>
+		<Description>MSBuild integration for ThunderPipe</Description>
 	</PropertyGroup>
 
 	<!-- Content includes -->
