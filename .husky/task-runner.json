@@ -13,7 +13,7 @@
                "**/*.targets"
            ],
 		   "exclude": [
-			   "ThunderPipe.MSBuild/**/*"
+			   "ThunderPipe.Sdk/**/*"
 		   ]
 	   }
    ]
