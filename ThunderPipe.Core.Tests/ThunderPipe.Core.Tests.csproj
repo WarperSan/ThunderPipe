@@ -12,7 +12,6 @@
 		<ProjectReference Include="../ThunderPipe.Core/ThunderPipe.Core.csproj" />
 
 		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
-		<PackageReference Include="Spectre.Console.Cli.Testing" Version="1.0.0-alpha.0.15" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.3.0" />
 		<PackageReference Include="Moq" Version="4.20.72" />
 		<PackageReference Include="RichardSzalay.MockHttp" Version="7.0.0" />
