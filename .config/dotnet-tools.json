@@ -3,13 +3,13 @@
   "isRoot": true,
   "tools": {
     "csharpier": {
-      "version": "1.2.3",
+      "version": "1.2.6",
       "commands": [
         "csharpier"
       ]
     },
     "husky": {
-      "version": "0.8.0",
+      "version": "0.9.1",
       "commands": [
         "husky"
       ]
