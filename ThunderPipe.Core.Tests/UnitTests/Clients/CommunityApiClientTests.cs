@@ -57,7 +57,7 @@ public class CommunityApiClientTests
 		client.Client = mockHttp.ToHttpClient();
 
 		// Act
-		var doesCommunityExist = await client.Exists(SLUG_3);
+		var doesCommunityExist = await client.Exists(SLUG_3, TestContext.Current.CancellationToken);
 
 		// Assert
 		Assert.True(doesCommunityExist);
@@ -99,7 +99,7 @@ public class CommunityApiClientTests
 		client.Client = mockHttp.ToHttpClient();
 
 		// Act
-		var wasCommunityFound = await client.Exists("test");
+		var wasCommunityFound = await client.Exists("test", TestContext.Current.CancellationToken);
 
 		// Assert
 		Assert.False(wasCommunityFound);
@@ -152,7 +152,7 @@ public class CommunityApiClientTests
 		client.Client = mockHttp.ToHttpClient();
 
 		// Act
-		var wasCommunityFound = await client.Exists("test");
+		var wasCommunityFound = await client.Exists("test", TestContext.Current.CancellationToken);
 
 		// Assert
 		Assert.False(wasCommunityFound);
@@ -183,7 +183,7 @@ public class CommunityApiClientTests
 		client.Client = mockHttp.ToHttpClient();
 
 		// Act
-		var wasCommunityFound = await client.Exists("test2");
+		var wasCommunityFound = await client.Exists("test2", TestContext.Current.CancellationToken);
 
 		// Assert
 		Assert.False(wasCommunityFound);

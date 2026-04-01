@@ -59,7 +59,11 @@ public class CategoryApiClientTests
 
 		// Act
 		var requested = new Category[] { SLUG_1, SLUG_2, SLUG_3 };
-		var missing = await client.GetMissing(requested, "test");
+		var missing = await client.GetMissing(
+			requested,
+			"test",
+			TestContext.Current.CancellationToken
+		);
 
 		// Assert
 		Assert.Empty(missing);
@@ -79,7 +83,7 @@ public class CategoryApiClientTests
 		client.Client = mockHttp.ToHttpClient();
 
 		// Act
-		var missing = await client.GetMissing([], "test");
+		var missing = await client.GetMissing([], "test", TestContext.Current.CancellationToken);
 
 		// Assert
 		Assert.Empty(missing);
@@ -122,7 +126,11 @@ public class CategoryApiClientTests
 
 		// Act
 		var requested = new Category[] { "test" };
-		var missing = await client.GetMissing(requested, "test");
+		var missing = await client.GetMissing(
+			requested,
+			"test",
+			TestContext.Current.CancellationToken
+		);
 
 		// Assert
 		Assert.Equal(missing.Count, requested.Length);
@@ -179,7 +187,11 @@ public class CategoryApiClientTests
 
 		// Act
 		var requested = new Category[] { "temp" };
-		var missing = await client.GetMissing(requested, "test");
+		var missing = await client.GetMissing(
+			requested,
+			"test",
+			TestContext.Current.CancellationToken
+		);
 
 		// Assert
 		Assert.Equal(missing.Count, requested.Length);
@@ -214,7 +226,11 @@ public class CategoryApiClientTests
 
 		// Act
 		var requested = new Category[] { "temp", "test2" };
-		var missing = await client.GetMissing(requested, "test");
+		var missing = await client.GetMissing(
+			requested,
+			"test",
+			TestContext.Current.CancellationToken
+		);
 
 		// Assert
 		Assert.Equal(missing.Count, requested.Length);

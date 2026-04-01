@@ -97,7 +97,9 @@ public class RequestBuilderTests
 		var request = new RequestBuilder().WithJSON(payload).Build();
 
 		Assert.NotNull(request.Content);
-		var actualPayload = await request.Content.ReadAsStringAsync();
+		var actualPayload = await request.Content.ReadAsStringAsync(
+			TestContext.Current.CancellationToken
+		);
 
 		var expectedJson = JObject.FromObject(payload);
 		var actualJson = JsonConvert.DeserializeObject(actualPayload);
@@ -302,10 +304,14 @@ public class RequestBuilderTests
 
 		// Assert
 		Assert.NotNull(originalRequest.Content);
-		var originalPayload = await originalRequest.Content.ReadAsStringAsync();
+		var originalPayload = await originalRequest.Content.ReadAsStringAsync(
+			TestContext.Current.CancellationToken
+		);
 
 		Assert.NotNull(copiedRequest.Content);
-		var copiedPayload = await copiedRequest.Content.ReadAsStringAsync();
+		var copiedPayload = await copiedRequest.Content.ReadAsStringAsync(
+			TestContext.Current.CancellationToken
+		);
 
 		var expectedJson = JObject.FromObject(payload);
 		var actualOriginalPayload = JsonConvert.DeserializeObject(originalPayload);

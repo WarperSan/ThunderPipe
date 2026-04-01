@@ -40,7 +40,7 @@ public class DependencyApiClientTests
 			new PackageDependency(SLUG_2),
 			new PackageDependency(SLUG_3),
 		};
-		var missing = await client.GetMissing(requested);
+		var missing = await client.GetMissing(requested, TestContext.Current.CancellationToken);
 
 		// Assert
 		Assert.Empty(missing);
@@ -77,7 +77,7 @@ public class DependencyApiClientTests
 			new PackageDependency(SLUG_2),
 			new PackageDependency(SLUG_3),
 		};
-		var missing = await client.GetMissing(requested);
+		var missing = await client.GetMissing(requested, TestContext.Current.CancellationToken);
 
 		// Assert
 		Assert.Equal(2, missing.Count);
@@ -97,7 +97,7 @@ public class DependencyApiClientTests
 		client.Client = mockHttp.ToHttpClient();
 
 		// Act
-		var missing = await client.GetMissing([]);
+		var missing = await client.GetMissing([], TestContext.Current.CancellationToken);
 
 		// Assert
 		Assert.Empty(missing);
@@ -130,7 +130,7 @@ public class DependencyApiClientTests
 			new PackageDependency(SLUG_2),
 			new PackageDependency(SLUG_3),
 		};
-		var missing = await client.GetMissing(requested);
+		var missing = await client.GetMissing(requested, TestContext.Current.CancellationToken);
 
 		// Assert
 		var expected = new[] { new PackageDependency(SLUG_1), new PackageDependency(SLUG_2) };
@@ -164,7 +164,7 @@ public class DependencyApiClientTests
 
 		// Act
 		var requested = new[] { new PackageDependency(SLUG_1), new PackageDependency(SLUG_2) };
-		var missing = await client.GetMissing(requested);
+		var missing = await client.GetMissing(requested, TestContext.Current.CancellationToken);
 
 		// Assert
 		var expected = new[] { new PackageDependency(SLUG_1), new PackageDependency(SLUG_2) };

@@ -28,7 +28,7 @@ public class PackageApiClientTests
 		client.Builder = builder;
 		client.Client = mockHttp.ToHttpClient();
 
-		var version = await client.GetVersion(TEAM, NAME);
+		var version = await client.GetVersion(TEAM, NAME, TestContext.Current.CancellationToken);
 
 		Assert.Equal(VERSION, version);
 	}
@@ -55,7 +55,7 @@ public class PackageApiClientTests
 		client.Builder = builder;
 		client.Client = mockHttp.ToHttpClient();
 
-		var version = await client.GetVersion(TEAM, NAME);
+		var version = await client.GetVersion(TEAM, NAME, TestContext.Current.CancellationToken);
 
 		Assert.Equal(VERSION, version);
 	}

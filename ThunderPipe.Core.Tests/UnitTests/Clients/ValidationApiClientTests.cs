@@ -28,7 +28,12 @@ public class ValidationApiClientTests
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		var errors = await client.IsIconValid(PATH, fileSystem, "");
+		var errors = await client.IsIconValid(
+			PATH,
+			fileSystem,
+			"",
+			TestContext.Current.CancellationToken
+		);
 
 		Assert.Single(errors);
 		Assert.Contains(ERROR, errors);
@@ -53,7 +58,12 @@ public class ValidationApiClientTests
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		var errors = await client.IsIconValid(PATH, fileSystem, "");
+		var errors = await client.IsIconValid(
+			PATH,
+			fileSystem,
+			"",
+			TestContext.Current.CancellationToken
+		);
 
 		Assert.Single(errors);
 		Assert.Contains(ERROR, errors);
@@ -88,7 +98,12 @@ public class ValidationApiClientTests
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		var errors = await client.IsIconValid(PATH, fileSystem, "");
+		var errors = await client.IsIconValid(
+			PATH,
+			fileSystem,
+			"",
+			TestContext.Current.CancellationToken
+		);
 
 		string[] expectedErrors = [ERROR_1, ERROR_2, ERROR_3, ERROR_4];
 
@@ -114,7 +129,7 @@ public class ValidationApiClientTests
 		client.Client = mockedHttp.ToHttpClient();
 
 		await Assert.ThrowsAsync<InvalidOperationException>(async () =>
-			await client.IsIconValid(PATH, fileSystem, "")
+			await client.IsIconValid(PATH, fileSystem, "", TestContext.Current.CancellationToken)
 		);
 	}
 
@@ -133,7 +148,12 @@ public class ValidationApiClientTests
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		var errors = await client.IsIconValid(PATH, fileSystem, "");
+		var errors = await client.IsIconValid(
+			PATH,
+			fileSystem,
+			"",
+			TestContext.Current.CancellationToken
+		);
 
 		Assert.Empty(errors);
 	}
@@ -158,7 +178,13 @@ public class ValidationApiClientTests
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		var errors = await client.IsManifestValid(PATH, TEAM, fileSystem, "");
+		var errors = await client.IsManifestValid(
+			PATH,
+			TEAM,
+			fileSystem,
+			"",
+			TestContext.Current.CancellationToken
+		);
 
 		Assert.Single(errors);
 		Assert.Contains(ERROR, errors);
@@ -184,7 +210,13 @@ public class ValidationApiClientTests
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		var errors = await client.IsManifestValid(PATH, TEAM, fileSystem, "");
+		var errors = await client.IsManifestValid(
+			PATH,
+			TEAM,
+			fileSystem,
+			"",
+			TestContext.Current.CancellationToken
+		);
 
 		Assert.Single(errors);
 		Assert.Contains(ERROR, errors);
@@ -210,7 +242,13 @@ public class ValidationApiClientTests
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		var errors = await client.IsManifestValid(PATH, TEAM, fileSystem, "");
+		var errors = await client.IsManifestValid(
+			PATH,
+			TEAM,
+			fileSystem,
+			"",
+			TestContext.Current.CancellationToken
+		);
 
 		Assert.Single(errors);
 		Assert.Contains(ERROR, errors);
@@ -250,7 +288,13 @@ public class ValidationApiClientTests
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		var errors = await client.IsManifestValid(PATH, TEAM, fileSystem, "");
+		var errors = await client.IsManifestValid(
+			PATH,
+			TEAM,
+			fileSystem,
+			"",
+			TestContext.Current.CancellationToken
+		);
 
 		string[] expectedErrors = [ERROR_1, ERROR_2, ERROR_3, ERROR_4, ERROR_5, ERROR_6];
 
@@ -277,7 +321,13 @@ public class ValidationApiClientTests
 		client.Client = mockedHttp.ToHttpClient();
 
 		await Assert.ThrowsAsync<InvalidOperationException>(async () =>
-			await client.IsManifestValid(PATH, TEAM, fileSystem, "")
+			await client.IsManifestValid(
+				PATH,
+				TEAM,
+				fileSystem,
+				"",
+				TestContext.Current.CancellationToken
+			)
 		);
 	}
 
@@ -297,7 +347,13 @@ public class ValidationApiClientTests
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		var errors = await client.IsManifestValid(PATH, TEAM, fileSystem, "");
+		var errors = await client.IsManifestValid(
+			PATH,
+			TEAM,
+			fileSystem,
+			"",
+			TestContext.Current.CancellationToken
+		);
 
 		Assert.Empty(errors);
 	}
@@ -321,7 +377,12 @@ public class ValidationApiClientTests
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		var errors = await client.IsReadmeValid(PATH, fileSystem, "");
+		var errors = await client.IsReadmeValid(
+			PATH,
+			fileSystem,
+			"",
+			TestContext.Current.CancellationToken
+		);
 
 		Assert.Single(errors);
 		Assert.Contains(ERROR, errors);
@@ -346,7 +407,12 @@ public class ValidationApiClientTests
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		var errors = await client.IsReadmeValid(PATH, fileSystem, "");
+		var errors = await client.IsReadmeValid(
+			PATH,
+			fileSystem,
+			"",
+			TestContext.Current.CancellationToken
+		);
 
 		Assert.Single(errors);
 		Assert.Contains(ERROR, errors);
@@ -381,7 +447,12 @@ public class ValidationApiClientTests
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		var errors = await client.IsReadmeValid(PATH, fileSystem, "");
+		var errors = await client.IsReadmeValid(
+			PATH,
+			fileSystem,
+			"",
+			TestContext.Current.CancellationToken
+		);
 
 		string[] expectedErrors = [ERROR_1, ERROR_2, ERROR_3, ERROR_4];
 
@@ -407,7 +478,7 @@ public class ValidationApiClientTests
 		client.Client = mockedHttp.ToHttpClient();
 
 		await Assert.ThrowsAsync<InvalidOperationException>(async () =>
-			await client.IsReadmeValid(PATH, fileSystem, "")
+			await client.IsReadmeValid(PATH, fileSystem, "", TestContext.Current.CancellationToken)
 		);
 	}
 
@@ -426,7 +497,12 @@ public class ValidationApiClientTests
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		var errors = await client.IsReadmeValid(PATH, fileSystem, "");
+		var errors = await client.IsReadmeValid(
+			PATH,
+			fileSystem,
+			"",
+			TestContext.Current.CancellationToken
+		);
 
 		Assert.Empty(errors);
 	}
