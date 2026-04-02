@@ -3,7 +3,6 @@
 </p>
 
 # ThunderPipe.Sdk
-[![ThunderPipe](https://img.shields.io/badge/ThunderPipe-blue)](https://github.com/WarperSan/ThunderPipe)
 [![NuGet Badge](https://img.shields.io/nuget/v/ThunderPipe.Sdk)](https://www.nuget.org/packages/ThunderPipe.Sdk)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/ThunderPipe.Sdk?color=purple)](https://www.nuget.org/packages/ThunderPipe.Sdk)
 [![License](https://img.shields.io/github/license/WarperSan/ThunderPipe)](https://raw.githubusercontent.com/WarperSan/ThunderPipe/master/LICENSE)

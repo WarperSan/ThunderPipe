@@ -3,13 +3,12 @@
 </p>
 
 # ThunderPipe.Core
-[![ThunderPipe](https://img.shields.io/badge/ThunderPipe-blue)](https://github.com/WarperSan/ThunderPipe)
 [![NuGet Badge](https://img.shields.io/nuget/v/ThunderPipe.Core)](https://www.nuget.org/packages/ThunderPipe.Core)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/ThunderPipe.Core?color=purple)](https://www.nuget.org/packages/ThunderPipe.Core)
 [![License](https://img.shields.io/github/license/WarperSan/ThunderPipe)](https://raw.githubusercontent.com/WarperSan/ThunderPipe/master/LICENSE)
 [![Codecov Badge](https://codecov.io/github/WarperSan/ThunderPipe/graph/badge.svg)](https://codecov.io/github/WarperSan/ThunderPipe)
 
-ThunderPipe.Core is the core logic of every ThunderPipe product.
+ThunderPipe.Core is the core logic of every [ThunderPipe](https://github.com/WarperSan/ThunderPipe) product.
 
 ## Custom Product
 
