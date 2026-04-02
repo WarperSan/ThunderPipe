@@ -7,7 +7,7 @@
 	<PropertyGroup>
 		<IsPackable>true</IsPackable>
 
-		<PackageId>WarperSan.ThunderPipe.Core</PackageId>
+		<PackageId>ThunderPipe.Core</PackageId>
 		<Description>Core implementation of ThunderPipe</Description>
 		<PackageIcon>icon.png</PackageIcon>
 		<PackageReadmeFile>README.md</PackageReadmeFile>

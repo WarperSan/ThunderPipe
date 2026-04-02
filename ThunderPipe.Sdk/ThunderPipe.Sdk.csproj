@@ -11,7 +11,7 @@
 		<IsPackable>true</IsPackable>
 		<PackageType>MSBuildSdk</PackageType>
 
-		<PackageId>WarperSan.ThunderPipe.Sdk</PackageId>
+		<PackageId>ThunderPipe.Sdk</PackageId>
 		<Description>MSBuild integration for ThunderPipe</Description>
 		<PackageIcon>icon.png</PackageIcon>
 		<PackageReadmeFile>README.md</PackageReadmeFile>

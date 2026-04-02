@@ -15,7 +15,7 @@ You can install and use ThunderPipe.Sdk by adding the following line to your `.c
 
 ```msbuild
 
-<Sdk Name="WarperSan.ThunderPipe.Sdk"/>
+<Sdk Name="ThunderPipe.Sdk"/>
 ```
 
 ## Tasks
