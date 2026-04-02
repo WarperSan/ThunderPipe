@@ -3,6 +3,7 @@
 </p>
 
 # ThunderPipe.Core
+[![ThunderPipe](https://img.shields.io/badge/ThunderPipe-blue)](https://github.com/WarperSan/ThunderPipe)
 [![Codecov Badge](https://codecov.io/github/WarperSan/ThunderPipe/graph/badge.svg)](https://codecov.io/github/WarperSan/ThunderPipe)
 
 ThunderPipe.Core is the core logic of every ThunderPipe product.

@@ -3,6 +3,7 @@
 </p>
 
 # ThunderPipe.Sdk
+[![ThunderPipe](https://img.shields.io/badge/ThunderPipe-blue)](https://github.com/WarperSan/ThunderPipe)
 
 ## Overview
 
