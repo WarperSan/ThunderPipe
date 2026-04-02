@@ -17,9 +17,6 @@
 		<PackageIcon>icon.png</PackageIcon>
 		<PackageLicenseFile>LICENSE</PackageLicenseFile>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-
-		<MinVerDefaultPreReleaseIdentifiers>beta</MinVerDefaultPreReleaseIdentifiers>
-		<MinVerIgnoreHeight>true</MinVerIgnoreHeight>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -35,10 +32,6 @@
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.5" />
 		<PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.5" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.5" />
-		<PackageReference Include="MinVer" Version="7.0.0">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
 		<PackageReference Include="Spectre.Console.Cli" Version="0.53.1" />
 	</ItemGroup>

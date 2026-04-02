@@ -1,5 +1,5 @@
 <Project>
-	<Target Name="GenerateMetadata" BeforeTargets="BeforeCompile" AfterTargets="MinVer">
+	<Target Name="GenerateMetadata" BeforeTargets="BeforeCompile">
 		<PropertyGroup>
 			<GUID>dev.$([System.String]::Copy('$(Authors)').ToLower()).$([System.String]::Copy('$(AssemblyName)').ToLower())</GUID>
 
