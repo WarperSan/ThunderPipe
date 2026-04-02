@@ -1,6 +1,6 @@
 using ThunderPipe.Core.Models.API;
 
-namespace ThunderPipe.Tests.UnitTests.Models;
+namespace ThunderPipe.Core.Tests.UnitTests.Models;
 
 public class PackageDependencyTests
 {
@@ -35,11 +35,9 @@ public class PackageDependencyTests
 	{
 		var packageDependency = new PackageDependency(dependencyString);
 
-		Assert.NotNull(packageDependency.Team);
+		Assert.True(packageDependency.IsValid());
 		Assert.Equal(@namespace, packageDependency.Team);
-		Assert.NotNull(packageDependency.Name);
 		Assert.Equal(name, packageDependency.Name);
-		Assert.NotNull(packageDependency.Version);
 		Assert.Equal(version, packageDependency.Version);
 	}
 
@@ -48,12 +46,13 @@ public class PackageDependencyTests
 	[InlineData("RugbugRedfern--5.0.0")]
 	[InlineData("-ReservedItemSlotCore-")]
 	[InlineData("sunnobunnoYippeeMod1.2.4")]
-	public void ctor_WhenIsInvalid_ReturnNulls(string dependencyString)
+	public void ctor_WhenIsInvalid_ReturnEmpties(string dependencyString)
 	{
 		var packageDependency = new PackageDependency(dependencyString);
 
-		Assert.Null(packageDependency.Team);
-		Assert.Null(packageDependency.Name);
-		Assert.Null(packageDependency.Version);
+		Assert.False(packageDependency.IsValid());
+		Assert.Equal(string.Empty, packageDependency.Team);
+		Assert.Equal(string.Empty, packageDependency.Name);
+		Assert.Equal(string.Empty, packageDependency.Version);
 	}
 }

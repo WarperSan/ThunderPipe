@@ -1,9 +1,9 @@
 using Newtonsoft.Json;
 using ThunderPipe.Core.Models.Web.GetCategory;
+using ThunderPipe.Core.Tests.MockedObjects;
 using ThunderPipe.Core.Utils;
-using ThunderPipe.Tests.MockedObjects;
 
-namespace ThunderPipe.Tests.UnitTests.Clients;
+namespace ThunderPipe.Core.Tests.UnitTests.Clients;
 
 public class ThunderstoreClientTests
 {
@@ -92,17 +92,9 @@ public class ThunderstoreClientTests
 		client.Builder = builder;
 		client.Client = mockHttp.ToHttpClient();
 
-		try
-		{
-			await client.TryReceiveJson<Person>();
-		}
-		catch (Exception e)
-		{
-			Assert.IsType<NullReferenceException>(e);
-			return;
-		}
-
-		Assert.Fail("Should have thrown an exception");
+		await Assert.ThrowsAsync<NullReferenceException>(async () =>
+			await client.TryReceiveJson<Person>()
+		);
 	}
 
 	[Fact]
@@ -112,16 +104,8 @@ public class ThunderstoreClientTests
 
 		client.Dispose();
 
-		try
-		{
-			await client.TryReceiveSuccess();
-		}
-		catch (Exception e)
-		{
-			Assert.IsType<ObjectDisposedException>(e);
-			return;
-		}
-
-		Assert.Fail("Should have thrown an exception");
+		await Assert.ThrowsAsync<ObjectDisposedException>(async () =>
+			await client.TryReceiveSuccess()
+		);
 	}
 }

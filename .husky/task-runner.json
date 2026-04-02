@@ -11,7 +11,10 @@
                "**/*.csproj",
                "**/*.props",
                "**/*.targets"
-           ]
-       }
+           ],
+		   "exclude": [
+			   "ThunderPipe.Sdk/**/*"
+		   ]
+	   }
    ]
 }

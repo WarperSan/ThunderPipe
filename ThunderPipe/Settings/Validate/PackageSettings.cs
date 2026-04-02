@@ -21,7 +21,7 @@ internal sealed class PackageSettings : BaseValidateSettings
 
 	[CommandArgument(1, "<team>")]
 	[Description("Team that will publish the package")]
-	public required PackageTeam Team { get; init; }
+	public required Team Team { get; init; }
 
 	[CommandOption("--icon-path")]
 	[Description("Relative path to the package icon")]
@@ -50,11 +50,6 @@ internal sealed class PackageSettings : BaseValidateSettings
 
 		if (!Team.IsValid())
 			return ValidationResult.Error($"'{Team}' is not a valid package team.");
-
-		IconPath = Path.GetFullPath(IconPath!, PackageFolder);
-
-		if (!File.Exists(IconPath))
-			return ValidationResult.Error($"No file was found at '{IconPath}'.");
 
 		IconPath = Path.GetFullPath(IconPath!, PackageFolder);
 

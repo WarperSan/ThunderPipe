@@ -1,12 +1,14 @@
 using System.ComponentModel;
+using Newtonsoft.Json;
 using ThunderPipe.Core.Converters;
 
 namespace ThunderPipe.Core.Models.API;
 
 /// <summary>
-/// Represents a valid package dependency string
+/// Object that represents a package's dependency string
 /// </summary>
-[TypeConverter(typeof(PackageDependencyTypeConverter))]
+[TypeConverter(typeof(StringCastTypeConverter<PackageDependency>))]
+[JsonConverter(typeof(StringCastJsonConverter<PackageDependency>))]
 public sealed record PackageDependency
 {
 	private readonly string _dependencyString;
@@ -15,45 +17,35 @@ public sealed record PackageDependency
 	{
 		_dependencyString = dependencyString;
 
-		var components = _dependencyString.Split("-", StringSplitOptions.RemoveEmptyEntries);
+		var components = _dependencyString.Split("-", 3, StringSplitOptions.RemoveEmptyEntries);
 
 		if (components.Length == 3)
 		{
-			Team = new PackageTeam(components[0]);
-			Name = new PackageName(components[1]);
-			Version = new PackageVersion(components[2]);
+			Team = components[0];
+			Name = components[1];
+			Version = components[2];
 		}
 		else
 		{
-			Team = null;
-			Name = null;
-			Version = null;
+			Team = string.Empty;
+			Name = string.Empty;
+			Version = string.Empty;
 		}
 	}
 
-	public PackageTeam? Team { get; }
-	public PackageName? Name { get; }
-	public PackageVersion? Version { get; }
+	public Team Team { get; }
+	public PackageName Name { get; }
+	public PackageVersion Version { get; }
 
 	/// <summary>
-	/// Checks if the package dependency string is valid
+	/// Checks if the underlying value is valid
 	/// </summary>
-	public bool IsValid()
-	{
-		if (Team == null)
-			return false;
+	public bool IsValid() => Team.IsValid() && Name.IsValid() && Version.IsValid();
 
-		if (Name == null)
-			return false;
-
-		if (Version == null)
-			return false;
-
-		return Team.IsValid() && Name.IsValid() && Version.IsValid();
-	}
-
-	/// <inheritdoc/>
+	/// <inheritdoc />
 	public override string ToString() => _dependencyString;
 
 	public static implicit operator string(PackageDependency p) => p.ToString();
+
+	public static implicit operator PackageDependency(string dependency) => new(dependency);
 }

@@ -1,5 +1,5 @@
 <Project>
-	<Target Name="GenerateMetadata" BeforeTargets="BeforeCompile" AfterTargets="MinVer">
+	<Target Name="GenerateMetadata" BeforeTargets="BeforeCompile">
 		<PropertyGroup>
 			<GUID>dev.$([System.String]::Copy('$(Authors)').ToLower()).$([System.String]::Copy('$(AssemblyName)').ToLower())</GUID>
 
@@ -33,5 +33,38 @@ namespace $(RootNamespace)
 			WriteOnlyWhenDifferent="true"
 			Overwrite="true"
 		/>
+	</Target>
+
+	<!-- Husky Install -->
+	<PropertyGroup>
+		<HuskyRoot Condition="'$(HuskyRoot)' == ''">$(MSBuildThisFileDirectory)</HuskyRoot>
+	</PropertyGroup>
+
+	<Target
+		Name="Husky"
+		AfterTargets="Restore"
+		Condition="'$(HUSKY)' != 0"
+		Inputs="$(HuskyRoot).config/dotnet-tools.json"
+		Outputs="$(HuskyRoot).husky/_/install.stamp"
+	>
+		<Exec
+			Command="dotnet tool restore"
+			StandardOutputImportance="Low"
+			StandardErrorImportance="High"
+		/>
+		<Exec
+			Command="dotnet husky install"
+			StandardOutputImportance="Low"
+			StandardErrorImportance="High"
+			WorkingDirectory="$(HuskyRoot)"
+		/>
+		<Touch
+			Files="$(HuskyRoot).husky/_/install.stamp"
+			AlwaysCreate="true"
+			Condition="Exists('$(HuskyRoot).husky/_')"
+		/>
+		<ItemGroup>
+			<FileWrites Include="$(HuskyRoot).husky/_/install.stamp" />
+		</ItemGroup>
 	</Target>
 </Project>

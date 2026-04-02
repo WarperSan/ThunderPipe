@@ -1,5 +1,4 @@
-using System.Net;
-using Microsoft.Extensions.Logging;
+using System.Collections.Concurrent;
 using ThunderPipe.Core.Models.API;
 using ThunderPipe.Core.Models.Web.GetDependency;
 using ThunderPipe.Core.Utils;
@@ -14,7 +13,10 @@ public sealed class DependencyApiClient : ThunderstoreClient
 	/// <summary>
 	/// Finds the missing dependencies
 	/// </summary>
-	public async Task<ISet<PackageDependency>> GetMissing(PackageDependency[] dependencies)
+	public async Task<IReadOnlyCollection<PackageDependency>> GetMissing(
+		IEnumerable<PackageDependency> dependencies,
+		CancellationToken ct = default
+	)
 	{
 		const string NAMESPACE = "NAMESPACE";
 		const string NAME = "NAME";
@@ -24,12 +26,12 @@ public sealed class DependencyApiClient : ThunderstoreClient
 			.Get()
 			.ToEndpoint($"api/experimental/package/{{{NAMESPACE}}}/{{{NAME}}}/{{{VERSION}}}/");
 
-		var dependenciesFound = new HashSet<PackageDependency>();
+		var dependenciesFound = new ConcurrentBag<PackageDependency>();
 
-		foreach (var dependency in dependencies)
+		var tasks = dependencies.Select(async dependency =>
 		{
 			if (!dependency.IsValid())
-				continue;
+				return;
 
 			var request = new RequestBuilder(tempBuilder)
 				.SetPathParameter(NAMESPACE, dependency.Team!)
@@ -37,27 +39,21 @@ public sealed class DependencyApiClient : ThunderstoreClient
 				.SetPathParameter(VERSION, dependency.Version!)
 				.Build();
 
-			var rawResponse = await SendRequest(request);
+			var response = await SendRequest<Response>(request, ct);
 
-			if (!rawResponse.IsSuccessStatusCode)
-			{
-				if (rawResponse.StatusCode != HttpStatusCode.NotFound)
-					Logger?.LogDebug(
-						"Expected '{ExpectedCode}', but got: {Code}",
-						HttpStatusCode.NotFound,
-						rawResponse.StatusCode
-					);
-				continue;
-			}
+			response.LogErrors(Logger);
 
-			var response = await ParseJson<Response>(rawResponse);
+			if (!response.IsSuccess || response.Data == null)
+				return;
 
-			if (!response.IsActive)
-				continue;
+			if (!response.Data.IsActive)
+				return;
 
 			dependenciesFound.Add(dependency);
-		}
+		});
 
-		return dependencies.Except(dependenciesFound).ToHashSet();
+		await Task.WhenAll(tasks);
+
+		return dependencies.Except(dependenciesFound).ToArray();
 	}
 }

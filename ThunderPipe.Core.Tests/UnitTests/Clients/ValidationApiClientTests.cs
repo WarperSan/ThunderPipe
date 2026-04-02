@@ -1,11 +1,11 @@
 using ThunderPipe.Core.Clients;
-using ThunderPipe.Tests.Helpers;
-using ThunderPipe.Tests.MockedObjects;
+using ThunderPipe.Core.Tests.Helpers;
+using ThunderPipe.Core.Tests.MockedObjects;
 using ValidateIcon = ThunderPipe.Core.Models.Web.ValidateIcon;
 using ValidateManifest = ThunderPipe.Core.Models.Web.ValidateManifest;
 using ValidateReadme = ThunderPipe.Core.Models.Web.ValidateReadme;
 
-namespace ThunderPipe.Tests.UnitTests.Clients;
+namespace ThunderPipe.Core.Tests.UnitTests.Clients;
 
 public class ValidationApiClientTests
 {
@@ -13,50 +13,68 @@ public class ValidationApiClientTests
 	public async Task IsIconValid_WhenDataErrorReceived_ReturnError()
 	{
 		const string PATH = "~/icon.png";
+		const string CATEGORY = "icon_data";
 		const string ERROR = "Expected in base64";
 
 		var mockedHttp = new MockHttpMessageHandler();
 		var fileSystem = new TestFileSystem();
 
-		mockedHttp.When("*").RespondJSON(new ValidateIcon.Response { DataErrors = [ERROR] });
+		mockedHttp
+			.When("*")
+			.RespondErrors(new Dictionary<string, string[]> { [CATEGORY] = [ERROR] });
 
 		fileSystem.SetContent(PATH, await ImageHelper.CreateImage(1, 1));
 
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		var errors = await client.IsIconValid(PATH, fileSystem);
+		var errors = await client.IsIconValid(
+			PATH,
+			fileSystem,
+			"",
+			TestContext.Current.CancellationToken
+		);
 
 		Assert.Single(errors);
-		Assert.True(errors.Contains(ERROR));
+		Assert.Contains(ERROR, errors);
 	}
 
 	[Fact]
 	public async Task IsIconValid_WhenValidationErrorReceived_ReturnError()
 	{
 		const string PATH = "~/icon.png";
+		const string CATEGORY = "non_field_errors";
 		const string ERROR = "Icon must be 256x256";
 
 		var mockedHttp = new MockHttpMessageHandler();
 		var fileSystem = new TestFileSystem();
 
-		mockedHttp.When("*").RespondJSON(new ValidateIcon.Response { ValidationErrors = [ERROR] });
+		mockedHttp
+			.When("*")
+			.RespondErrors(new Dictionary<string, string[]> { [CATEGORY] = [ERROR] });
 
 		fileSystem.SetContent(PATH, await ImageHelper.CreateImage(1, 1));
 
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		var errors = await client.IsIconValid(PATH, fileSystem);
+		var errors = await client.IsIconValid(
+			PATH,
+			fileSystem,
+			"",
+			TestContext.Current.CancellationToken
+		);
 
 		Assert.Single(errors);
-		Assert.True(errors.Contains(ERROR));
+		Assert.Contains(ERROR, errors);
 	}
 
 	[Fact]
 	public async Task IsIconValid_WhenMultipleErrorsReceived_ReturnErrors()
 	{
 		const string PATH = "~/icon.png";
+		const string CATEGORY_1 = "icon_data";
+		const string CATEGORY_2 = "non_field_errors";
 		const string ERROR_1 = "This is an error";
 		const string ERROR_2 = "This could be an error";
 		const string ERROR_3 = "This should be an error";
@@ -67,11 +85,11 @@ public class ValidationApiClientTests
 
 		mockedHttp
 			.When("*")
-			.RespondJSON(
-				new ValidateIcon.Response
+			.RespondErrors(
+				new Dictionary<string, string[]>
 				{
-					DataErrors = [ERROR_1, ERROR_2],
-					ValidationErrors = [ERROR_3, ERROR_4],
+					[CATEGORY_1] = [ERROR_1, ERROR_2],
+					[CATEGORY_2] = [ERROR_3, ERROR_4],
 				}
 			);
 
@@ -80,14 +98,19 @@ public class ValidationApiClientTests
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		var errors = await client.IsIconValid(PATH, fileSystem);
+		var errors = await client.IsIconValid(
+			PATH,
+			fileSystem,
+			"",
+			TestContext.Current.CancellationToken
+		);
 
 		string[] expectedErrors = [ERROR_1, ERROR_2, ERROR_3, ERROR_4];
 
 		Assert.Equal(expectedErrors.Length, errors.Count);
 
 		foreach (var error in expectedErrors)
-			Assert.True(errors.Contains(error));
+			Assert.Contains(error, errors);
 	}
 
 	[Fact]
@@ -105,75 +128,9 @@ public class ValidationApiClientTests
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		try
-		{
-			_ = await client.IsIconValid(PATH, fileSystem);
-		}
-		catch (Exception e)
-		{
-			Assert.IsType<InvalidOperationException>(e);
-			return;
-		}
-
-		Assert.Fail("Should have thrown an exception");
-	}
-
-	[Fact]
-	public async Task IsIconValid_WhenNoErrorButMissingValid_ThrowException()
-	{
-		const string PATH = "~/icon.png";
-
-		var mockedHttp = new MockHttpMessageHandler();
-		var fileSystem = new TestFileSystem();
-
-		mockedHttp.When("*").RespondJSON(new ValidateIcon.Response());
-
-		fileSystem.SetContent(PATH, await ImageHelper.CreateImage(1, 1));
-
-		using var client = new ValidationApiClient();
-		client.Client = mockedHttp.ToHttpClient();
-
-		try
-		{
-			_ = await client.IsIconValid(PATH, fileSystem);
-		}
-		catch (Exception e)
-		{
-			Assert.IsType<InvalidOperationException>(e);
-			return;
-		}
-
-		Assert.Fail("Should have thrown an exception");
-	}
-
-	[Fact]
-	public async Task IsIconValid_WhenErrorReceivedButMarkedAsValid_ThrowException()
-	{
-		const string PATH = "~/icon.png";
-
-		var mockedHttp = new MockHttpMessageHandler();
-		var fileSystem = new TestFileSystem();
-
-		mockedHttp
-			.When("*")
-			.RespondJSON(new ValidateIcon.Response { DataErrors = ["Error"], Valid = true });
-
-		fileSystem.SetContent(PATH, await ImageHelper.CreateImage(1, 1));
-
-		using var client = new ValidationApiClient();
-		client.Client = mockedHttp.ToHttpClient();
-
-		try
-		{
-			_ = await client.IsIconValid(PATH, fileSystem);
-		}
-		catch (Exception e)
-		{
-			Assert.IsType<InvalidOperationException>(e);
-			return;
-		}
-
-		Assert.Fail("Should have thrown an exception");
+		await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+			await client.IsIconValid(PATH, fileSystem, "", TestContext.Current.CancellationToken)
+		);
 	}
 
 	[Fact]
@@ -191,7 +148,12 @@ public class ValidationApiClientTests
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		var errors = await client.IsIconValid(PATH, fileSystem);
+		var errors = await client.IsIconValid(
+			PATH,
+			fileSystem,
+			"",
+			TestContext.Current.CancellationToken
+		);
 
 		Assert.Empty(errors);
 	}
@@ -201,22 +163,31 @@ public class ValidationApiClientTests
 	{
 		const string PATH = "~/manifest.json";
 		const string TEAM = "test-team";
+		const string CATEGORY = "manifest_data";
 		const string ERROR = "Expected in base64";
 
 		var mockedHttp = new MockHttpMessageHandler();
 		var fileSystem = new TestFileSystem();
 
-		mockedHttp.When("*").RespondJSON(new ValidateManifest.Response { DataErrors = [ERROR] });
+		mockedHttp
+			.When("*")
+			.RespondErrors(new Dictionary<string, string[]> { [CATEGORY] = [ERROR] });
 
 		fileSystem.SetContent(PATH, "{}");
 
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		var errors = await client.IsManifestValid(PATH, TEAM, fileSystem);
+		var errors = await client.IsManifestValid(
+			PATH,
+			TEAM,
+			fileSystem,
+			"",
+			TestContext.Current.CancellationToken
+		);
 
 		Assert.Single(errors);
-		Assert.True(errors.Contains(ERROR));
+		Assert.Contains(ERROR, errors);
 	}
 
 	[Fact]
@@ -224,6 +195,7 @@ public class ValidationApiClientTests
 	{
 		const string PATH = "~/manifest.json";
 		const string TEAM = "test-team";
+		const string CATEGORY = "non_field_errors";
 		const string ERROR = "Expected in base64";
 
 		var mockedHttp = new MockHttpMessageHandler();
@@ -231,17 +203,23 @@ public class ValidationApiClientTests
 
 		mockedHttp
 			.When("*")
-			.RespondJSON(new ValidateManifest.Response { ValidationErrors = [ERROR] });
+			.RespondErrors(new Dictionary<string, string[]> { [CATEGORY] = [ERROR] });
 
 		fileSystem.SetContent(PATH, "{}");
 
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		var errors = await client.IsManifestValid(PATH, TEAM, fileSystem);
+		var errors = await client.IsManifestValid(
+			PATH,
+			TEAM,
+			fileSystem,
+			"",
+			TestContext.Current.CancellationToken
+		);
 
 		Assert.Single(errors);
-		Assert.True(errors.Contains(ERROR));
+		Assert.Contains(ERROR, errors);
 	}
 
 	[Fact]
@@ -249,6 +227,7 @@ public class ValidationApiClientTests
 	{
 		const string PATH = "~/manifest.json";
 		const string TEAM = "test-team";
+		const string CATEGORY = "namespace";
 		const string ERROR = "Expected in base64";
 
 		var mockedHttp = new MockHttpMessageHandler();
@@ -256,17 +235,23 @@ public class ValidationApiClientTests
 
 		mockedHttp
 			.When("*")
-			.RespondJSON(new ValidateManifest.Response { NamespaceErrors = [ERROR] });
+			.RespondErrors(new Dictionary<string, string[]> { [CATEGORY] = [ERROR] });
 
 		fileSystem.SetContent(PATH, "{}");
 
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		var errors = await client.IsManifestValid(PATH, TEAM, fileSystem);
+		var errors = await client.IsManifestValid(
+			PATH,
+			TEAM,
+			fileSystem,
+			"",
+			TestContext.Current.CancellationToken
+		);
 
 		Assert.Single(errors);
-		Assert.True(errors.Contains(ERROR));
+		Assert.Contains(ERROR, errors);
 	}
 
 	[Fact]
@@ -274,6 +259,9 @@ public class ValidationApiClientTests
 	{
 		const string PATH = "~/manifest.json";
 		const string TEAM = "test-team";
+		const string CATEGORY_1 = "manifest_data";
+		const string CATEGORY_2 = "non_field_errors";
+		const string CATEGORY_3 = "namespace";
 		const string ERROR_1 = "This is an error";
 		const string ERROR_2 = "This could be an error";
 		const string ERROR_3 = "This should be an error";
@@ -286,12 +274,12 @@ public class ValidationApiClientTests
 
 		mockedHttp
 			.When("*")
-			.RespondJSON(
-				new ValidateManifest.Response
+			.RespondErrors(
+				new Dictionary<string, string[]>
 				{
-					DataErrors = [ERROR_1, ERROR_2],
-					ValidationErrors = [ERROR_3, ERROR_4],
-					NamespaceErrors = [ERROR_5, ERROR_6],
+					[CATEGORY_1] = [ERROR_1, ERROR_2],
+					[CATEGORY_2] = [ERROR_3, ERROR_4],
+					[CATEGORY_3] = [ERROR_5, ERROR_6],
 				}
 			);
 
@@ -300,14 +288,20 @@ public class ValidationApiClientTests
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		var errors = await client.IsManifestValid(PATH, TEAM, fileSystem);
+		var errors = await client.IsManifestValid(
+			PATH,
+			TEAM,
+			fileSystem,
+			"",
+			TestContext.Current.CancellationToken
+		);
 
 		string[] expectedErrors = [ERROR_1, ERROR_2, ERROR_3, ERROR_4, ERROR_5, ERROR_6];
 
 		Assert.Equal(expectedErrors.Length, errors.Count);
 
 		foreach (var error in expectedErrors)
-			Assert.True(errors.Contains(error));
+			Assert.Contains(error, errors);
 	}
 
 	[Fact]
@@ -326,77 +320,15 @@ public class ValidationApiClientTests
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		try
-		{
-			_ = await client.IsManifestValid(PATH, TEAM, fileSystem);
-		}
-		catch (Exception e)
-		{
-			Assert.IsType<InvalidOperationException>(e);
-			return;
-		}
-
-		Assert.Fail("Should have thrown an exception");
-	}
-
-	[Fact]
-	public async Task IsManifestValid_WhenNoErrorButMissingValid_ThrowException()
-	{
-		const string PATH = "~/manifest.json";
-		const string TEAM = "test-team";
-
-		var mockedHttp = new MockHttpMessageHandler();
-		var fileSystem = new TestFileSystem();
-
-		mockedHttp.When("*").RespondJSON(new ValidateManifest.Response());
-
-		fileSystem.SetContent(PATH, "{}");
-
-		using var client = new ValidationApiClient();
-		client.Client = mockedHttp.ToHttpClient();
-
-		try
-		{
-			_ = await client.IsManifestValid(PATH, TEAM, fileSystem);
-		}
-		catch (Exception e)
-		{
-			Assert.IsType<InvalidOperationException>(e);
-			return;
-		}
-
-		Assert.Fail("Should have thrown an exception");
-	}
-
-	[Fact]
-	public async Task IsManifestValid_WhenErrorReceivedButMarkedAsValid_ThrowException()
-	{
-		const string PATH = "~/manifest.json";
-		const string TEAM = "test-team";
-
-		var mockedHttp = new MockHttpMessageHandler();
-		var fileSystem = new TestFileSystem();
-
-		mockedHttp
-			.When("*")
-			.RespondJSON(new ValidateManifest.Response { DataErrors = ["Error"], Valid = true });
-
-		fileSystem.SetContent(PATH, "{}");
-
-		using var client = new ValidationApiClient();
-		client.Client = mockedHttp.ToHttpClient();
-
-		try
-		{
-			_ = await client.IsManifestValid(PATH, TEAM, fileSystem);
-		}
-		catch (Exception e)
-		{
-			Assert.IsType<InvalidOperationException>(e);
-			return;
-		}
-
-		Assert.Fail("Should have thrown an exception");
+		await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+			await client.IsManifestValid(
+				PATH,
+				TEAM,
+				fileSystem,
+				"",
+				TestContext.Current.CancellationToken
+			)
+		);
 	}
 
 	[Fact]
@@ -415,7 +347,13 @@ public class ValidationApiClientTests
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		var errors = await client.IsManifestValid(PATH, TEAM, fileSystem);
+		var errors = await client.IsManifestValid(
+			PATH,
+			TEAM,
+			fileSystem,
+			"",
+			TestContext.Current.CancellationToken
+		);
 
 		Assert.Empty(errors);
 	}
@@ -424,28 +362,37 @@ public class ValidationApiClientTests
 	public async Task IsReadmeValid_WhenDataErrorReceived_ReturnError()
 	{
 		const string PATH = "~/README.md";
+		const string CATEGORY = "readme_data";
 		const string ERROR = "Expected in base64";
 
 		var mockedHttp = new MockHttpMessageHandler();
 		var fileSystem = new TestFileSystem();
 
-		mockedHttp.When("*").RespondJSON(new ValidateReadme.Response { DataErrors = [ERROR] });
+		mockedHttp
+			.When("*")
+			.RespondErrors(new Dictionary<string, string[]>() { [CATEGORY] = [ERROR] });
 
 		fileSystem.SetContent(PATH, "this is a great README");
 
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		var errors = await client.IsReadmeValid(PATH, fileSystem);
+		var errors = await client.IsReadmeValid(
+			PATH,
+			fileSystem,
+			"",
+			TestContext.Current.CancellationToken
+		);
 
 		Assert.Single(errors);
-		Assert.True(errors.Contains(ERROR));
+		Assert.Contains(ERROR, errors);
 	}
 
 	[Fact]
 	public async Task IsReadmeValid_WhenValidationErrorReceived_ReturnError()
 	{
 		const string PATH = "~/README.md";
+		const string CATEGORY = "non_field_errors";
 		const string ERROR = "too fat";
 
 		var mockedHttp = new MockHttpMessageHandler();
@@ -453,23 +400,30 @@ public class ValidationApiClientTests
 
 		mockedHttp
 			.When("*")
-			.RespondJSON(new ValidateReadme.Response { ValidationErrors = [ERROR] });
+			.RespondErrors(new Dictionary<string, string[]>() { [CATEGORY] = [ERROR] });
 
 		fileSystem.SetContent(PATH, "aww :(");
 
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		var errors = await client.IsReadmeValid(PATH, fileSystem);
+		var errors = await client.IsReadmeValid(
+			PATH,
+			fileSystem,
+			"",
+			TestContext.Current.CancellationToken
+		);
 
 		Assert.Single(errors);
-		Assert.True(errors.Contains(ERROR));
+		Assert.Contains(ERROR, errors);
 	}
 
 	[Fact]
 	public async Task IsReadmeValid_WhenMultipleErrorsReceived_ReturnErrors()
 	{
 		const string PATH = "~/README.md";
+		const string CATEGORY_1 = "readme_data";
+		const string CATEGORY_2 = "non_field_errors";
 		const string ERROR_1 = "This is an error";
 		const string ERROR_2 = "This could be an error";
 		const string ERROR_3 = "This should be an error";
@@ -480,11 +434,11 @@ public class ValidationApiClientTests
 
 		mockedHttp
 			.When("*")
-			.RespondJSON(
-				new ValidateReadme.Response
+			.RespondErrors(
+				new Dictionary<string, string[]>()
 				{
-					DataErrors = [ERROR_1, ERROR_2],
-					ValidationErrors = [ERROR_3, ERROR_4],
+					[CATEGORY_1] = [ERROR_1, ERROR_2],
+					[CATEGORY_2] = [ERROR_3, ERROR_4],
 				}
 			);
 
@@ -493,14 +447,19 @@ public class ValidationApiClientTests
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		var errors = await client.IsReadmeValid(PATH, fileSystem);
+		var errors = await client.IsReadmeValid(
+			PATH,
+			fileSystem,
+			"",
+			TestContext.Current.CancellationToken
+		);
 
 		string[] expectedErrors = [ERROR_1, ERROR_2, ERROR_3, ERROR_4];
 
 		Assert.Equal(expectedErrors.Length, errors.Count);
 
 		foreach (var error in expectedErrors)
-			Assert.True(errors.Contains(error));
+			Assert.Contains(error, errors);
 	}
 
 	[Fact]
@@ -518,75 +477,9 @@ public class ValidationApiClientTests
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		try
-		{
-			_ = await client.IsReadmeValid(PATH, fileSystem);
-		}
-		catch (Exception e)
-		{
-			Assert.IsType<InvalidOperationException>(e);
-			return;
-		}
-
-		Assert.Fail("Should have thrown an exception");
-	}
-
-	[Fact]
-	public async Task IsReadmeValid_WhenNoErrorButMissingValid_ThrowException()
-	{
-		const string PATH = "~/README.md";
-
-		var mockedHttp = new MockHttpMessageHandler();
-		var fileSystem = new TestFileSystem();
-
-		mockedHttp.When("*").RespondJSON(new ValidateReadme.Response());
-
-		fileSystem.SetContent(PATH, "oh?");
-
-		using var client = new ValidationApiClient();
-		client.Client = mockedHttp.ToHttpClient();
-
-		try
-		{
-			_ = await client.IsReadmeValid(PATH, fileSystem);
-		}
-		catch (Exception e)
-		{
-			Assert.IsType<InvalidOperationException>(e);
-			return;
-		}
-
-		Assert.Fail("Should have thrown an exception");
-	}
-
-	[Fact]
-	public async Task IsReadmeValid_WhenErrorReceivedButMarkedAsValid_ThrowException()
-	{
-		const string PATH = "~/README.md";
-
-		var mockedHttp = new MockHttpMessageHandler();
-		var fileSystem = new TestFileSystem();
-
-		mockedHttp
-			.When("*")
-			.RespondJSON(new ValidateReadme.Response { DataErrors = ["Error"], Valid = true });
-
-		fileSystem.SetContent(PATH, "oh?");
-
-		using var client = new ValidationApiClient();
-		client.Client = mockedHttp.ToHttpClient();
-
-		try
-		{
-			_ = await client.IsReadmeValid(PATH, fileSystem);
-		}
-		catch (Exception e)
-		{
-			Assert.IsType<InvalidOperationException>(e);
-			return;
-		}
-
-		Assert.Fail("Should have thrown an exception");
+		await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+			await client.IsReadmeValid(PATH, fileSystem, "", TestContext.Current.CancellationToken)
+		);
 	}
 
 	[Fact]
@@ -604,7 +497,12 @@ public class ValidationApiClientTests
 		using var client = new ValidationApiClient();
 		client.Client = mockedHttp.ToHttpClient();
 
-		var errors = await client.IsReadmeValid(PATH, fileSystem);
+		var errors = await client.IsReadmeValid(
+			PATH,
+			fileSystem,
+			"",
+			TestContext.Current.CancellationToken
+		);
 
 		Assert.Empty(errors);
 	}

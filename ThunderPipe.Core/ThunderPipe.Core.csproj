@@ -1,13 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<!-- Nuget Properties -->
+	<PropertyGroup>
+		<IsPackable>true</IsPackable>
+
+		<PackageId>ThunderPipe.Core</PackageId>
+		<Description>Core implementation of ThunderPipe</Description>
+		<PackageIcon>icon.png</PackageIcon>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.1" />
+		<PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.5" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+	</ItemGroup>
+
+	<!-- Content includes -->
+	<ItemGroup>
+		<None Include="../icon.png" Pack="true" PackagePath="" />
+		<None Include="README.md" Pack="true" PackagePath="" />
+		<None Include="../LICENSE" Pack="true" PackagePath="" />
 	</ItemGroup>
 
 	<!-- Testing -->

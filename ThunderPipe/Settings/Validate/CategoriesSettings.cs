@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using Spectre.Console;
 using Spectre.Console.Cli;
+using ThunderPipe.Core.Models.API;
 
 namespace ThunderPipe.Settings.Validate;
 
@@ -14,20 +15,26 @@ internal sealed class CategoriesSettings : BaseValidateSettings
 {
 	[CommandArgument(0, "<community>")]
 	[Description("Slug of the community to validate categories against")]
-	public required string Community { get; init; }
+	public required Community Community { get; init; }
 
 	[CommandArgument(1, "<categories>")]
 	[Description("Slugs of the categories to validate")]
-	public required string[] Categories { get; init; }
+	public required Category[] Categories { get; init; }
 
 	/// <inheritdoc />
 	public override ValidationResult Validate()
 	{
-		if (string.IsNullOrWhiteSpace(Community))
-			return ValidationResult.Error("Community cannot be empty.");
+		if (!Community.IsValid())
+			return ValidationResult.Error($"'{Community}' is not a valid community.");
 
-		if (Categories.Any(string.IsNullOrWhiteSpace))
-			return ValidationResult.Error("Categories contain an empty item.");
+		var invalidCategories = Categories.Where(d => !d.IsValid()).ToArray();
+
+		if (invalidCategories.Length > 0)
+		{
+			var list = string.Join(", ", invalidCategories.Select(d => $"'{d}'"));
+
+			return ValidationResult.Error($"Invalid categories: {list}");
+		}
 
 		return base.Validate();
 	}

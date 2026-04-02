@@ -5,6 +5,7 @@ using Spectre.Console.Cli;
 using ThunderPipe.Core.Services.Implementations;
 using ThunderPipe.Core.Services.Interfaces;
 using ThunderPipe.Infrastructure;
+using ThunderPipe.Infrastructure.Logging;
 
 namespace ThunderPipe;
 
@@ -25,6 +26,7 @@ internal static class Program
 		};
 
 		var services = new ServiceCollection();
+		var logLevelContext = new LogLevelContext();
 
 		services.AddLogging(builder =>
 		{
@@ -37,7 +39,7 @@ internal static class Program
 			{
 				options.IncludeScopes = false;
 			});
-			builder.AddFilter(level => level >= LogInterceptor.Level);
+			builder.AddFilter(level => level >= logLevelContext.Level);
 		});
 		services.AddSingleton<ILogger>(sp =>
 			sp.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(ThunderPipe))
@@ -53,7 +55,7 @@ internal static class Program
 		{
 			config.SetApplicationName(nameof(ThunderPipe));
 			config.SetApplicationVersion(Metadata.VERSION);
-			config.SetInterceptor(new LogInterceptor());
+			config.SetInterceptor(new LogInterceptor(logLevelContext));
 
 			config.SetExceptionHandler(
 				(exception, resolver) => HandleException(exception, resolver)

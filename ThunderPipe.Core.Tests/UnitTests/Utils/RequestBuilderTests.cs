@@ -5,7 +5,7 @@ using ThunderPipe.Core.Utils;
 
 // ReSharper disable InconsistentNaming
 
-namespace ThunderPipe.Tests.UnitTests.Utils;
+namespace ThunderPipe.Core.Tests.UnitTests.Utils;
 
 // TODO: Redo all tests to match proper syntax
 // TODO: Get 100% coverage on RequestBuilder
@@ -97,7 +97,9 @@ public class RequestBuilderTests
 		var request = new RequestBuilder().WithJSON(payload).Build();
 
 		Assert.NotNull(request.Content);
-		var actualPayload = await request.Content.ReadAsStringAsync();
+		var actualPayload = await request.Content.ReadAsStringAsync(
+			TestContext.Current.CancellationToken
+		);
 
 		var expectedJson = JObject.FromObject(payload);
 		var actualJson = JsonConvert.DeserializeObject(actualPayload);
@@ -207,6 +209,30 @@ public class RequestBuilderTests
 	}
 
 	[Fact]
+	public void SetPathParameter_WhenSetTwice_ReplacePathParam()
+	{
+		const string KEY = "UUID";
+		const string ENDPOINT = $"/test/{{{KEY}}}/foo";
+
+		const string FIRST_VALUE = "ABC";
+		const string LAST_VALUE = "CBA";
+
+		var builder = new RequestBuilder()
+			.ToUri(new Uri("https://www.google.com"))
+			.ToEndpoint(ENDPOINT);
+
+		var expectedPath = ENDPOINT.Replace($"{{{KEY}}}", LAST_VALUE);
+
+		builder.SetPathParameter(KEY, FIRST_VALUE);
+		builder.SetPathParameter(KEY, LAST_VALUE);
+
+		var request = builder.Build();
+
+		Assert.NotNull(request.RequestUri);
+		Assert.Equal(expectedPath, request.RequestUri.AbsolutePath);
+	}
+
+	[Fact]
 	public void Copy_WhenCopied_ReturnNewInstance()
 	{
 		var originalBuilder = new RequestBuilder();
@@ -278,10 +304,14 @@ public class RequestBuilderTests
 
 		// Assert
 		Assert.NotNull(originalRequest.Content);
-		var originalPayload = await originalRequest.Content.ReadAsStringAsync();
+		var originalPayload = await originalRequest.Content.ReadAsStringAsync(
+			TestContext.Current.CancellationToken
+		);
 
 		Assert.NotNull(copiedRequest.Content);
-		var copiedPayload = await copiedRequest.Content.ReadAsStringAsync();
+		var copiedPayload = await copiedRequest.Content.ReadAsStringAsync(
+			TestContext.Current.CancellationToken
+		);
 
 		var expectedJson = JObject.FromObject(payload);
 		var actualOriginalPayload = JsonConvert.DeserializeObject(originalPayload);

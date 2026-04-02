@@ -1,8 +1,9 @@
 using ThunderPipe.Core.Clients;
+using ThunderPipe.Core.Models.API;
 using ThunderPipe.Core.Models.Web.GetCategory;
 using ThunderPipe.Core.Utils;
 
-namespace ThunderPipe.Tests.UnitTests.Clients;
+namespace ThunderPipe.Core.Tests.UnitTests.Clients;
 
 public class CategoryApiClientTests
 {
@@ -57,8 +58,12 @@ public class CategoryApiClientTests
 		client.Client = mockHttp.ToHttpClient();
 
 		// Act
-		var requested = new[] { SLUG_1, SLUG_2, SLUG_3 };
-		var missing = await client.GetMissing(requested, "test");
+		var requested = new Category[] { SLUG_1, SLUG_2, SLUG_3 };
+		var missing = await client.GetMissing(
+			requested,
+			"test",
+			TestContext.Current.CancellationToken
+		);
 
 		// Assert
 		Assert.Empty(missing);
@@ -78,7 +83,7 @@ public class CategoryApiClientTests
 		client.Client = mockHttp.ToHttpClient();
 
 		// Act
-		var missing = await client.GetMissing([], "test");
+		var missing = await client.GetMissing([], "test", TestContext.Current.CancellationToken);
 
 		// Assert
 		Assert.Empty(missing);
@@ -120,14 +125,18 @@ public class CategoryApiClientTests
 		client.Client = mockHttp.ToHttpClient();
 
 		// Act
-		var requested = new[] { "test" };
-		var missing = await client.GetMissing(requested, "test");
+		var requested = new Category[] { "test" };
+		var missing = await client.GetMissing(
+			requested,
+			"test",
+			TestContext.Current.CancellationToken
+		);
 
 		// Assert
 		Assert.Equal(missing.Count, requested.Length);
 
 		foreach (var slug in requested)
-			Assert.True(missing.Contains(slug));
+			Assert.Contains(slug, missing);
 	}
 
 	[Fact]
@@ -177,14 +186,18 @@ public class CategoryApiClientTests
 		client.Client = mockHttp.ToHttpClient();
 
 		// Act
-		var requested = new[] { "temp" };
-		var missing = await client.GetMissing(requested, "test");
+		var requested = new Category[] { "temp" };
+		var missing = await client.GetMissing(
+			requested,
+			"test",
+			TestContext.Current.CancellationToken
+		);
 
 		// Assert
 		Assert.Equal(missing.Count, requested.Length);
 
 		foreach (var slug in requested)
-			Assert.True(missing.Contains(slug));
+			Assert.Contains(slug, missing);
 	}
 
 	[Fact]
@@ -212,13 +225,17 @@ public class CategoryApiClientTests
 		client.Client = mockHttp.ToHttpClient();
 
 		// Act
-		var requested = new[] { "temp", "test2" };
-		var missing = await client.GetMissing(requested, "test");
+		var requested = new Category[] { "temp", "test2" };
+		var missing = await client.GetMissing(
+			requested,
+			"test",
+			TestContext.Current.CancellationToken
+		);
 
 		// Assert
 		Assert.Equal(missing.Count, requested.Length);
 
 		foreach (var slug in requested)
-			Assert.True(missing.Contains(slug));
+			Assert.Contains(slug, missing);
 	}
 }

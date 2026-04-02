@@ -1,14 +1,16 @@
 using System.ComponentModel;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 using ThunderPipe.Core.Converters;
 
 namespace ThunderPipe.Core.Models.API;
 
 /// <summary>
-/// Represents a valid package version
+/// Object that represents a package's version
 /// </summary>
-[TypeConverter(typeof(PackageVersionTypeConverter))]
-public sealed record PackageVersion
+[TypeConverter(typeof(StringCastTypeConverter<PackageVersion>))]
+[JsonConverter(typeof(StringCastJsonConverter<PackageVersion>))]
+public sealed partial record PackageVersion
 {
 	private readonly string _version;
 
@@ -18,12 +20,17 @@ public sealed record PackageVersion
 	}
 
 	/// <summary>
-	/// Checks if the package version is valid
+	/// Checks if the underlying value is valid
 	/// </summary>
-	public bool IsValid() => Regex.IsMatch(_version, "^[0-9]+.[0-9]+.[0-9]+$");
+	public bool IsValid() => VersionRegex().IsMatch(_version);
 
-	/// <inheritdoc/>
+	/// <inheritdoc />
 	public override string ToString() => _version;
 
 	public static implicit operator string(PackageVersion p) => p.ToString();
+
+	public static implicit operator PackageVersion(string version) => new(version);
+
+	[GeneratedRegex("^[0-9]+.[0-9]+.[0-9]+$")]
+	private static partial Regex VersionRegex();
 }

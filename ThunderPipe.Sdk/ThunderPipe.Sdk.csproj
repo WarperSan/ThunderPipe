@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<DevelopmentDependency>true</DevelopmentDependency>
+
+		<Version>1.0.0</Version>
+	</PropertyGroup>
+
+	<!-- Nuget Properties -->
+	<PropertyGroup>
+		<IsPackable>true</IsPackable>
+		<PackageType>MSBuildSdk</PackageType>
+
+		<PackageId>ThunderPipe.Sdk</PackageId>
+		<Description>MSBuild integration for ThunderPipe</Description>
+		<PackageIcon>icon.png</PackageIcon>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="../ThunderPipe.MSBuild/ThunderPipe.MSBuild.csproj"/>
+	</ItemGroup>
+
+	<!-- Content includes -->
+	<ItemGroup>
+		<Content Include="Sdk/*" Pack="true" PackagePath="Sdk/"/>
+		<Content
+			Include="../ThunderPipe.MSBuild/bin/$(Configuration)/net8.0/**/*"
+			Pack="true"
+			PackagePath="build/net8.0/"
+			Visible="false"
+		/>
+
+		<None Include="../icon.png" Pack="true" PackagePath=""/>
+		<None Include="README.md" Pack="true" PackagePath=""/>
+		<None Include="../LICENSE" Pack="true" PackagePath=""/>
+	</ItemGroup>
+</Project>

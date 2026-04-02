@@ -1,6 +1,7 @@
 using ThunderPipe.Core.Clients;
+using ThunderPipe.Core.Models.Web;
 
-namespace ThunderPipe.Tests.MockedObjects;
+namespace ThunderPipe.Core.Tests.MockedObjects;
 
 /// <summary>
 /// Version of <see cref="ThunderstoreClient"/> that has methods to test certain behaviors
@@ -14,7 +15,7 @@ internal class TestClient : ThunderstoreClient
 	{
 		var request = Builder.Build();
 
-		var response = await SendRequest(request);
+		var response = await SendRequest(request, CancellationToken.None);
 
 		response.EnsureSuccessStatusCode();
 	}
@@ -22,10 +23,11 @@ internal class TestClient : ThunderstoreClient
 	/// <summary>
 	/// Sends a request and tries to parse the JSON response
 	/// </summary>
-	public Task<T> TryReceiveJson<T>()
+	public Task<Response<T>> TryReceiveJson<T>()
+		where T : class
 	{
 		var request = Builder.Build();
 
-		return SendRequest<T>(request);
+		return SendRequest<T>(request, CancellationToken.None);
 	}
 }

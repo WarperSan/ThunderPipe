@@ -4,14 +4,14 @@
     <DataCollectors>
       <DataCollector friendlyName="XPlat Code coverage">
         <Configuration>
-          <Format>opencover</Format>
+          <Format>opencover,cobertura</Format>
 		  <Include>[ThunderPipe.Core]*</Include>
           <SingleHit>false</SingleHit>
           <UseSourceLink>true</UseSourceLink>
-          <IncludeTestAssembly>true</IncludeTestAssembly>
+          <IncludeTestAssembly>false</IncludeTestAssembly>
           <SkipAutoProps>true</SkipAutoProps>
           <DeterministicReport>false</DeterministicReport>
-          <ExcludeAssembliesWithoutSources>MissingAny</ExcludeAssembliesWithoutSources>
+          <ExcludeAssembliesWithoutSources>None</ExcludeAssembliesWithoutSources>
         </Configuration>
       </DataCollector>
     </DataCollectors>

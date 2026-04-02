@@ -1,7 +1,7 @@
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
-namespace ThunderPipe.Tests.Helpers;
+namespace ThunderPipe.Core.Tests.Helpers;
 
 /// <summary>
 /// Class holding useful methods related to images

@@ -24,15 +24,15 @@ internal sealed class PackageSettings : BasePublishSettings
 
 	[CommandArgument(1, "<team>")]
 	[Description("Team that will own the published package")]
-	public required PackageTeam Team { get; init; }
+	public required Team Team { get; init; }
 
 	[CommandArgument(2, "<community>")]
 	[Description("Slug of the community to publish the package to")]
-	public required string Community { get; init; }
+	public required Community Community { get; init; }
 
 	[CommandOption($"{CATEGORY_OPTION} <CATEGORY>")]
 	[Description("Category slug to label the package with")]
-	public string[]? Categories { get; init; }
+	public Category[]? Categories { get; init; }
 
 	[CommandOption("--has-nsfw|--nsfw")]
 	[Description("Mark the package as containing NSFW content")]
@@ -48,12 +48,12 @@ internal sealed class PackageSettings : BasePublishSettings
 		if (!Team.IsValid())
 			return ValidationResult.Error($"'{Team}' is not a valid package team.");
 
-		if (string.IsNullOrWhiteSpace(Community))
-			return ValidationResult.Error("Community cannot be empty.");
+		if (!Community.IsValid())
+			return ValidationResult.Error($"'{Community}' is not a valid community.");
 
 		if (Categories != null)
 		{
-			var invalidCategories = Categories.Where(string.IsNullOrWhiteSpace).ToArray();
+			var invalidCategories = Categories.Where(d => !d.IsValid()).ToArray();
 
 			if (invalidCategories.Length > 0)
 			{

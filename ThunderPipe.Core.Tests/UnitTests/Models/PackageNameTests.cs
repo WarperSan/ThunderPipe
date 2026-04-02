@@ -1,6 +1,6 @@
 using ThunderPipe.Core.Models.API;
 
-namespace ThunderPipe.Tests.UnitTests.Models;
+namespace ThunderPipe.Core.Tests.UnitTests.Models;
 
 public class PackageNameTests
 {

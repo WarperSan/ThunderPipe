@@ -1,6 +1,6 @@
 using System.Net.Http.Headers;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
+using ThunderPipe.Core.Models.Web;
 using ThunderPipe.Core.Utils;
 
 namespace ThunderPipe.Core.Clients;
@@ -10,13 +10,20 @@ namespace ThunderPipe.Core.Clients;
 /// </summary>
 public abstract class ThunderstoreClient : IDisposable
 {
+	protected ThunderstoreClient()
+	{
+		Builder = new RequestBuilder();
+		Client = new HttpClient();
+		Logger = null;
+	}
+
 	#region Properties
 
 	private HttpClient _client = null!;
 	private RequestBuilder _builder = null!;
 
 	/// <summary>
-	/// Default <see cref="RequestBuilder"/> for this client
+	/// <see cref="RequestBuilder"/> that all requests are templated from
 	/// </summary>
 	public RequestBuilder Builder
 	{
@@ -25,12 +32,7 @@ public abstract class ThunderstoreClient : IDisposable
 	}
 
 	/// <summary>
-	/// Token used to cancel operations
-	/// </summary>
-	public CancellationToken CancellationToken { protected get; set; }
-
-	/// <summary>
-	/// <see cref="HttpClient"/> instance used for requests
+	/// <see cref="HttpClient"/> instance used to execute requests
 	/// </summary>
 	public HttpClient Client
 	{
@@ -41,77 +43,47 @@ public abstract class ThunderstoreClient : IDisposable
 			_client.DefaultRequestHeaders.UserAgent.Add(
 				new ProductInfoHeaderValue(Metadata.GUID, Metadata.VERSION)
 			);
-			_client.Timeout = TimeSpan.FromMinutes(5);
 		}
 	}
 
 	/// <summary>
-	/// <see cref="ILogger"/> instead used for operations
+	/// <see cref="ILogger"/> instance used to log client operations
 	/// </summary>
 	public ILogger? Logger { protected get; set; }
 
 	#endregion
-
-	protected ThunderstoreClient()
-	{
-		Builder = new RequestBuilder();
-		CancellationToken = CancellationToken.None;
-		Client = new HttpClient();
-		Logger = null;
-	}
 
 	#region Requests
 
 	/// <summary>
 	/// Sends the given request
 	/// </summary>
-	protected async Task<HttpResponseMessage> SendRequest(HttpRequestMessage request)
+	protected async Task<HttpResponseMessage> SendRequest(
+		HttpRequestMessage request,
+		CancellationToken ct
+	)
 	{
 		Logger?.LogDebug("Sending request:\n{Request}", request);
-		var response = await _client.SendAsync(request, CancellationToken);
+		var response = await _client.SendAsync(request, ct);
 
 		Logger?.LogDebug("Received response:\n{Response}", response);
 		return response;
 	}
 
 	/// <summary>
-	/// Sends the given request, and returns the JSON response
+	/// Sends the given request, and parses the returning JSON
 	/// </summary>
-	protected async Task<T> SendRequest<T>(HttpRequestMessage request)
+	protected async Task<Response<T>> SendRequest<T>(
+		HttpRequestMessage request,
+		CancellationToken ct
+	)
+		where T : class
 	{
-		var response = await SendRequest(request);
-		return await ParseJson<T>(response);
-	}
-
-	/// <summary>
-	/// Parses the JSON content of the given response
-	/// </summary>
-	protected async Task<T> ParseJson<T>(HttpResponseMessage response)
-	{
-		var content = await response.Content.ReadAsStringAsync(CancellationToken);
+		var response = await SendRequest(request, ct);
+		var content = await response.Content.ReadAsStringAsync(ct);
 		Logger?.LogDebug("Received JSON:\n{Json}", content);
 
-		T? json;
-
-		try
-		{
-			json = JsonConvert.DeserializeObject<T>(content);
-		}
-		catch (JsonException e)
-		{
-			throw new InvalidOperationException(
-				$"Failed to deserialize the response: \n\n{content}",
-				e
-			);
-		}
-
-		// ReSharper disable once ConvertIfStatementToReturnStatement
-		if (json == null)
-			throw new NullReferenceException(
-				$"Failed to parse the response's payload as '{nameof(T)}'"
-			);
-
-		return json;
+		return Response<T>.CreateResponse(response, content);
 	}
 
 	#endregion

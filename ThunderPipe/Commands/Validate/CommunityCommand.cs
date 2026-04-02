@@ -8,11 +8,14 @@ using ThunderPipe.Settings.Validate;
 namespace ThunderPipe.Commands.Validate;
 
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
-internal sealed class CommunityCommand : BaseCommand<CommunitySettings>
+internal sealed class CommunityCommand : AsyncCommand<CommunitySettings>
 {
-	/// <inheritdoc />
+	private readonly ILogger _logger;
+
 	public CommunityCommand(ILogger logger)
-		: base(logger) { }
+	{
+		_logger = logger;
+	}
 
 	/// <inheritdoc />
 	public override async Task<int> ExecuteAsync(
@@ -21,21 +24,20 @@ internal sealed class CommunityCommand : BaseCommand<CommunitySettings>
 		CancellationToken cancellationToken
 	)
 	{
-		var communitySlug = settings.Community;
+		var community = settings.Community;
 		var builder = new RequestBuilder().ToUri(settings.Host!);
 		using var client = new CommunityApiClient();
 		client.Builder = builder;
-		client.CancellationToken = cancellationToken;
-		client.Logger = Logger;
+		client.Logger = _logger;
 
-		var doesCommunityExist = await client.Exists(communitySlug);
+		var doesCommunityExist = await client.Exists(community, cancellationToken);
 
 		if (!doesCommunityExist)
 			throw new KeyNotFoundException(
-				$"Could not find a community with the slug '{communitySlug}'."
+				$"Could not find a community with the slug '{community}'."
 			);
 
-		Logger.LogInformation("A community was found for '{Slug}'!", communitySlug);
+		_logger.LogInformation("A community was found for '{Slug}'!", community);
 		return 0;
 	}
 }
