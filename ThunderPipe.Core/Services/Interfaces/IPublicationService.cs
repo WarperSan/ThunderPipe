@@ -14,7 +14,7 @@ public interface IPublicationService
 		string file,
 		Team team,
 		IEnumerable<Community> communities,
-		IDictionary<Community, IEnumerable<Category>> categories,
+		IDictionary<Community, List<Category>> categories,
 		bool hasNsfw,
 		string token,
 		CancellationToken cancellationToken

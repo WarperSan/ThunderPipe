@@ -1,11 +1,12 @@
 <Project>
 	<PropertyGroup>
-		<ThunderPipeOutputDir>$(MSBuildProjectDirectory)/artifacts/thunderstore/</ThunderPipeOutputDir>
 		<ThunderPipeToken></ThunderPipeToken>
 
 		<ThunderstoreHost></ThunderstoreHost>
 		<ThunderPipeLogLevel></ThunderPipeLogLevel>
 
-		<ThunderstoreCommunity></ThunderstoreCommunity>
+		<ThunderstoreCommunities></ThunderstoreCommunities>
+		<ThunderstoreCommunityCategories></ThunderstoreCommunityCategories>
+		<ThunderstoreCategories></ThunderstoreCategories>
 	</PropertyGroup>
 </Project>

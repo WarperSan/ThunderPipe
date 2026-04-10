@@ -1,0 +1,78 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<Import Project="../ThunderPipe.Sdk/Sdk/Sdk.props" />
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+	</PropertyGroup>
+
+	<!-- Thunderstore package properties -->
+	<PropertyGroup>
+		<ThunderstoreTeam>TS_Team</ThunderstoreTeam>
+		<ThunderstoreName>Some_Plugin</ThunderstoreName>
+		<Version>0.1.0</Version>
+		<Description>Short description.</Description>
+		<RepositoryUrl>https://example.com/</RepositoryUrl>
+
+		<!-- MSBuild arrays use ';' as a separator -->
+		<ThunderstoreCommunities>lethal-company;repo;peak</ThunderstoreCommunities>
+		<!--
+			These categories are applied to all defined communities,
+			even to communities only used as keys in ThunderstoreCommunityCategories,
+			which also get added to communities to upload to.
+		-->
+		<ThunderstoreCategories>mods;libraries</ThunderstoreCategories>
+		<!-- This is the format for adding per-community categories -->
+		<ThunderstoreCommunityCategories>
+			repo=client-side/server-side;
+			lethal-company=bepinex;
+			yapyap=all-client
+		</ThunderstoreCommunityCategories>
+
+		<!-- Allow ThunderPipe to run automatically -->
+		<ThunderPipePackAfterBuild>true</ThunderPipePackAfterBuild>
+	</PropertyGroup>
+
+	<!-- Nuget Properties -->
+	<PropertyGroup>
+		<IsPackable>false</IsPackable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="../ThunderPipe.Core/ThunderPipe.Core.csproj" />
+		<ProjectReference Include="../ThunderPipe.MSBuild/ThunderPipe.MSBuild.csproj" />
+		<ProjectReference Include="../ThunderPipe.Sdk/ThunderPipe.Sdk.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ThunderstoreFile Include="$(TargetPath)" Destination="plugins/" />
+		<ThunderstorePackageFile Include="$(SolutionRoot)README.md" />
+		<ThunderstorePackageFile Include="$(SolutionRoot)icon.png" />
+		<ThunderstorePackageFile Include="$(SolutionRoot)LICENSE" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ThunderstoreDependency Include="BepInEx-BepInExPack" Version="1.2.3" />
+	</ItemGroup>
+
+	<!--
+		Target 'ThunderPipePack' runs because we set 'ThunderPipePackAfterBuild' to 'true'
+		and it defines $(ThunderPipePackOutputFile) which is the path to the built zip package
+	-->
+	<Target Name="PublishTS" AfterTargets="ThunderPipePack">
+		<ThunderPipePublish
+			Token="tss"
+			File="$(ThunderPipePackOutputFile)"
+			Team="$(ThunderstoreTeam)"
+			Communities="$(ThunderstoreCommunities)"
+			Categories="$(ThunderstoreCategories)"
+			CommunityCategories="$(ThunderstoreCommunityCategories)"
+			HasNSFW="$(ThunderstoreNSFW)"
+		/>
+	</Target>
+
+	<Import Project="../ThunderPipe.Sdk/Sdk/Sdk.targets" />
+
+	<PropertyGroup>
+		<MSBuildTasksAssemblyFile>$(MSBuildThisFileDirectory)bin/$(Configuration)/$(TargetFramework)/ThunderPipe.MSBuild.dll</MSBuildTasksAssemblyFile>
+	</PropertyGroup>
+</Project>

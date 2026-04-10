@@ -11,4 +11,10 @@
 		<RepositoryUrl>https://github.com/WarperSan/ThunderPipe</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 	</PropertyGroup>
+
+	<PropertyGroup>
+		<!-- Make Release config not mean Debug for projects outside the current solution. -->
+		<ShouldUnsetParentConfigurationAndPlatform>false</ShouldUnsetParentConfigurationAndPlatform>
+		<SolutionRoot>$(MSBuildThisFileDirectory)</SolutionRoot>
+	</PropertyGroup>
 </Project>

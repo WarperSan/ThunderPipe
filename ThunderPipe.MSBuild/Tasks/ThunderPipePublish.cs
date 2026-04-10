@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using Microsoft.Build.Framework;
 using Microsoft.Extensions.Logging;
 using ThunderPipe.Core.Models.API;
@@ -22,6 +23,8 @@ public class ThunderPipePublish : Task
 	[Required]
 	public required string[] Communities { get; set; }
 
+	public string[]? CommunityCategories { get; set; }
+
 	public string[]? Categories { get; set; }
 
 	// ReSharper disable once InconsistentNaming
@@ -38,8 +41,10 @@ public class ThunderPipePublish : Task
 		var builder = new RequestBuilder();
 		var logger = new MSBuildLogger(Log);
 
-		if (!string.IsNullOrEmpty(Host))
-			builder.ToUri(new Uri(Host));
+		if (string.IsNullOrEmpty(Host))
+			Host = "https://thunderstore.io/";
+
+		builder.ToUri(new Uri(Host));
 
 		var publicationService = new PublicationService(builder, new FileSystem(), logger);
 
@@ -57,15 +62,46 @@ public class ThunderPipePublish : Task
 			return false;
 		}
 
-		var communities = Communities.Select(c => (Community)c).ToArray();
-		var categories = ParseCategories(Categories ?? []);
+		// Communities can be defined two ways: from Communities property, or
+		// from CommunityCategories property, where the community is a key.
+		var communitiesHashSet = Communities.Select(c => (Community)c).ToHashSet();
+		var categoriesDictionary = ParseCommunityCategories(
+			CommunityCategories ?? [],
+			communitiesHashSet
+		);
+		var communities = communitiesHashSet.ToArray();
+
+		// 'Categories' property is added to every community's categories,
+		// even to those which were only defined as keys in CommunityCategories.
+		AddSharedCategories(
+			communities,
+			categoriesDictionary,
+			Categories?.Select(x => (Category)x) ?? []
+		);
+
+		// Debugging thing.
+		// Probably would be good to have some simple way to confirm the values are correct as a user.
+		// throw new Exception(
+		// 	$"""
+		// 		Token {Token}
+		// 		File {File}
+		// 		Team {Team}
+		// 		Communities[] {string.Join(", ", communities.Select(x => x.ToString()))}
+		// 		Categories[] {string.Join(
+		// 		", ",
+		// 		categoriesDictionary.Select(x => $"{x.Key}={string.Join(';', x.Value)}")
+		// 	)}
+		// 		HasNSFW {HasNSFW}
+		// 		Host {Host}
+		// 	"""
+		// );
 
 		var package = publicationService
 			.PublishPackage(
 				File,
 				Team,
 				communities,
-				categories,
+				categoriesDictionary,
 				hasNsfw,
 				Token,
 				CancellationToken.None
@@ -77,30 +113,55 @@ public class ThunderPipePublish : Task
 		return true;
 	}
 
-	private static IDictionary<Community, IEnumerable<Category>> ParseCategories(
-		string[] categoryStrings
+	private static Dictionary<Community, List<Category>> ParseCommunityCategories(
+		string[] categoryStrings,
+		HashSet<Community> communities
 	)
 	{
-		var categoriesDictionary = new Dictionary<Community, IEnumerable<Category>>();
+		var categoriesDictionary = new Dictionary<Community, List<Category>>();
 
 		foreach (var categoryString in categoryStrings)
 		{
 			var parts = categoryString.Split('=');
 
-			if (parts.Length < 2)
-				continue;
+			if (parts.Length != 2)
+				throw new IndexOutOfRangeException(
+					$"Community category '{categoryString}' must have exactly one '=' separator."
+				);
 
 			var community = parts[0];
 			var categoriesString = parts[1];
 
+			// We can't use ';' as a separator here because that's the MSBuild array separator.
 			var categories = categoriesString.Split(
-				';',
+				'/',
 				StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
 			);
 
-			categoriesDictionary[community] = categories.Select(c => (Category)c);
+			categoriesDictionary[community] = [.. categories.Select(c => (Category)c)];
+			communities.Add(community);
 		}
 
 		return categoriesDictionary;
+	}
+
+	private static void AddSharedCategories(
+		Community[] communities,
+		Dictionary<Community, List<Category>> categoriesDictionary,
+		IEnumerable<Category> sharedCategories
+	)
+	{
+		foreach (var community in communities)
+		{
+			ref var categoryList = ref CollectionsMarshal.GetValueRefOrAddDefault(
+				categoriesDictionary,
+				community,
+				out var exists
+			);
+			if (exists)
+				categoryList!.AddRange(sharedCategories);
+			else
+				categoryList = [.. sharedCategories];
+		}
 	}
 }
