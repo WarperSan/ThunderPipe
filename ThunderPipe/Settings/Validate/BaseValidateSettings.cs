@@ -16,7 +16,7 @@ internal abstract class BaseValidateSettings : BaseCommandSettings
 
 	[CommandOption(HOST_OPTION)]
 	[Description("URL of the Thunderstore server to validate against")]
-	[DefaultValue("https://thunderstore.io")]
+	[DefaultValue(Core.Constants.DEFAULT_HOST)]
 	[TypeConverter(typeof(UriTypeConverter))]
 	public Uri? Host { get; init; }
 

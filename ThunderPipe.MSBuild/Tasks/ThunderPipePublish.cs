@@ -42,7 +42,7 @@ public class ThunderPipePublish : Task
 		var logger = new MSBuildLogger(Log);
 
 		if (string.IsNullOrEmpty(Host))
-			Host = "https://thunderstore.io/";
+			Host = Core.Constants.DEFAULT_HOST;
 
 		builder.ToUri(new Uri(Host));
 
