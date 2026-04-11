@@ -67,10 +67,16 @@ public class ThunderPipePack : Task
 			Dependencies =
 				Dependencies
 					?.Select(d =>
-						(PackageDependency)(
-							d.ItemSpec + '-' + d.GetMetadata("Version") ?? "0.0.0" ?? ""
-						)
-					)
+					{
+						var package = (PackageDependency)(
+							d.ItemSpec + '-' + d.GetMetadata("Version")
+						);
+						if (!package.IsValid())
+							throw new InvalidDataException(
+								$"package dependency '{package}' is invalid."
+							);
+						return package;
+					})
 					.ToArray()
 				?? [],
 		};
@@ -93,15 +99,15 @@ public class ThunderPipePack : Task
 		}
 
 		// We prefer OutputFile if it's defined because OutputDir is defined implicitly.
-		if (!string.IsNullOrEmpty(OutputFile))
-			OutputDir = Path.GetDirectoryName(OutputFile) ?? string.Empty;
-		else
+		if (string.IsNullOrEmpty(OutputFile))
 		{
 			if (string.IsNullOrWhiteSpace(OutputDir))
 				OutputDir = Path.GetTempPath();
 
 			OutputFile = Path.Combine(OutputDir, $"{Team}-{Name}-{Version}.zip");
 		}
+		else
+			OutputDir = Path.GetDirectoryName(OutputFile) ?? string.Empty;
 
 		if (File.Exists(OutputFile))
 			File.Delete(OutputFile);

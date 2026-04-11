@@ -62,26 +62,10 @@ public class ThunderPipePublish : Task
 			return false;
 		}
 
-		// Communities can be defined two ways: from Communities property, or
-		// from CommunityCategories property, where the community is a key.
-		var communitiesHashSet = Communities.Select(c => (Community)c).ToHashSet();
-		var mutableCategoriesDictionary = ParseCommunityCategories(
-			CommunityCategories ?? [],
-			communitiesHashSet
-		);
-		var communities = communitiesHashSet.ToArray();
-
-		// 'Categories' property is added to every community's categories,
-		// even to those which were only defined as keys in CommunityCategories.
-		AddSharedCategories(
-			communities,
-			mutableCategoriesDictionary,
-			Categories?.Select(x => (Category)x) ?? []
-		);
-
-		var categories = mutableCategoriesDictionary.ToDictionary(
-			x => x.Key,
-			x => (IEnumerable<Category>)x.Value
+		var (communities, categories) = ParseCommunitiesAndCategories(
+			Communities,
+			CommunityCategories,
+			Categories
 		);
 
 		// Debugging thing.
@@ -116,6 +100,40 @@ public class ThunderPipePublish : Task
 
 		Output = package.DownloadURL.ToString();
 		return true;
+	}
+
+	private static (
+		Community[] communities,
+		Dictionary<Community, IEnumerable<Category>> categories
+	) ParseCommunitiesAndCategories(
+		string[] communities,
+		string[]? communityCategories,
+		string[]? categories
+	)
+	{
+		// Communities can be defined two ways: from Communities property, or
+		// from CommunityCategories property, where the community is a key.
+		var communitiesHashSet = communities.Select(c => (Community)c).ToHashSet();
+		var mutableCategoriesDictionary = ParseCommunityCategories(
+			communityCategories ?? [],
+			communitiesHashSet
+		);
+		var communitiesArray = communitiesHashSet.ToArray();
+
+		// 'Categories' property is added to every community's categories,
+		// even to those which were only defined as keys in CommunityCategories.
+		AddSharedCategories(
+			communitiesArray,
+			mutableCategoriesDictionary,
+			categories?.Select(x => (Category)x) ?? []
+		);
+
+		var categoriesDictionary = mutableCategoriesDictionary.ToDictionary(
+			x => x.Key,
+			x => (IEnumerable<Category>)x.Value
+		);
+
+		return (communitiesArray, categoriesDictionary);
 	}
 
 	private static Dictionary<Community, List<Category>> ParseCommunityCategories(
