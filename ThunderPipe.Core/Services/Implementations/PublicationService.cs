@@ -28,7 +28,7 @@ public sealed class PublicationService : IPublicationService
 		string file,
 		Team team,
 		IEnumerable<Community> communities,
-		IDictionary<Community, List<Category>> categories,
+		IDictionary<Community, IEnumerable<Category>> categories,
 		bool hasNsfw,
 		string token,
 		CancellationToken cancellationToken

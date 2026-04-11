@@ -212,7 +212,7 @@ public sealed class PublishApiClient : ThunderstoreClient
 	public async Task<Package> SubmitPackage(
 		Team team,
 		IEnumerable<Community> communities,
-		IDictionary<Community, List<Category>> categories,
+		IDictionary<Community, IEnumerable<Category>> categories,
 		bool hasNsfw,
 		string sessionUUID,
 		string token,

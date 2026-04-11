@@ -65,7 +65,7 @@ public class ThunderPipePublish : Task
 		// Communities can be defined two ways: from Communities property, or
 		// from CommunityCategories property, where the community is a key.
 		var communitiesHashSet = Communities.Select(c => (Community)c).ToHashSet();
-		var categoriesDictionary = ParseCommunityCategories(
+		var mutableCategoriesDictionary = ParseCommunityCategories(
 			CommunityCategories ?? [],
 			communitiesHashSet
 		);
@@ -75,8 +75,13 @@ public class ThunderPipePublish : Task
 		// even to those which were only defined as keys in CommunityCategories.
 		AddSharedCategories(
 			communities,
-			categoriesDictionary,
+			mutableCategoriesDictionary,
 			Categories?.Select(x => (Category)x) ?? []
+		);
+
+		var categories = mutableCategoriesDictionary.ToDictionary(
+			x => x.Key,
+			x => (IEnumerable<Category>)x.Value
 		);
 
 		// Debugging thing.
@@ -101,7 +106,7 @@ public class ThunderPipePublish : Task
 				File,
 				Team,
 				communities,
-				categoriesDictionary,
+				categories,
 				hasNsfw,
 				Token,
 				CancellationToken.None
