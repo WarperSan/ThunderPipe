@@ -68,9 +68,7 @@ public class ThunderPipePack : Task
 				Dependencies
 					?.Select(d =>
 					{
-						var package = (PackageDependency)(
-							d.ItemSpec + '-' + d.GetMetadata("Version")
-						);
+						PackageDependency package = d.ItemSpec + '-' + d.GetMetadata("Version");
 						if (!package.IsValid())
 							throw new InvalidDataException(
 								$"package dependency '{package}' is invalid."
