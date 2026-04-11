@@ -15,12 +15,14 @@
 
 		<!-- MSBuild arrays use ';' as a separator -->
 		<ThunderstoreCommunities>lethal-company;repo;peak</ThunderstoreCommunities>
+
 		<!--
 			These categories are applied to all defined communities,
 			even to communities only used as keys in ThunderstoreCommunityCategories,
 			which also get added to communities to upload to.
 		-->
 		<ThunderstoreCategories>mods;libraries</ThunderstoreCategories>
+
 		<!-- This is the format for adding per-community categories -->
 		<ThunderstoreCommunityCategories>
 			repo=client-side/server-side;
