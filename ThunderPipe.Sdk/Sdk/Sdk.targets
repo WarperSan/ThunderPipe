@@ -60,8 +60,10 @@
 			Files="@(ThunderstoreFile)"
 			Host="$(ThunderstoreHost)"
 			OutputDir="$(ThunderPipeOutputDir)"
+			OutputFile="$(ThunderPipeOutputFile)"
 		>
-			<Output TaskParameter="OutputFile" PropertyName="ThunderPipePackOutputFile" />
+			<Output TaskParameter="OutputDir" PropertyName="ThunderPipeOutputDir" />
+			<Output TaskParameter="OutputFile" PropertyName="ThunderPipeOutputFile" />
 		</ThunderPipePack>
 	</Target>
 </Project>

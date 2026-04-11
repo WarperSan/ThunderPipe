@@ -30,6 +30,11 @@
 
 		<!-- Allow ThunderPipe to run automatically -->
 		<ThunderPipePackAfterBuild>true</ThunderPipePackAfterBuild>
+
+		<!--
+			Optionally configure exact location & file name for zip
+			<ThunderPipeOutputFile>./bin/file.zip</ThunderPipeOutputFile>
+		-->
 	</PropertyGroup>
 
 	<!-- Nuget Properties -->
@@ -56,12 +61,13 @@
 
 	<!--
 		Target 'ThunderPipePack' runs because we set 'ThunderPipePackAfterBuild' to 'true'
-		and it defines $(ThunderPipePackOutputFile) which is the path to the built zip package
+		and it defines $(ThunderPipeOutputFile) which is the path to the built zip package
+		if it wasn't defined already by the user.
 	-->
 	<Target Name="PublishTS" AfterTargets="ThunderPipePack">
 		<ThunderPipePublish
 			Token="tss"
-			File="$(ThunderPipePackOutputFile)"
+			File="$(ThunderPipeOutputFile)"
 			Team="$(ThunderstoreTeam)"
 			Communities="$(ThunderstoreCommunities)"
 			Categories="$(ThunderstoreCategories)"

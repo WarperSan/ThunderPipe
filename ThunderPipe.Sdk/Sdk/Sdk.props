@@ -8,5 +8,7 @@
 		<ThunderstoreCommunities></ThunderstoreCommunities>
 		<ThunderstoreCommunityCategories></ThunderstoreCommunityCategories>
 		<ThunderstoreCategories></ThunderstoreCategories>
+
+		<ThunderPipeOutputFile></ThunderPipeOutputFile>
 	</PropertyGroup>
 </Project>

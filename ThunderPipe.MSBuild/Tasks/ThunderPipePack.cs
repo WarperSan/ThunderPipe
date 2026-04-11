@@ -81,7 +81,7 @@ public class ThunderPipePack : Task
 			.GetResult();
 
 		// For now, I ignore validation if token is not set,
-		// because otherwise  token is not required for building a package.
+		// because otherwise token is not required for building a package.
 		if (!string.IsNullOrEmpty(Token))
 		{
 			var isPackageValid = ValidatePackage(validationService, logger, Team, Token, tempDir)
@@ -92,10 +92,16 @@ public class ThunderPipePack : Task
 				return false;
 		}
 
-		if (string.IsNullOrWhiteSpace(OutputDir))
-			OutputDir = Path.GetTempPath();
+		// We prefer OutputFile if it's defined because OutputDir is defined implicitly.
+		if (!string.IsNullOrEmpty(OutputFile))
+			OutputDir = Path.GetDirectoryName(OutputFile) ?? string.Empty;
+		else
+		{
+			if (string.IsNullOrWhiteSpace(OutputDir))
+				OutputDir = Path.GetTempPath();
 
-		OutputFile = Path.Combine(OutputDir, $"{Team}-{Name}-{Version}.zip");
+			OutputFile = Path.Combine(OutputDir, $"{Team}-{Name}-{Version}.zip");
+		}
 
 		if (File.Exists(OutputFile))
 			File.Delete(OutputFile);
