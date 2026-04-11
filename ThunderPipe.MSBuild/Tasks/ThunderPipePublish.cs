@@ -123,15 +123,17 @@ public class ThunderPipePublish : Task
 		HashSet<Community> communities
 	)
 	{
+		const char SEPARATOR = '=';
+
 		var categoriesDictionary = new Dictionary<Community, List<Category>>();
 
 		foreach (var categoryString in categoryStrings)
 		{
-			var parts = categoryString.Split('=');
+			var parts = categoryString.Split(SEPARATOR);
 
 			if (parts.Length != 2)
 				throw new IndexOutOfRangeException(
-					$"Community category '{categoryString}' must have exactly one '=' separator."
+					$"Community category '{categoryString}' must have exactly one '{SEPARATOR}' separator."
 				);
 
 			var community = parts[0];
