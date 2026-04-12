@@ -9,6 +9,8 @@
 	<PropertyGroup>
 		<ThunderstoreTeam>TS_Team</ThunderstoreTeam>
 		<ThunderstoreName>Some_Plugin</ThunderstoreName>
+		<ThunderstoreToken>TS_TOKEN</ThunderstoreToken>
+
 		<Version>0.1.0</Version>
 		<Description>Short description.</Description>
 		<RepositoryUrl>https://example.com/</RepositoryUrl>
