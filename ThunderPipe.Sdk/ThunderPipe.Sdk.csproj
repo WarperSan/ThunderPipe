@@ -17,21 +17,21 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="../ThunderPipe.MSBuild/ThunderPipe.MSBuild.csproj"/>
+		<ProjectReference Include="$(SolutionRoot)ThunderPipe.MSBuild/ThunderPipe.MSBuild.csproj"/>
 	</ItemGroup>
 
 	<!-- Content includes -->
 	<ItemGroup>
 		<Content Include="Sdk/*" Pack="true" PackagePath="Sdk/"/>
 		<Content
-			Include="../ThunderPipe.MSBuild/bin/$(Configuration)/net8.0/**/*"
+			Include="$(SolutionRoot)ThunderPipe.MSBuild/bin/$(Configuration)/net8.0/**/*"
 			Pack="true"
 			PackagePath="build/net8.0/"
 			Visible="false"
 		/>
 
-		<None Include="../icon.png" Pack="true" PackagePath=""/>
+		<None Include="$(SolutionRoot)icon.png" Pack="true" PackagePath=""/>
 		<None Include="README.md" Pack="true" PackagePath=""/>
-		<None Include="../LICENSE" Pack="true" PackagePath=""/>
+		<None Include="$(SolutionRoot)LICENSE" Pack="true" PackagePath=""/>
 	</ItemGroup>
 </Project>
