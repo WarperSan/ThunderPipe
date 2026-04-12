@@ -31,6 +31,12 @@ public sealed partial record PackageVersion
 
 	public static implicit operator PackageVersion(string version) => new(version);
 
+#if NETSTANDARD
+	static Regex? _versionRegex;
+
+	private static Regex VersionRegex() => _versionRegex ??= new Regex("^[0-9]+.[0-9]+.[0-9]+$");
+#else
 	[GeneratedRegex("^[0-9]+.[0-9]+.[0-9]+$")]
 	private static partial Regex VersionRegex();
+#endif
 }

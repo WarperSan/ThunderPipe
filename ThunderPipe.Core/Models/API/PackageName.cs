@@ -31,6 +31,13 @@ public sealed partial record PackageName
 
 	public static implicit operator PackageName(string name) => new(name);
 
+#if NETSTANDARD
+	static Regex? _nameRegex;
+
+	private static Regex NameRegex() => _nameRegex ??= new Regex("^[a-zA-Z0-9_]+$");
+
+#else
 	[GeneratedRegex("^[a-zA-Z0-9_]+$")]
 	private static partial Regex NameRegex();
+#endif
 }

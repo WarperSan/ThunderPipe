@@ -112,12 +112,9 @@ public class ThunderPipePublish : Task
 			var categoriesString = parts[1];
 
 			// We can't use ';' as a separator here because that's the MSBuild array separator.
-			var categories = categoriesString.Split(
-				'/',
-				StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
-			);
+			var categories = categoriesString.Split(['/'], StringSplitOptions.RemoveEmptyEntries);
 
-			communityCategories[community] = [.. categories.Select(c => (Category)c)];
+			communityCategories[community] = [.. categories.Select(c => (Category)c.Trim())];
 		}
 
 		// Ensure all communities are included

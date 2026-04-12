@@ -80,7 +80,11 @@ public abstract class ThunderstoreClient : IDisposable
 		where T : class
 	{
 		var response = await SendRequest(request, ct);
-		var content = await response.Content.ReadAsStringAsync(ct);
+		var content = await response.Content.ReadAsStringAsync(
+#if !NETSTANDARD
+			ct
+#endif
+		);
 		Logger?.LogDebug("Received JSON:\n{Json}", content);
 
 		return Response<T>.CreateResponse(response, content);

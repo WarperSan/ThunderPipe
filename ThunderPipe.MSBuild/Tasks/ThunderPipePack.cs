@@ -88,7 +88,7 @@ public class ThunderPipePack : Task
 		// because otherwise token is not required for building a package.
 		if (!string.IsNullOrEmpty(Token))
 		{
-			var isPackageValid = ValidatePackage(validationService, logger, Team, Token, tempDir)
+			var isPackageValid = ValidatePackage(validationService, logger, Team, Token!, tempDir)
 				.GetAwaiter()
 				.GetResult();
 
@@ -122,7 +122,14 @@ public class ThunderPipePack : Task
 		DirectoryInfo directory;
 
 		if (string.IsNullOrWhiteSpace(temporaryDir))
+		{
+#if NETSTANDARD
+			var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+			directory = Directory.CreateDirectory(path);
+#else
 			directory = Directory.CreateTempSubdirectory();
+#endif
+		}
 		else
 			directory = Directory.CreateDirectory(temporaryDir);
 
@@ -163,7 +170,7 @@ public class ThunderPipePack : Task
 
 		if (destination.StartsWith("./"))
 			destination = destination[2..];
-		else if (destination.StartsWith('/'))
+		else if (destination.StartsWith("/"))
 			destination = destination[1..];
 
 		return destination;
@@ -196,8 +203,11 @@ public class ThunderPipePack : Task
 		var output = new StringBuilder();
 
 		output.AppendLine("Validation failed:");
-		output.Append("- ");
-		output.AppendJoin("\n- ", errors);
+		foreach (var error in errors)
+		{
+			output.Append("- ");
+			output.AppendLine(error);
+		}
 
 		logger.LogError("{Output}", output.ToString());
 		return false;

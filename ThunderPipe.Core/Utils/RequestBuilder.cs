@@ -40,7 +40,7 @@ public sealed class RequestBuilder
 		}
 
 		if (original._content != null)
-			_content = new StreamContent(original._content.ReadAsStream());
+			_content = new StreamContent(original._content.ReadAsStreamAsync().Result);
 
 		foreach (var paramKey in original._queryParams.AllKeys)
 		{
@@ -50,8 +50,8 @@ public sealed class RequestBuilder
 			SetParameter(paramKey, original._queryParams.Get(paramKey));
 		}
 
-		foreach ((var key, var value) in original._pathParams)
-			SetPathParameter(key, value);
+		foreach (var kvp in original._pathParams)
+			SetPathParameter(kvp.Key, kvp.Value);
 	}
 
 	#region Methods
@@ -135,11 +135,7 @@ public sealed class RequestBuilder
 	{
 		var serializedJson = JsonConvert.SerializeObject(json);
 
-		var jsonContent = new StringContent(
-			serializedJson,
-			Encoding.UTF8,
-			MediaTypeNames.Application.Json
-		);
+		var jsonContent = new StringContent(serializedJson, Encoding.UTF8, "application/json");
 
 		return WithContent(jsonContent);
 	}
@@ -196,8 +192,8 @@ public sealed class RequestBuilder
 		{
 			var path = HttpUtility.UrlDecode(tempBuilder.Path);
 
-			foreach ((var key, var value) in _pathParams)
-				path = path.Replace($"{{{key}}}", value);
+			foreach (var kvp in _pathParams)
+				path = path.Replace($"{{{kvp.Key}}}", kvp.Value);
 
 			tempBuilder.Path = path;
 		}

@@ -67,4 +67,8 @@ namespace $(RootNamespace)
 			<FileWrites Include="$(HuskyRoot).husky/_/install.stamp" />
 		</ItemGroup>
 	</Target>
+
+	<ItemGroup>
+		<PackageReference Include="PolySharp" Version="1.15.0" PrivateAssets="all" />
+	</ItemGroup>
 </Project>

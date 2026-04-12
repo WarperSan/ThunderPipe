@@ -56,7 +56,7 @@ public sealed class PublishApiClient : ThunderstoreClient
 		return new UploadSession
 		{
 			UUID = data.FileMetadata.UUID,
-			Parts = parts.ToArray().AsReadOnly(),
+			Parts = Array.AsReadOnly(parts.ToArray()),
 		};
 	}
 
@@ -76,7 +76,10 @@ public sealed class PublishApiClient : ThunderstoreClient
 		var uploadTasks = new List<Task<UploadPart>>();
 		UploadPart[] uploadedParts;
 
-		await using (var stream = fileSystem.OpenRead(file))
+#if !NETSTANDARD
+		await
+#endif
+		using (var stream = fileSystem.OpenRead(file))
 		{
 			foreach (var part in parts)
 			{
@@ -87,10 +90,10 @@ public sealed class PublishApiClient : ThunderstoreClient
 				uploadTasks.Add(task);
 			}
 
-			uploadedParts = await Task.WhenAll(uploadTasks).WaitAsync(ct);
+			uploadedParts = await Task.WhenAll(uploadTasks);
 		}
 
-		return uploadedParts.AsReadOnly();
+		return Array.AsReadOnly(uploadedParts);
 	}
 
 	/// <summary>

@@ -29,6 +29,12 @@ public sealed partial record Team
 
 	public static implicit operator Team(string team) => new(team);
 
+#if NETSTANDARD
+	static Regex? _teamRegex;
+
+	private static Regex TeamRegex() => _teamRegex ??= new Regex("^(?!_)[a-zA-Z0-9_]+(?<!_)$");
+#else
 	[GeneratedRegex("^(?!_)[a-zA-Z0-9_]+(?<!_)$")]
 	private static partial Regex TeamRegex();
+#endif
 }

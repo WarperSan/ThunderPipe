@@ -3,6 +3,7 @@
 	<PropertyGroup>
 		<ImplicitUsings>true</ImplicitUsings>
 		<Nullable>enable</Nullable>
+		<LangVersion>14</LangVersion>
 	</PropertyGroup>
 
 	<!-- Default Metadata -->
