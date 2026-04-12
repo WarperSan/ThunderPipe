@@ -113,6 +113,7 @@ public class ThunderPipePack : Task
 			Directory.CreateDirectory(OutputDir);
 
 		ZipFile.CreateFromDirectory(tempDir, OutputFile);
+		logger.LogDebug("Plugin packed to '{OutputFile}'", OutputFile);
 
 		return true;
 	}
