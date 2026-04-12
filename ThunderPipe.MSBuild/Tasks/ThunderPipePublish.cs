@@ -1,4 +1,4 @@
-using System.Runtime.InteropServices;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Build.Framework;
 using Microsoft.Extensions.Logging;
 using ThunderPipe.Core.Models.API;
@@ -9,6 +9,7 @@ using Task = Microsoft.Build.Utilities.Task;
 
 namespace ThunderPipe.MSBuild.Tasks;
 
+[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 public class ThunderPipePublish : Task
 {
 	[Required]
