@@ -161,15 +161,10 @@ public class ThunderPipePublish : Task
 	{
 		foreach (var community in communities)
 		{
-			ref var categoryList = ref CollectionsMarshal.GetValueRefOrAddDefault(
-				categoriesDictionary,
-				community,
-				out var exists
-			);
-			if (exists)
-				categoryList!.AddRange(sharedCategories);
+			if (categoriesDictionary.TryGetValue(community, out var categories))
+				categories.AddRange(sharedCategories);
 			else
-				categoryList = [.. sharedCategories];
+				categoriesDictionary.Add(community, [.. sharedCategories]);
 		}
 	}
 }
