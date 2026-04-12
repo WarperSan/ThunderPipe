@@ -14,4 +14,10 @@
 		<RunThunderPipePackAfterBuild></RunThunderPipePackAfterBuild>
 		<RunThunderPipePublishAfterBuild></RunThunderPipePublishAfterBuild>
 	</PropertyGroup>
+
+	<ItemDefinitionGroup>
+		<ThunderstoreDependency>
+			<Visible>false</Visible>
+		</ThunderstoreDependency>
+	</ItemDefinitionGroup>
 </Project>
