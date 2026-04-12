@@ -35,7 +35,7 @@
 		<PropertyGroup>
 			<ThunderPipeOutputDir
 				Condition="$(ThunderPipeOutputDir) == '' And $(ArtifactsPath) != ''"
-				>$(ArtifactsPath)/thunderstore/</ThunderPipeOutputDir
+				>$(ArtifactsPath)/thunderstore/$(ArtifactsPivots)</ThunderPipeOutputDir
 			>
 			<ThunderPipeOutputDir Condition="$(ThunderPipeOutputDir) == ''"
 				>$(TargetDir)thunderstore/</ThunderPipeOutputDir
