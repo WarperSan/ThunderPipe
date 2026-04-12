@@ -100,10 +100,10 @@ public sealed class Response<T>
 	/// </summary>
 	public static Response<T> CreateResponse(HttpResponseMessage response, string content)
 	{
-		var status = response.StatusCode;
+		if (response.IsSuccessStatusCode)
+			return HandleSuccess(content);
 
-		if (status == HttpStatusCode.OK)
-			return HandleOk(content);
+		var status = response.StatusCode;
 
 		var jToken = JToken.Parse(content);
 
@@ -137,7 +137,7 @@ public sealed class Response<T>
 		return json;
 	}
 
-	private static Response<T> HandleOk(string content)
+	private static Response<T> HandleSuccess(string content)
 	{
 		var data = ParseJson<T>(content);
 
