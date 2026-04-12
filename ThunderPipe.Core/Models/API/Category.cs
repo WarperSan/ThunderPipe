@@ -29,6 +29,6 @@ public sealed partial record Category
 
 	public static implicit operator Category(string category) => new(category);
 
-	[GeneratedRegex("^[a-z-A-Z\\-]+$")]
+	[GeneratedRegex("^[a-z-A-Z0-9\\-]+$")]
 	private static partial Regex CategoryRegex();
 }

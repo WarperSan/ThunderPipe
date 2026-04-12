@@ -29,6 +29,6 @@ public sealed partial record Community
 
 	public static implicit operator Community(string community) => new(community);
 
-	[GeneratedRegex("^[a-zA-Z-]+$")]
+	[GeneratedRegex("^[a-zA-Z0-9-]+$")]
 	private static partial Regex CommunityRegex();
 }
