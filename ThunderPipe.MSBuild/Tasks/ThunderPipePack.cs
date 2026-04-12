@@ -69,10 +69,12 @@ public class ThunderPipePack : Task
 					?.Select(d =>
 					{
 						PackageDependency package = d.ItemSpec + '-' + d.GetMetadata("Version");
+
 						if (!package.IsValid())
 							throw new InvalidDataException(
 								$"package dependency '{package}' is invalid."
 							);
+
 						return package;
 					})
 					.ToArray()
