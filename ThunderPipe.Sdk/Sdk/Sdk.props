@@ -10,5 +10,8 @@
 		<ThunderstoreCategories></ThunderstoreCategories>
 
 		<ThunderPipeOutputFile></ThunderPipeOutputFile>
+
+		<RunThunderPipePackAfterBuild></RunThunderPipePackAfterBuild>
+		<RunThunderPipePublishAfterBuild></RunThunderPipePublishAfterBuild>
 	</PropertyGroup>
 </Project>

@@ -46,7 +46,7 @@
 	<Target
 		Name="ThunderPipePack"
 		AfterTargets="Build"
-		Condition="$(ThunderPipePackAfterBuild) == 'true'"
+		Condition="'$(RunThunderPipePackAfterBuild)' == 'true'"
 	>
 		<ThunderPipePack
 			Token="$(ThunderPipeToken)"
@@ -65,5 +65,24 @@
 			<Output TaskParameter="OutputDir" PropertyName="ThunderPipeOutputDir" />
 			<Output TaskParameter="OutputFile" PropertyName="ThunderPipeOutputFile" />
 		</ThunderPipePack>
+	</Target>
+
+	<Target
+		Name="ThunderPipePublish"
+		AfterTargets="Build;ThunderPipePack"
+		Condition="'$(RunThunderPipePublishAfterBuild)' == 'true'"
+	>
+		<ThunderPipePublish
+			Token="$(ThunderPipeToken)"
+			File="$(ThunderPipeOutputFile)"
+			Team="$(ThunderstoreTeam)"
+			Communities="$(ThunderstoreCommunities)"
+			Categories="$(ThunderstoreCategories)"
+			CommunityCategories="$(ThunderstoreCommunityCategories)"
+			Host="$(ThunderstoreHost)"
+			HasNSFW="$(ThunderstoreNSFW)"
+		>
+			<Output TaskParameter="Output" PropertyName="ThunderPipePublishDownloadUrl" />
+		</ThunderPipePublish>
 	</Target>
 </Project>

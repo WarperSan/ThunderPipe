@@ -31,7 +31,12 @@
 		</ThunderstoreCommunityCategories>
 
 		<!-- Allow ThunderPipe to run automatically -->
-		<ThunderPipePackAfterBuild>true</ThunderPipePackAfterBuild>
+		<RunThunderPipePackAfterBuild>true</RunThunderPipePackAfterBuild>
+
+		<!--
+			Optionally also publish automatically
+			<RunThunderPipePublishAfterBuild>true</RunThunderPipePublishAfterBuild>
+		-->
 
 		<!--
 			Optionally configure exact location & file name for zip
@@ -60,23 +65,6 @@
 	<ItemGroup>
 		<ThunderstoreDependency Include="BepInEx-BepInExPack" Version="1.2.3" />
 	</ItemGroup>
-
-	<!--
-		Target 'ThunderPipePack' runs because we set 'ThunderPipePackAfterBuild' to 'true'
-		and it defines $(ThunderPipeOutputFile) which is the path to the built zip package
-		if it wasn't defined already by the user.
-	-->
-	<Target Name="PublishTS" AfterTargets="ThunderPipePack">
-		<ThunderPipePublish
-			Token="tss"
-			File="$(ThunderPipeOutputFile)"
-			Team="$(ThunderstoreTeam)"
-			Communities="$(ThunderstoreCommunities)"
-			Categories="$(ThunderstoreCategories)"
-			CommunityCategories="$(ThunderstoreCommunityCategories)"
-			HasNSFW="$(ThunderstoreNSFW)"
-		/>
-	</Target>
 
 	<Import Project="../ThunderPipe.Sdk/Sdk/Sdk.targets" />
 
