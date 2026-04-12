@@ -63,18 +63,19 @@ public class ThunderPipePublish : Task
 			return false;
 		}
 
-		var (communities, categories) = ParseCommunitiesAndCategories(
-			Communities,
-			CommunityCategories,
-			Categories
+		var communityCategories = ParseCommunitiesAndCategories(
+			Communities.Select(c => (Community)c),
+			CommunityCategories ?? [],
+			Categories?.Select(x => (Category)x).ToArray() ?? []
 		);
+		var communities = communityCategories.Keys;
 
 		var package = publicationService
 			.PublishPackage(
 				File,
 				Team,
 				communities,
-				categories,
+				communityCategories,
 				hasNsfw,
 				Token,
 				CancellationToken.None
@@ -86,50 +87,19 @@ public class ThunderPipePublish : Task
 		return true;
 	}
 
-	private static (
-		Community[] communities,
-		Dictionary<Community, IEnumerable<Category>> categories
-	) ParseCommunitiesAndCategories(
-		string[] communities,
-		string[]? communityCategories,
-		string[]? categories
-	)
-	{
-		// Communities can be defined two ways: from Communities property, or
-		// from CommunityCategories property, where the community is a key.
-		var communitiesHashSet = communities.Select(c => (Community)c).ToHashSet();
-		var mutableCategoriesDictionary = ParseCommunityCategories(
-			communityCategories ?? [],
-			communitiesHashSet
-		);
-		var communitiesArray = communitiesHashSet.ToArray();
-
-		// 'Categories' property is added to every community's categories,
-		// even to those which were only defined as keys in CommunityCategories.
-		AddSharedCategories(
-			communitiesArray,
-			mutableCategoriesDictionary,
-			categories?.Select(x => (Category)x) ?? []
-		);
-
-		var categoriesDictionary = mutableCategoriesDictionary.ToDictionary(
-			x => x.Key,
-			x => (IEnumerable<Category>)x.Value
-		);
-
-		return (communitiesArray, categoriesDictionary);
-	}
-
-	private static Dictionary<Community, List<Category>> ParseCommunityCategories(
-		string[] categoryStrings,
-		HashSet<Community> communities
+	private static Dictionary<Community, IEnumerable<Category>> ParseCommunitiesAndCategories(
+		IEnumerable<Community> communities,
+		string[] communityCategoriesStrings,
+		IEnumerable<Category> sharedCategories
 	)
 	{
 		const char SEPARATOR = '=';
 
-		var categoriesDictionary = new Dictionary<Community, List<Category>>();
+		var communityCategories = new Dictionary<Community, List<Category>>();
 
-		foreach (var categoryString in categoryStrings)
+		// Communities can be defined two ways: from Communities property, or
+		// from CommunityCategories property, where the community is a key.
+		foreach (var categoryString in communityCategoriesStrings)
 		{
 			var parts = categoryString.Split(SEPARATOR);
 
@@ -147,25 +117,22 @@ public class ThunderPipePublish : Task
 				StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
 			);
 
-			categoriesDictionary[community] = [.. categories.Select(c => (Category)c)];
-			communities.Add(community);
+			communityCategories[community] = [.. categories.Select(c => (Category)c)];
 		}
 
-		return categoriesDictionary;
-	}
-
-	private static void AddSharedCategories(
-		Community[] communities,
-		Dictionary<Community, List<Category>> categoriesDictionary,
-		IEnumerable<Category> sharedCategories
-	)
-	{
+		// Ensure all communities are included
 		foreach (var community in communities)
 		{
-			if (categoriesDictionary.TryGetValue(community, out var categories))
-				categories.AddRange(sharedCategories);
-			else
-				categoriesDictionary.Add(community, [.. sharedCategories]);
+			if (!communityCategories.ContainsKey(community))
+				communityCategories.Add(community, []);
 		}
+
+		// And finally add shared Categories to all communities
+		foreach (var categories in communityCategories.Values)
+		{
+			categories.AddRange(sharedCategories);
+		}
+
+		return communityCategories.ToDictionary(x => x.Key, x => (IEnumerable<Category>)x.Value);
 	}
 }
