@@ -31,6 +31,6 @@ public sealed class CreationService : ICreationService
 
 		await _fileSystem.WriteAllTextAsync(path, json, cancellationToken);
 
-		_logger.LogInformation("File wrote to '{Path}'.", path);
+		_logger.LogDebug("Manifest written to '{Path}'.", path);
 	}
 }
