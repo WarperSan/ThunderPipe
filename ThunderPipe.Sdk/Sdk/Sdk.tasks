@@ -1,6 +1,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<PropertyGroup>
-		<MSBuildTasksAssemblyFile>../build/net8.0/ThunderPipe.MSBuild.dll</MSBuildTasksAssemblyFile>
+		<MSBuildTasksAssemblyFile>../build/netstandard2.0/ThunderPipe.MSBuild.dll</MSBuildTasksAssemblyFile>
 	</PropertyGroup>
 
 	<UsingTask TaskName="ThunderPipePack" AssemblyFile="$(MSBuildTasksAssemblyFile)"/>

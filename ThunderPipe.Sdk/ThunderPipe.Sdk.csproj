@@ -24,9 +24,9 @@
 	<ItemGroup>
 		<Content Include="Sdk/*" Pack="true" PackagePath="Sdk/"/>
 		<Content
-			Include="../ThunderPipe.MSBuild/bin/$(Configuration)/net8.0/**/*"
+			Include="../ThunderPipe.MSBuild/bin/$(Configuration)/netstandard2.0/**/*"
 			Pack="true"
-			PackagePath="build/net8.0/"
+			PackagePath="build/netstandard2.0/"
 			Visible="false"
 		/>
 
