@@ -49,7 +49,7 @@
 		Condition="'$(RunThunderPipePackAfterBuild)' == 'true'"
 	>
 		<ThunderPipePack
-			Token="$(ThunderPipeToken)"
+			Token="$(ThunderstoreToken)"
 			Team="$(ThunderstoreTeam)"
 			Name="$(ThunderstoreName)"
 			Version="$(ThunderstoreVersion)"
@@ -73,7 +73,7 @@
 		Condition="'$(RunThunderPipePublishAfterBuild)' == 'true'"
 	>
 		<ThunderPipePublish
-			Token="$(ThunderPipeToken)"
+			Token="$(ThunderstoreToken)"
 			File="$(ThunderPipeOutputFile)"
 			Team="$(ThunderstoreTeam)"
 			Communities="$(ThunderstoreCommunities)"

@@ -1,6 +1,6 @@
 <Project>
 	<PropertyGroup>
-		<ThunderPipeToken></ThunderPipeToken>
+		<ThunderstoreToken></ThunderstoreToken>
 
 		<ThunderstoreHost></ThunderstoreHost>
 		<ThunderPipeLogLevel></ThunderPipeLogLevel>
