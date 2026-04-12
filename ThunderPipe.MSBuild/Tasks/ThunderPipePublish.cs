@@ -68,23 +68,6 @@ public class ThunderPipePublish : Task
 			Categories
 		);
 
-		// Debugging thing.
-		// Probably would be good to have some simple way to confirm the values are correct as a user.
-		// throw new Exception(
-		// 	$"""
-		// 		Token {Token}
-		// 		File {File}
-		// 		Team {Team}
-		// 		Communities[] {string.Join(", ", communities.Select(x => x.ToString()))}
-		// 		Categories[] {string.Join(
-		// 		", ",
-		// 		categoriesDictionary.Select(x => $"{x.Key}={string.Join(';', x.Value)}")
-		// 	)}
-		// 		HasNSFW {HasNSFW}
-		// 		Host {Host}
-		// 	"""
-		// );
-
 		var package = publicationService
 			.PublishPackage(
 				File,
