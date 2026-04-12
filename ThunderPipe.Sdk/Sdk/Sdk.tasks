@@ -3,6 +3,28 @@
 		<MSBuildTasksAssemblyFile>../build/net8.0/ThunderPipe.MSBuild.dll</MSBuildTasksAssemblyFile>
 	</PropertyGroup>
 
-	<UsingTask TaskName="ThunderPipePack" AssemblyFile="$(MSBuildTasksAssemblyFile)"/>
-	<UsingTask TaskName="ThunderPipePublish" AssemblyFile="$(MSBuildTasksAssemblyFile)"/>
+	<!-- https://github.com/dotnet/core/blob/main/release-notes/10.0/preview/rc2/sdk.md#use-net-msbuild-tasks-with-net-framework-msbuild -->
+	<UsingTask TaskName="ThunderPipePack"
+		AssemblyFile="$(MSBuildTasksAssemblyFile)"
+		Runtime="NET"
+		TaskFactory="TaskHostFactory"
+		Condition="$(MSBuildRuntimeType) == 'Full'"
+	/>
+	<UsingTask TaskName="ThunderPipePack"
+		AssemblyFile="$(MSBuildTasksAssemblyFile)"
+		Runtime="NET"
+		Condition="$(MSBuildRuntimeType) == 'Core'"
+	/>
+
+	<UsingTask TaskName="ThunderPipePublish"
+		AssemblyFile="$(MSBuildTasksAssemblyFile)"
+		Runtime="NET"
+		TaskFactory="TaskHostFactory"
+		Condition="$(MSBuildRuntimeType) == 'Full'"
+	/>
+	<UsingTask TaskName="ThunderPipePublish"
+		AssemblyFile="$(MSBuildTasksAssemblyFile)"
+		Runtime="NET"
+		Condition="$(MSBuildRuntimeType) == 'Core'"
+	/>
 </Project>
