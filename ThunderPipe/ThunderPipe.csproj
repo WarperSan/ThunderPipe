@@ -43,4 +43,6 @@
 	<PropertyGroup>
 		<MinVerTagPrefix>cli-v</MinVerTagPrefix>
 	</PropertyGroup>
+
+	<Import Project="ThunderPipe.targets" />
 </Project>
