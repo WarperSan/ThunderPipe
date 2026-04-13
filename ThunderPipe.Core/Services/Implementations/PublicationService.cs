@@ -59,16 +59,11 @@ public sealed class PublicationService : IPublicationService
 				cancellationToken
 			);
 		}
-		catch (Exception)
+		catch (Exception e)
 		{
+			_logger.LogWarning("Upload aborted due to an exception thrown:\n{Exception}", e);
 			await _client.AbortMultipartUpload(uploadSession.UUID, token, cancellationToken);
 			throw;
-		}
-
-		if (uploadedParts.Count != uploadSession.Parts.Count)
-		{
-			await _client.AbortMultipartUpload(uploadSession.UUID, token, cancellationToken);
-			throw new InvalidOperationException("Failed to upload every parts.");
 		}
 
 		var finishedUpload = await _client.FinishMultipartUpload(
@@ -81,7 +76,7 @@ public sealed class PublicationService : IPublicationService
 		if (!finishedUpload)
 			throw new InvalidOperationException("Failed to finish upload.");
 
-		_logger.LogInformation("Successfully finalized the upload.");
+		_logger.LogDebug("Successfully finalized the upload.");
 
 		return await _client.SubmitPackage(
 			team,
