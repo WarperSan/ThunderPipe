@@ -27,10 +27,6 @@
 		<ThunderstoreHost Condition="'$(ThunderstoreHost)' == ''">https://thunderstore.io/</ThunderstoreHost>
 	</PropertyGroup>
 
-	<ItemGroup Condition="'@(ThunderstoreFile)' == ''">
-		<ThunderstoreFile Include="$(OutputPath)*.dll" Destination="plugins/"/>
-	</ItemGroup>
-
 	<Target Name="_EvaluateThunderPipeOutputDir" AfterTargets="ResolveAssemblyReferences">
 		<PropertyGroup>
 			<ThunderPipeOutputDir
