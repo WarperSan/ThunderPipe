@@ -124,6 +124,100 @@ public class ResponseTests
 		});
 	}
 
+	[Fact]
+	public async Task CreateResponse_WhenReturnBadRequestWithArrayOfObjects_ReturnErrors()
+	{
+		// {"a":[{"b": "", "c": ""}, {"d": ""}]}
+		const string CATEGORY_1 = "namespace";
+		const string CATEGORY_2 = "non_field_errors";
+		const string CATEGORY_3 = "version";
+		const string CATEGORY_4 = "slime";
+
+		const string ERROR_1 = "This field is required.";
+		const string ERROR_2 = "This field cannot be empty.";
+		const string ERROR_3 = "Time to get sticky.";
+
+		const string KEY_ERROR_1 = $"{CATEGORY_1}[0].{CATEGORY_2}";
+		const string KEY_ERROR_2 = $"{CATEGORY_1}[0].{CATEGORY_3}";
+		const string KEY_ERROR_3 = $"{CATEGORY_1}[1].{CATEGORY_4}";
+
+		var errors = new Dictionary<string, Dictionary<string, string>[]>()
+		{
+			[CATEGORY_1] =
+			[
+				new Dictionary<string, string>() { [CATEGORY_2] = ERROR_1, [CATEGORY_3] = ERROR_2 },
+				new Dictionary<string, string>() { [CATEGORY_4] = ERROR_3 },
+			],
+		};
+
+		var rawResponse = CreateMessage(HttpStatusCode.BadRequest, errors);
+		var content = await rawResponse.Content.ReadAsStringAsync(
+			TestContext.Current.CancellationToken
+		);
+		var response = Response<Product>.CreateResponse(rawResponse, content);
+
+		Assert.False(response.IsSuccess);
+		Assert.Null(response.Data);
+		Assert.NotEmpty(response.Errors);
+		Assert.Contains(KEY_ERROR_1, response.Errors);
+		Assert.Contains(KEY_ERROR_2, response.Errors);
+		Assert.Contains(KEY_ERROR_3, response.Errors);
+
+		Assert.Contains(ERROR_1, response.Errors[KEY_ERROR_1]);
+		Assert.Contains(ERROR_2, response.Errors[KEY_ERROR_2]);
+		Assert.Contains(ERROR_3, response.Errors[KEY_ERROR_3]);
+	}
+
+	[Fact]
+	public async Task CreateResponse_WhenReturnBadRequestWithNestedObject_ReturnErrors()
+	{
+		// {"a":{"b":{"d": "", "e": ""}, "c": ""}}
+		const string CATEGORY_1 = "namespace";
+		const string CATEGORY_2 = "non_field_errors";
+		const string CATEGORY_3 = "version";
+		const string CATEGORY_4 = "testing";
+		const string CATEGORY_5 = "production";
+
+		const string ERROR_1 = "This field is required.";
+		const string ERROR_2 = "This field cannot be empty.";
+		const string ERROR_3 = "This field should be an integer.";
+
+		const string KEY_ERROR_1 = $"{CATEGORY_1}.{CATEGORY_2}.{CATEGORY_3}";
+		const string KEY_ERROR_2 = $"{CATEGORY_1}.{CATEGORY_2}.{CATEGORY_4}";
+		const string KEY_ERROR_3 = $"{CATEGORY_1}.{CATEGORY_5}";
+
+		var errors = new Dictionary<string, dynamic>()
+		{
+			[CATEGORY_1] = new Dictionary<string, dynamic>()
+			{
+				[CATEGORY_2] = new Dictionary<string, string>()
+				{
+					[CATEGORY_3] = ERROR_1,
+					[CATEGORY_4] = ERROR_2,
+				},
+				[CATEGORY_5] = ERROR_3,
+			},
+		};
+
+		var rawResponse = CreateMessage(HttpStatusCode.BadRequest, errors);
+		var content = await rawResponse.Content.ReadAsStringAsync(
+			TestContext.Current.CancellationToken
+		);
+		var response = Response<Product>.CreateResponse(rawResponse, content);
+
+		Assert.False(response.IsSuccess);
+		Assert.Null(response.Data);
+		Assert.NotEmpty(response.Errors);
+
+		Assert.Contains(KEY_ERROR_1, response.Errors);
+		Assert.Contains(KEY_ERROR_2, response.Errors);
+		Assert.Contains(KEY_ERROR_3, response.Errors);
+
+		Assert.Contains(ERROR_1, response.Errors[KEY_ERROR_1]);
+		Assert.Contains(ERROR_2, response.Errors[KEY_ERROR_2]);
+		Assert.Contains(ERROR_3, response.Errors[KEY_ERROR_3]);
+	}
+
 	[Theory]
 	[InlineData(HttpStatusCode.NotFound, "Upload not found")]
 	[InlineData(HttpStatusCode.NotFound, "Not found.")]

@@ -142,6 +142,43 @@ public sealed class Response<T>
 
 	private static Response<T> HandleBadRequest(JToken jToken)
 	{
+		switch (jToken)
+		{
+			case JObject jObject:
+				return ParseObjectError(jObject);
+			case JArray jArray:
+			{
+				// if is array, parse all errors as global
+				var errors = jArray.Values<string>().OfType<string>();
+
+				return new Response<T>(
+					new Dictionary<string, IEnumerable<string>>() { [GLOBAL_ERRORS] = errors }
+				);
+			}
+			default:
+				throw new InvalidOperationException(
+					$"Cannot parse a '{HttpStatusCode.BadRequest:D}' response when it's not an array or an object."
+				);
+		}
+	}
+
+	private static Response<T> HandleError(JToken jToken)
+	{
+		// Parse details
+		if (jToken is JObject detailsObj && detailsObj.TryGetValue("detail", out var error))
+		{
+			var errorString = error.Value<string>() ?? "";
+
+			return new Response<T>(
+				new Dictionary<string, IEnumerable<string>>() { [GLOBAL_ERRORS] = [errorString] }
+			);
+		}
+
+		throw new NotSupportedException($"Received a payload that was not supported:\n{jToken}");
+	}
+
+	private static Response<T> ParseObjectError(JToken jToken)
+	{
 		var tokensToProcess = new Queue<JToken>();
 		var allErrors = new Dictionary<string, List<string>>();
 
@@ -160,17 +197,22 @@ public sealed class Response<T>
 					break;
 				}
 				case JArray jArray:
-					foreach (var item in jArray.Values())
+					foreach (var item in jArray)
 						tokensToProcess.Enqueue(item);
 					break;
 				default:
-					if (!allErrors.ContainsKey(token.Path))
-						allErrors.Add(token.Path, []);
+					var key = token.Path;
+
+					if (token.Parent != null && token.Parent.Type == JTokenType.Array)
+						key = token.Parent.Path;
+
+					if (!allErrors.ContainsKey(key))
+						allErrors.Add(key, []);
 
 					var error = token.Value<string>();
 
 					if (!string.IsNullOrEmpty(error))
-						allErrors[token.Path].Add(error);
+						allErrors[key].Add(error);
 					break;
 			}
 		}
@@ -181,20 +223,5 @@ public sealed class Response<T>
 			readOnlyErrors[error.Key] = error.Value;
 
 		return new Response<T>(readOnlyErrors);
-	}
-
-	private static Response<T> HandleError(JToken jToken)
-	{
-		// Parse details
-		if (jToken is JObject detailsObj && detailsObj.TryGetValue("detail", out var error))
-		{
-			var errorString = error.Value<string>() ?? "";
-
-			return new Response<T>(
-				new Dictionary<string, IEnumerable<string>>() { [GLOBAL_ERRORS] = [errorString] }
-			);
-		}
-
-		throw new NotSupportedException($"Received a payload that was not supported:\n{jToken}");
 	}
 }
