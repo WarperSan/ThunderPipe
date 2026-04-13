@@ -67,14 +67,17 @@ public sealed class Response<T>
 			return;
 
 		var output = new StringBuilder();
-		output.AppendLine("Errors:");
+		output.AppendLine($"Errors from '{_response.RequestMessage?.RequestUri}':");
 
 		foreach (var error in Errors)
 		{
-			output.AppendLine($"- [{error.Key}]:");
+			output.Append($"- [{error.Key}]:");
 
 			foreach (var errorValue in error.Value)
-				output.AppendLine($"    {errorValue}");
+			{
+				output.AppendLine();
+				output.Append($"    {errorValue}");
+			}
 		}
 
 		logger.LogError("{Errors}", output.ToString());
