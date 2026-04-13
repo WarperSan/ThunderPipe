@@ -34,9 +34,16 @@ public sealed class ValidationService : IValidationService
 
 		try
 		{
-			errors.AddRange(
-				await _client.IsIconValid(iconPath, _fileSystem, token, cancellationToken)
+			var iconErrors = await _client.IsIconValid(
+				iconPath,
+				_fileSystem,
+				token,
+				cancellationToken
 			);
+
+			var errorPrefix = $"['{iconPath}']";
+
+			errors.AddRange(iconErrors.Select(error => $"{errorPrefix} {error}"));
 		}
 		catch (Exception e)
 		{
@@ -45,15 +52,17 @@ public sealed class ValidationService : IValidationService
 
 		try
 		{
-			errors.AddRange(
-				await _client.IsManifestValid(
-					manifestPath,
-					team,
-					_fileSystem,
-					token,
-					cancellationToken
-				)
+			var manifestErrors = await _client.IsManifestValid(
+				manifestPath,
+				team,
+				_fileSystem,
+				token,
+				cancellationToken
 			);
+
+			var errorPrefix = $"['{manifestPath}']";
+
+			errors.AddRange(manifestErrors.Select(error => $"{errorPrefix} {error}"));
 		}
 		catch (Exception e)
 		{
@@ -63,7 +72,16 @@ public sealed class ValidationService : IValidationService
 		try
 		{
 			// TODO: Check why this returns a 500
-			//errors.AddRange(await _client.IsReadmeValid(readmePath, _fileSystem, token, cancellationToken));
+			/*var readmeErrors = await _client.IsReadmeValid(
+				readmePath,
+				_fileSystem,
+				token,
+				cancellationToken
+			);
+
+			var errorPrefix = $"['{readmePath}']";
+
+			errors.AddRange(readmeErrors.Select(error => $"{errorPrefix} {error}"));*/
 		}
 		catch (Exception e)
 		{
