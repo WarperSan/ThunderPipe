@@ -83,6 +83,12 @@ public class ThunderPipePublish : Task
 			.GetAwaiter()
 			.GetResult();
 
+		logger.LogInformation(
+			"Successfully published '{VersionName}' v{VersionVersion}",
+			package.Name,
+			package.Version
+		);
+
 		Output = package.DownloadURL.ToString();
 		return true;
 	}
