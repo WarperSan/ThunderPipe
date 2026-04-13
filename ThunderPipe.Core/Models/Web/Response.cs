@@ -12,20 +12,11 @@ namespace ThunderPipe.Core.Models.Web;
 public sealed class Response<T>
 	where T : class
 {
-	public const string GLOBAL_ERRORS = "global";
-
 	private Response(T data)
 	{
 		IsSuccess = true;
 		Data = data;
 		Errors = new Dictionary<string, IEnumerable<string>>();
-	}
-
-	private Response(IEnumerable<string> errors)
-	{
-		IsSuccess = false;
-		Data = null;
-		Errors = new Dictionary<string, IEnumerable<string>>() { [GLOBAL_ERRORS] = errors };
 	}
 
 	private Response(IDictionary<string, IEnumerable<string>> errors)
@@ -146,35 +137,45 @@ public sealed class Response<T>
 
 	private static Response<T> HandleBadRequest(JToken jToken)
 	{
-		switch (jToken)
+		var tokensToProcess = new Queue<JToken>();
+		var allErrors = new Dictionary<string, List<string>>();
+
+		tokensToProcess.Enqueue(jToken);
+
+		while (tokensToProcess.Count > 0)
 		{
-			case JObject jObject:
-			{
-				// if is object, parse every error as field specific
-				var allErrors = new Dictionary<string, IEnumerable<string>>();
+			var token = tokensToProcess.Dequeue();
 
-				foreach (var property in jObject.Properties())
+			switch (token)
+			{
+				case JObject jObject:
 				{
-					var category = property.Name;
-					var errors = property.Value.Values<string>().OfType<string>();
-
-					allErrors[category] = errors;
+					foreach (var property in jObject.Properties())
+						tokensToProcess.Enqueue(property.Value);
+					break;
 				}
+				case JArray jArray:
+					foreach (var item in jArray.Values())
+						tokensToProcess.Enqueue(item);
+					break;
+				default:
+					if (!allErrors.ContainsKey(token.Path))
+						allErrors.Add(token.Path, []);
 
-				return new Response<T>(allErrors);
-			}
-			case JArray jArray:
-			{
-				// if is array, parse all errors as global
-				var errors = jArray.Values<string>().OfType<string>();
+					var error = token.Value<string>();
 
-				return new Response<T>(errors);
+					if (!string.IsNullOrEmpty(error))
+						allErrors[token.Path].Add(error);
+					break;
 			}
-			default:
-				throw new InvalidOperationException(
-					$"Cannot parse a '{HttpStatusCode.BadRequest:D}' response when it's not an array or an object."
-				);
 		}
+
+		var readOnlyErrors = new Dictionary<string, IEnumerable<string>>();
+
+		foreach (var error in allErrors)
+			readOnlyErrors[error.Key] = error.Value;
+
+		return new Response<T>(readOnlyErrors);
 	}
 
 	private static Response<T> HandleError(JToken jToken)
@@ -183,7 +184,10 @@ public sealed class Response<T>
 		if (jToken is JObject detailsObj && detailsObj.TryGetValue("detail", out var error))
 		{
 			var errorString = error.Value<string>() ?? "";
-			return new Response<T>([errorString]);
+
+			return new Response<T>(
+				new Dictionary<string, IEnumerable<string>>() { ["global"] = [errorString] }
+			);
 		}
 
 		throw new NotSupportedException($"Received a payload that was not supported:\n{jToken}");
