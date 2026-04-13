@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Build.Framework;
 using Microsoft.Extensions.Logging;
 using ThunderPipe.Core.Models.API;
@@ -8,6 +9,7 @@ using Task = Microsoft.Build.Utilities.Task;
 
 namespace ThunderPipe.MSBuild.Tasks;
 
+[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 public class ThunderPipePublish : Task
 {
 	[Required]
@@ -21,6 +23,8 @@ public class ThunderPipePublish : Task
 
 	[Required]
 	public required string[] Communities { get; set; }
+
+	public string[]? CommunityCategories { get; set; }
 
 	public string[]? Categories { get; set; }
 
@@ -38,8 +42,10 @@ public class ThunderPipePublish : Task
 		var builder = new RequestBuilder();
 		var logger = new MSBuildLogger(Log);
 
-		if (!string.IsNullOrEmpty(Host))
-			builder.ToUri(new Uri(Host));
+		if (string.IsNullOrEmpty(Host))
+			Host = Core.Constants.DEFAULT_HOST;
+
+		builder.ToUri(new Uri(Host));
 
 		var publicationService = new PublicationService(builder, new FileSystem(), logger);
 
@@ -57,15 +63,19 @@ public class ThunderPipePublish : Task
 			return false;
 		}
 
-		var communities = Communities.Select(c => (Community)c).ToArray();
-		var categories = ParseCategories(Categories ?? []);
+		var communityCategories = ParseCommunitiesAndCategories(
+			Communities.Select(c => (Community)c),
+			CommunityCategories ?? [],
+			Categories?.Select(x => (Category)x).ToArray() ?? []
+		);
+		var communities = communityCategories.Keys;
 
 		var package = publicationService
 			.PublishPackage(
 				File,
 				Team,
 				communities,
-				categories,
+				communityCategories,
 				hasNsfw,
 				Token,
 				CancellationToken.None
@@ -77,30 +87,52 @@ public class ThunderPipePublish : Task
 		return true;
 	}
 
-	private static IDictionary<Community, IEnumerable<Category>> ParseCategories(
-		string[] categoryStrings
+	private static Dictionary<Community, IEnumerable<Category>> ParseCommunitiesAndCategories(
+		IEnumerable<Community> communities,
+		string[] communityCategoriesStrings,
+		IEnumerable<Category> sharedCategories
 	)
 	{
-		var categoriesDictionary = new Dictionary<Community, IEnumerable<Category>>();
+		const char SEPARATOR = '=';
 
-		foreach (var categoryString in categoryStrings)
+		var communityCategories = new Dictionary<Community, List<Category>>();
+
+		// Communities can be defined two ways: from Communities property, or
+		// from CommunityCategories property, where the community is a key.
+		foreach (var categoryString in communityCategoriesStrings)
 		{
-			var parts = categoryString.Split('=');
+			var parts = categoryString.Split(SEPARATOR);
 
-			if (parts.Length < 2)
-				continue;
+			if (parts.Length != 2)
+				throw new IndexOutOfRangeException(
+					$"Community category '{categoryString}' must have exactly one '{SEPARATOR}' separator."
+				);
 
 			var community = parts[0];
 			var categoriesString = parts[1];
 
+			// We can't use ';' as a separator here because that's the MSBuild array separator.
 			var categories = categoriesString.Split(
-				';',
+				'/',
 				StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
 			);
 
-			categoriesDictionary[community] = categories.Select(c => (Category)c);
+			communityCategories[community] = [.. categories.Select(c => (Category)c)];
 		}
 
-		return categoriesDictionary;
+		// Ensure all communities are included
+		foreach (var community in communities)
+		{
+			if (!communityCategories.ContainsKey(community))
+				communityCategories.Add(community, []);
+		}
+
+		// And finally add shared Categories to all communities
+		foreach (var categories in communityCategories.Values)
+		{
+			categories.AddRange(sharedCategories);
+		}
+
+		return communityCategories.ToDictionary(x => x.Key, x => (IEnumerable<Category>)x.Value);
 	}
 }

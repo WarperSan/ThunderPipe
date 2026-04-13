@@ -16,8 +16,7 @@ namespace ThunderPipe.MSBuild.Tasks;
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 public class ThunderPipePack : Task
 {
-	[Required]
-	public required string Token { get; set; }
+	public string? Token { get; set; }
 
 	[Required]
 	public required string Team { get; set; }
@@ -37,7 +36,10 @@ public class ThunderPipePack : Task
 	public string? Host { get; set; }
 
 	[Output]
-	public string? Output { get; set; }
+	public string? OutputDir { get; set; }
+
+	[Output]
+	public string? OutputFile { get; set; }
 
 	/// <inheritdoc />
 	public override bool Execute()
@@ -63,7 +65,20 @@ public class ThunderPipePack : Task
 			Description = Description ?? "",
 			Website = Website ?? "",
 			Dependencies =
-				Dependencies?.Select(d => (PackageDependency)(d.ItemSpec ?? "")).ToArray() ?? [],
+				Dependencies
+					?.Select(d =>
+					{
+						PackageDependency package = d.ItemSpec + '-' + d.GetMetadata("Version");
+
+						if (!package.IsValid())
+							throw new InvalidDataException(
+								$"package dependency '{package}' is invalid."
+							);
+
+						return package;
+					})
+					.ToArray()
+				?? [],
 		};
 
 		creationService
@@ -71,20 +86,36 @@ public class ThunderPipePack : Task
 			.GetAwaiter()
 			.GetResult();
 
-		var isPackageValid = ValidatePackage(validationService, logger, Team, Token, tempDir)
-			.GetAwaiter()
-			.GetResult();
+		// For now, I ignore validation if token is not set,
+		// because otherwise token is not required for building a package.
+		if (!string.IsNullOrEmpty(Token))
+		{
+			var isPackageValid = ValidatePackage(validationService, logger, Team, Token, tempDir)
+				.GetAwaiter()
+				.GetResult();
 
-		if (!isPackageValid)
-			return false;
+			if (!isPackageValid)
+				return false;
+		}
 
-		if (string.IsNullOrWhiteSpace(Output))
-			Output = Path.Combine(Path.GetTempPath(), $"{Team}-{Name}-{Version}.zip");
+		// We prefer OutputFile if it's defined because OutputDir is defined implicitly.
+		if (string.IsNullOrEmpty(OutputFile))
+		{
+			if (string.IsNullOrWhiteSpace(OutputDir))
+				OutputDir = Path.GetTempPath();
 
-		if (File.Exists(Output))
-			File.Delete(Output);
+			OutputFile = Path.Combine(OutputDir, $"{Team}-{Name}-{Version}.zip");
+		}
+		else
+			OutputDir = Path.GetDirectoryName(OutputFile) ?? string.Empty;
 
-		ZipFile.CreateFromDirectory(tempDir, Output);
+		if (File.Exists(OutputFile))
+			File.Delete(OutputFile);
+		else if (!Directory.Exists(OutputDir))
+			Directory.CreateDirectory(OutputDir);
+
+		ZipFile.CreateFromDirectory(tempDir, OutputFile);
+		logger.LogDebug("Plugin packed to '{OutputFile}'", OutputFile);
 
 		return true;
 	}

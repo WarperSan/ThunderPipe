@@ -13,7 +13,7 @@ internal abstract class BaseFetchSettings : BaseCommandSettings
 
 	[CommandOption(HOST_OPTION)]
 	[Description("URL of the Thunderstore server")]
-	[DefaultValue("https://thunderstore.io")]
+	[DefaultValue(Core.Constants.DEFAULT_HOST)]
 	[TypeConverter(typeof(UriTypeConverter))]
 	public Uri? Host { get; init; }
 

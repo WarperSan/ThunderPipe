@@ -45,6 +45,10 @@ public class MSBuildLogger : ILogger
 			case LogLevel.Critical:
 				_logger.LogError(message);
 				break;
+			case LogLevel.None:
+				break;
+			default:
+				throw new ArgumentOutOfRangeException(nameof(logLevel), logLevel, null);
 		}
 	}
 

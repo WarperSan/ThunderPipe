@@ -27,10 +27,10 @@ public sealed class CreationService : ICreationService
 
 		var json = JsonConvert.SerializeObject(manifest, Formatting.Indented);
 
-		_logger.LogDebug("Writing content to '{Path}':\n{Content}", path, json);
+		_logger.LogDebug("Writing manifest to '{Path}':\n{Manifest}", path, json);
 
 		await _fileSystem.WriteAllTextAsync(path, json, cancellationToken);
 
-		_logger.LogInformation("File wrote to '{Path}'.", path);
+		_logger.LogDebug("Manifest written to '{Path}'.", path);
 	}
 }

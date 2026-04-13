@@ -27,7 +27,58 @@
 		<ThunderstoreHost Condition="'$(ThunderstoreHost)' == ''">https://thunderstore.io/</ThunderstoreHost>
 	</PropertyGroup>
 
-	<ItemGroup Condition="'@(ThunderstoreFile)' == ''">
-		<ThunderstoreFile Include="$(OutputPath)*.dll" Destination="plugins/"/>
-	</ItemGroup>
+	<Target Name="_EvaluateThunderPipeOutputDir" AfterTargets="ResolveAssemblyReferences">
+		<PropertyGroup>
+			<ThunderPipeOutputDir
+				Condition="$(ThunderPipeOutputDir) == '' And $(ArtifactsPath) != ''"
+				>$(ArtifactsPath)/thunderstore/$(ArtifactsPivots)</ThunderPipeOutputDir
+			>
+			<ThunderPipeOutputDir Condition="$(ThunderPipeOutputDir) == ''"
+				>$(TargetDir)thunderstore/</ThunderPipeOutputDir
+			>
+		</PropertyGroup>
+	</Target>
+
+	<Target
+		Name="ThunderPipePack"
+		AfterTargets="Build"
+		Condition="'$(RunThunderPipePackAfterBuild)' == 'true'"
+	>
+		<ThunderPipePack
+			Token="$(ThunderstoreToken)"
+			Team="$(ThunderstoreTeam)"
+			Name="$(ThunderstoreName)"
+			Version="$(ThunderstoreVersion)"
+			Description="$(ThunderstoreDescription)"
+			Website="$(ThunderstoreWebsite)"
+			Dependencies="@(ThunderstoreDependency)"
+			PackageFiles="@(ThunderstorePackageFile)"
+			Files="@(ThunderstoreFile)"
+			Host="$(ThunderstoreHost)"
+			OutputDir="$(ThunderPipeOutputDir)"
+			OutputFile="$(ThunderPipeOutputFile)"
+		>
+			<Output TaskParameter="OutputDir" PropertyName="ThunderPipeOutputDir" />
+			<Output TaskParameter="OutputFile" PropertyName="ThunderPipeOutputFile" />
+		</ThunderPipePack>
+	</Target>
+
+	<Target
+		Name="ThunderPipePublish"
+		AfterTargets="Build;ThunderPipePack"
+		Condition="'$(RunThunderPipePublishAfterBuild)' == 'true'"
+	>
+		<ThunderPipePublish
+			Token="$(ThunderstoreToken)"
+			File="$(ThunderPipeOutputFile)"
+			Team="$(ThunderstoreTeam)"
+			Communities="$(ThunderstoreCommunities)"
+			Categories="$(ThunderstoreCategories)"
+			CommunityCategories="$(ThunderstoreCommunityCategories)"
+			Host="$(ThunderstoreHost)"
+			HasNSFW="$(ThunderstoreNSFW)"
+		>
+			<Output TaskParameter="Output" PropertyName="ThunderPipePublishDownloadUrl" />
+		</ThunderPipePublish>
+	</Target>
 </Project>
