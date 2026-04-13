@@ -39,8 +39,6 @@ public sealed class ValidationApiClient : ThunderstoreClient
 			throw new InvalidOperationException("Icon was not marked as valid.");
 		}
 
-		response.LogErrors(Logger);
-
 		return response.AllErrors.ToList();
 	}
 
@@ -80,8 +78,6 @@ public sealed class ValidationApiClient : ThunderstoreClient
 			throw new InvalidOperationException("Manifest was not marked as valid.");
 		}
 
-		response.LogErrors(Logger);
-
 		return response.AllErrors.ToList();
 	}
 
@@ -115,8 +111,6 @@ public sealed class ValidationApiClient : ThunderstoreClient
 
 			throw new InvalidOperationException("README was not marked as valid.");
 		}
-
-		response.LogErrors(Logger);
 
 		return response.AllErrors.ToList();
 	}
