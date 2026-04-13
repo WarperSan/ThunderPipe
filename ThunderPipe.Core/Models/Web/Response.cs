@@ -150,7 +150,7 @@ public sealed class Response<T>
 		{
 			case JObject jObject:
 			{
-				// if object, parse every error as field specific
+				// if is object, parse every error as field specific
 				var allErrors = new Dictionary<string, IEnumerable<string>>();
 
 				foreach (var property in jObject.Properties())
@@ -165,7 +165,7 @@ public sealed class Response<T>
 			}
 			case JArray jArray:
 			{
-				// if array, parse all errors as global
+				// if is array, parse all errors as global
 				var errors = jArray.Values<string>().OfType<string>();
 
 				return new Response<T>(errors);
