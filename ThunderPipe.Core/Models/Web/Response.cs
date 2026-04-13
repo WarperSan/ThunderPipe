@@ -12,6 +12,11 @@ namespace ThunderPipe.Core.Models.Web;
 public sealed class Response<T>
 	where T : class
 {
+	/// <summary>
+	/// Category used when the error is not related to a specific field
+	/// </summary>
+	public const string GLOBAL_ERRORS = "global";
+
 	private Response(T data)
 	{
 		IsSuccess = true;
@@ -186,7 +191,7 @@ public sealed class Response<T>
 			var errorString = error.Value<string>() ?? "";
 
 			return new Response<T>(
-				new Dictionary<string, IEnumerable<string>>() { ["global"] = [errorString] }
+				new Dictionary<string, IEnumerable<string>>() { [GLOBAL_ERRORS] = [errorString] }
 			);
 		}
 
