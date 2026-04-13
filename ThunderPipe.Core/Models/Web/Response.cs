@@ -17,15 +17,19 @@ public sealed class Response<T>
 	/// </summary>
 	public const string GLOBAL_ERRORS = "global";
 
-	private Response(T data)
+	private readonly HttpResponseMessage _response;
+
+	private Response(HttpResponseMessage response, T data)
 	{
+		_response = response;
 		IsSuccess = true;
 		Data = data;
 		Errors = new Dictionary<string, IEnumerable<string>>();
 	}
 
-	private Response(IDictionary<string, IEnumerable<string>> errors)
+	private Response(HttpResponseMessage response, IDictionary<string, IEnumerable<string>> errors)
 	{
+		_response = response;
 		IsSuccess = false;
 		Data = null;
 		Errors = errors;
@@ -97,16 +101,16 @@ public sealed class Response<T>
 	public static Response<T> CreateResponse(HttpResponseMessage response, string content)
 	{
 		if (response.IsSuccessStatusCode)
-			return HandleSuccess(content);
+			return HandleSuccess(response, content);
 
 		var status = response.StatusCode;
 
 		var jToken = JToken.Parse(content);
 
 		if (status == HttpStatusCode.BadRequest)
-			return HandleBadRequest(jToken);
+			return HandleBadRequest(response, jToken);
 
-		return HandleError(jToken);
+		return HandleError(response, jToken);
 	}
 
 	private static TPayload ParseJson<TPayload>(string content)
@@ -133,26 +137,29 @@ public sealed class Response<T>
 		return json;
 	}
 
-	private static Response<T> HandleSuccess(string content)
+	private static Response<T> HandleSuccess(HttpResponseMessage response, string content)
 	{
 		var data = ParseJson<T>(content);
 
-		return new Response<T>(data);
+		return new Response<T>(response, data);
 	}
 
-	private static Response<T> HandleBadRequest(JToken jToken)
+	private static Response<T> HandleBadRequest(HttpResponseMessage response, JToken jToken)
 	{
 		switch (jToken)
 		{
 			case JObject jObject:
-				return ParseObjectError(jObject);
+				var objectErrors = ParseObjectError(jObject);
+
+				return new Response<T>(response, objectErrors);
 			case JArray jArray:
 			{
 				// if is array, parse all errors as global
-				var errors = jArray.Values<string>().OfType<string>();
+				var arrayErrors = jArray.Values<string>().OfType<string>();
 
 				return new Response<T>(
-					new Dictionary<string, IEnumerable<string>>() { [GLOBAL_ERRORS] = errors }
+					response,
+					new Dictionary<string, IEnumerable<string>>() { [GLOBAL_ERRORS] = arrayErrors }
 				);
 			}
 			default:
@@ -162,7 +169,7 @@ public sealed class Response<T>
 		}
 	}
 
-	private static Response<T> HandleError(JToken jToken)
+	private static Response<T> HandleError(HttpResponseMessage response, JToken jToken)
 	{
 		// Parse details
 		if (jToken is JObject detailsObj && detailsObj.TryGetValue("detail", out var error))
@@ -170,6 +177,7 @@ public sealed class Response<T>
 			var errorString = error.Value<string>() ?? "";
 
 			return new Response<T>(
+				response,
 				new Dictionary<string, IEnumerable<string>>() { [GLOBAL_ERRORS] = [errorString] }
 			);
 		}
@@ -177,7 +185,7 @@ public sealed class Response<T>
 		throw new NotSupportedException($"Received a payload that was not supported:\n{jToken}");
 	}
 
-	private static Response<T> ParseObjectError(JToken jToken)
+	private static Dictionary<string, IEnumerable<string>> ParseObjectError(JToken jToken)
 	{
 		var tokensToProcess = new Queue<JToken>();
 		var allErrors = new Dictionary<string, List<string>>();
@@ -222,6 +230,6 @@ public sealed class Response<T>
 		foreach (var error in allErrors)
 			readOnlyErrors[error.Key] = error.Value;
 
-		return new Response<T>(readOnlyErrors);
+		return readOnlyErrors;
 	}
 }
