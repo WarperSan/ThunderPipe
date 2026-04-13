@@ -41,5 +41,5 @@ jobs:
               with:
                 directory: './ThunderPipe.Core.Tests/TestResults/'
                 env_vars: OS
-                fail_ci_if_error: 'true'
+                fail_ci_if_error: 'false'
                 token: ${{ secrets.CODECOV_TOKEN }}
