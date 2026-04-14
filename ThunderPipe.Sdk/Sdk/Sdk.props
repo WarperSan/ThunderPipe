@@ -1,5 +1,6 @@
 <Project>
-	<PropertyGroup>
+	<!-- These exist for intellisense -->
+	<PropertyGroup Condition="'true' == 'false'">
 		<ThunderstoreToken></ThunderstoreToken>
 
 		<ThunderstoreHost></ThunderstoreHost>
