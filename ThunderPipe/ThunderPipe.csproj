@@ -29,8 +29,8 @@
 	<ItemGroup>
 		<ProjectReference Include="../ThunderPipe.Core/ThunderPipe.Core.csproj" />
 
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.5" />
-		<PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.5" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.6" />
+		<PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.6" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.5" />
 		<PackageReference Include="MinVer" Version="7.0.0">
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
