@@ -3,76 +3,18 @@
 </p>
 
 # ThunderPipe
-[![NuGet Badge](https://img.shields.io/nuget/v/ThunderPipe)](https://www.nuget.org/packages/ThunderPipe)
-[![NuGet Downloads](https://img.shields.io/nuget/dt/ThunderPipe?color=purple)](https://www.nuget.org/packages/ThunderPipe)
-[![License](https://img.shields.io/github/license/WarperSan/ThunderPipe)](https://raw.githubusercontent.com/WarperSan/ThunderPipe/master/LICENSE)
 
 ## Overview
 
-ThunderPipe is a command-line tool for validating and publishing mod packages to [Thunderstore](https://thunderstore.io/).
+ThunderPipe is a collection of tools that aims to simplify the publishing workflows to [Thunderstore](https://thunderstore.io).
 
-## Installation
+## Projects
 
-You can install ThunderPipe from NuGet by running the following command:
+For an easy-to-use CLI tool, take a look at [ThunderPipe](https://github.com/WarperSan/ThunderPipe/tree/master/ThunderPipe).
 
-```bash
-dotnet tool install ThunderPipe
-```
+For built-in integration with C# projects, take a look at [ThunderPipe.Sdk](https://github.com/WarperSan/ThunderPipe/tree/master/ThunderPipe.Sdk).
 
-Alternatively, you can install it by downloading the package from [NuGet](https://www.nuget.org/packages/ThunderPipe/latest) or [GitHub Releases](https://github.com/WarperSan/ThunderPipe/releases/latest) directly, and installing the local file:
-
-```bash
-dotnet tool install ThunderPipe --add-source <path-to-download>
-```
-
-> [!IMPORTANT]
-> The commands shown in further sections will omit the `dotnet tool run` part, due to [being installed globally](https://learn.microsoft.com/en-us/dotnet/core/tools/global-tools-how-to-use#use-the-tool-as-a-global-tool-traditional-installation). This can be achieved by adding the `--global` flag in the installation command.
-
-## Commands
-
-### Publishing a Package
-
-Uploads your `.zip` file directly to Thunderstore.
-
-```bash
-ThunderPipe publish <file> <team> <community> --token <your-token>
-```
-
-| Argument       | Description                                    |
-|----------------|------------------------------------------------|
-| `<file>`       | Path to your `.zip` file                       |
-| `<team>`       | Name of the team that owns the service account |
-| `<community>`  | Slug of the community                          |
-| `<your-token>` | API token of the service account to use        |
-
-### Validating a Package
-
-Checks if your package meets [Thunderstore's requirements](https://thunderstore.io/package/create/docs/) before you attempt to publish it.
-
-```bash
-ThunderPipe validate package <package-folder>
-```
-
-| Argument           | Description                                       |
-|--------------------|---------------------------------------------------|
-| `<package-folder>` | Path to the folder containing the package's files |
-
-### Create a Manifest
-
-Creates a `manifest.json` file that meets [Thunderstore's requirements](https://thunderstore.io/package/create/docs/).
-
-```bash
-ThunderPipe create manifest <name> <version>
-```
-
-| Argument    | Description            |
-|-------------|------------------------|
-| `<name>`    | Name of the package    |
-| `<version>` | Version of the package |
-
-## GitHub Action
-
-[upload-thunderstore-package](https://github.com/WarperSan/upload-thunderstore-package) is a GitHub Action that wraps ThunderPipe to automate the full publish pipeline. Under the hood, the action automates the full validation, the build, the packaging and the publishing.
+For full access to all the features of ThunderPipe, take a look at [ThunderPipe.Core](https://github.com/WarperSan/ThunderPipe/tree/master/ThunderPipe.Core).
 
 ## Wiki
 
