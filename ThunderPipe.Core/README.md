@@ -8,34 +8,31 @@
 [![License](https://img.shields.io/github/license/WarperSan/ThunderPipe)](https://raw.githubusercontent.com/WarperSan/ThunderPipe/master/LICENSE)
 [![Codecov Badge](https://codecov.io/github/WarperSan/ThunderPipe/graph/badge.svg)](https://codecov.io/github/WarperSan/ThunderPipe)
 
-ThunderPipe.Core is the core logic of every [ThunderPipe](https://github.com/WarperSan/ThunderPipe) product.
+ThunderPipe.Core is the shared logic that powers every [ThunderPipe](https://github.com/WarperSan/ThunderPipe) project.
 
-## Custom Product
+## Building on ThunderPipe.Core
 
-If the needs are not met with the provided products, it is possible to create custom ones. They simply need to reference this package. They will have access to everything ThunderPipe.Core has to offer.
+If the existing tools don't meet your needs, you can build your own by referencing this package. Doing so gives you full access to everything `ThunderPipe.Core` exposes.
 
-## Development
+> [!TIP]
+> Before building a custom integration, consider [opening an issue](https://github.com/WarperSan/ThunderPipe/issues/new) to describe your use case. Your needs may already be on the roadmap, or they could shape a future feature that benefits everyone.
 
-This section goes over how ThunderPipe.Core is made.
+## Architecture
 
-### Where are the API calls?
+### API calls
 
-Clients are responsible to communicate with API endpoints. They offer simple methods that addresses a single endpoint.
+Clients are responsible for communicating with individual API endpoints, each exposing a method that targets a single endpoint. To understand how requests are constructed, follow the usage of `RequestBuilder` through the codebase.
 
-You can see how requests are made by following how the `RequestBuilder` is used.
+### `Models/API` vs `Models/Web`
 
-### Why `Models/API` and `Models/Web`?
+`Models/API` contains types intended for consumers of this library — wrappers around useful data that external programs work with directly.
 
-Classes in `Models/API` are intended for other program's use. They are wrappers around useful data types.
+`Models/Web` contains types used internally for API communication — what Thunderstore expects to receive and what it returns.
 
-On the other hand, `Models/Web` is meant for internal API calls. They are what Thunderstore expects and returns.
+### Services
 
-### What are Services?
+Services standardize multi-step API procedures. Rather than requiring every consumer to orchestrate a sequence of calls correctly, a service exposes a single method that handles the procedure end to end. This also insulates dependants from changes to Thunderstore's internals, unless the procedure itself changes significantly.
 
-Services are a way to standardize a series of API calls. Instead of requiring every other program to orchestrate the procedure correctly, ThunderPipe.Core offers a single method that does it.
+### Services vs Clients
 
-This also removes the weak link between other programs and Thunderstore. Unless the procedure changes drastically, the dependants will not have to change their calls.
-
-### Why a Service and not a Client?
-
-Services are meant for a series of calls. When looking at certain call, they only require one method. Theses will stay at the client level, as they are too simple for services.
+Services are for multi-step procedures. When an operation maps to a single API call, it stays at the client level — wrapping it in a service would add complexity without benefit.
