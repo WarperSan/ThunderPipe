@@ -1,9 +1,11 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Net.Http.Headers;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using Spectre.Console.Cli;
 using ThunderPipe.Core.Services.Implementations;
 using ThunderPipe.Core.Services.Interfaces;
+using ThunderPipe.Core.Utils;
 using ThunderPipe.Infrastructure;
 using ThunderPipe.Infrastructure.Logging;
 
@@ -41,9 +43,19 @@ internal static class Program
 			});
 			builder.AddFilter(level => level >= logLevelContext.Level);
 		});
-		services.AddSingleton<ILogger>(sp =>
-			sp.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(ThunderPipe))
+		services.AddSingleton<ILogger>(provider =>
+			provider.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(ThunderPipe))
 		);
+
+		services.AddSingleton<HttpApiClient>(sp =>
+		{
+			var client = new HttpClient();
+			client.DefaultRequestHeaders.UserAgent.Add(
+				new ProductInfoHeaderValue(nameof(ThunderPipe), Metadata.VERSION)
+			);
+
+			return new HttpApiClient(client, sp.GetService<ILogger>());
+		});
 
 		services.AddSingleton<IFileSystem>(new FileSystem());
 
