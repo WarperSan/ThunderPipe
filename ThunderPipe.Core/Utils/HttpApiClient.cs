@@ -6,7 +6,7 @@ namespace ThunderPipe.Core.Utils;
 /// <summary>
 /// Wrapper around <see cref="HttpClient"/>
 /// </summary>
-public sealed class HttpApiClient : IDisposable
+public sealed class HttpApiClient
 {
 	public HttpApiClient(HttpClient client, ILogger? logger = null)
 	{
@@ -59,10 +59,4 @@ public sealed class HttpApiClient : IDisposable
 	}
 
 	#endregion
-
-	/// <inheritdoc />
-	public void Dispose()
-	{
-		_client.Dispose();
-	}
 }

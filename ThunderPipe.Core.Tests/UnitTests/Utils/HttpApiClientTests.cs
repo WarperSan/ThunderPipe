@@ -88,7 +88,8 @@ public class HttpApiClientTests
 	[Fact]
 	public async Task Dispose_WhenDisposed_ThrowException()
 	{
-		var client = new HttpApiClient(new HttpClient());
+		var client = new HttpClient();
+		var apiClient = new HttpApiClient(client);
 
 		client.Dispose();
 
@@ -96,7 +97,7 @@ public class HttpApiClientTests
 		{
 			var request = new RequestBuilder().Build();
 
-			await client.SendRequest(request, CancellationToken.None);
+			await apiClient.SendRequest(request, CancellationToken.None);
 		});
 	}
 }
