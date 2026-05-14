@@ -1,6 +1,7 @@
 using ThunderPipe.Core.Clients;
 using ThunderPipe.Core.Tests.Helpers;
 using ThunderPipe.Core.Tests.MockedObjects;
+using ThunderPipe.Core.Utils;
 using ValidateIcon = ThunderPipe.Core.Models.Web.ValidateIcon;
 using ValidateManifest = ThunderPipe.Core.Models.Web.ValidateManifest;
 using ValidateReadme = ThunderPipe.Core.Models.Web.ValidateReadme;
@@ -25,8 +26,7 @@ public class ValidationApiClientTests
 
 		fileSystem.SetContent(PATH, await ImageHelper.CreateImage(1, 1));
 
-		using var client = new ValidationApiClient();
-		client.Client = mockedHttp.ToHttpClient();
+		var client = new ValidationApiClient(mockedHttp.ToApiClient(), new RequestBuilder());
 
 		var errors = await client.IsIconValid(
 			PATH,
@@ -55,8 +55,7 @@ public class ValidationApiClientTests
 
 		fileSystem.SetContent(PATH, await ImageHelper.CreateImage(1, 1));
 
-		using var client = new ValidationApiClient();
-		client.Client = mockedHttp.ToHttpClient();
+		var client = new ValidationApiClient(mockedHttp.ToApiClient(), new RequestBuilder());
 
 		var errors = await client.IsIconValid(
 			PATH,
@@ -95,8 +94,7 @@ public class ValidationApiClientTests
 
 		fileSystem.SetContent(PATH, await ImageHelper.CreateImage(1, 1));
 
-		using var client = new ValidationApiClient();
-		client.Client = mockedHttp.ToHttpClient();
+		var client = new ValidationApiClient(mockedHttp.ToApiClient(), new RequestBuilder());
 
 		var errors = await client.IsIconValid(
 			PATH,
@@ -125,8 +123,7 @@ public class ValidationApiClientTests
 
 		fileSystem.SetContent(PATH, await ImageHelper.CreateImage(1, 1));
 
-		using var client = new ValidationApiClient();
-		client.Client = mockedHttp.ToHttpClient();
+		var client = new ValidationApiClient(mockedHttp.ToApiClient(), new RequestBuilder());
 
 		await Assert.ThrowsAsync<InvalidOperationException>(async () =>
 			await client.IsIconValid(PATH, fileSystem, "", TestContext.Current.CancellationToken)
@@ -145,8 +142,7 @@ public class ValidationApiClientTests
 
 		fileSystem.SetContent(PATH, await ImageHelper.CreateImage(1, 1));
 
-		using var client = new ValidationApiClient();
-		client.Client = mockedHttp.ToHttpClient();
+		var client = new ValidationApiClient(mockedHttp.ToApiClient(), new RequestBuilder());
 
 		var errors = await client.IsIconValid(
 			PATH,
@@ -175,8 +171,7 @@ public class ValidationApiClientTests
 
 		fileSystem.SetContent(PATH, "{}");
 
-		using var client = new ValidationApiClient();
-		client.Client = mockedHttp.ToHttpClient();
+		var client = new ValidationApiClient(mockedHttp.ToApiClient(), new RequestBuilder());
 
 		var errors = await client.IsManifestValid(
 			PATH,
@@ -207,8 +202,7 @@ public class ValidationApiClientTests
 
 		fileSystem.SetContent(PATH, "{}");
 
-		using var client = new ValidationApiClient();
-		client.Client = mockedHttp.ToHttpClient();
+		var client = new ValidationApiClient(mockedHttp.ToApiClient(), new RequestBuilder());
 
 		var errors = await client.IsManifestValid(
 			PATH,
@@ -239,8 +233,7 @@ public class ValidationApiClientTests
 
 		fileSystem.SetContent(PATH, "{}");
 
-		using var client = new ValidationApiClient();
-		client.Client = mockedHttp.ToHttpClient();
+		var client = new ValidationApiClient(mockedHttp.ToApiClient(), new RequestBuilder());
 
 		var errors = await client.IsManifestValid(
 			PATH,
@@ -285,8 +278,7 @@ public class ValidationApiClientTests
 
 		fileSystem.SetContent(PATH, "{}");
 
-		using var client = new ValidationApiClient();
-		client.Client = mockedHttp.ToHttpClient();
+		var client = new ValidationApiClient(mockedHttp.ToApiClient(), new RequestBuilder());
 
 		var errors = await client.IsManifestValid(
 			PATH,
@@ -317,8 +309,7 @@ public class ValidationApiClientTests
 
 		fileSystem.SetContent(PATH, "{}");
 
-		using var client = new ValidationApiClient();
-		client.Client = mockedHttp.ToHttpClient();
+		var client = new ValidationApiClient(mockedHttp.ToApiClient(), new RequestBuilder());
 
 		await Assert.ThrowsAsync<InvalidOperationException>(async () =>
 			await client.IsManifestValid(
@@ -344,8 +335,7 @@ public class ValidationApiClientTests
 
 		fileSystem.SetContent(PATH, "{}");
 
-		using var client = new ValidationApiClient();
-		client.Client = mockedHttp.ToHttpClient();
+		var client = new ValidationApiClient(mockedHttp.ToApiClient(), new RequestBuilder());
 
 		var errors = await client.IsManifestValid(
 			PATH,
@@ -374,8 +364,7 @@ public class ValidationApiClientTests
 
 		fileSystem.SetContent(PATH, "this is a great README");
 
-		using var client = new ValidationApiClient();
-		client.Client = mockedHttp.ToHttpClient();
+		var client = new ValidationApiClient(mockedHttp.ToApiClient(), new RequestBuilder());
 
 		var errors = await client.IsReadmeValid(
 			PATH,
@@ -404,8 +393,7 @@ public class ValidationApiClientTests
 
 		fileSystem.SetContent(PATH, "aww :(");
 
-		using var client = new ValidationApiClient();
-		client.Client = mockedHttp.ToHttpClient();
+		var client = new ValidationApiClient(mockedHttp.ToApiClient(), new RequestBuilder());
 
 		var errors = await client.IsReadmeValid(
 			PATH,
@@ -444,8 +432,7 @@ public class ValidationApiClientTests
 
 		fileSystem.SetContent(PATH, "yay :D");
 
-		using var client = new ValidationApiClient();
-		client.Client = mockedHttp.ToHttpClient();
+		var client = new ValidationApiClient(mockedHttp.ToApiClient(), new RequestBuilder());
 
 		var errors = await client.IsReadmeValid(
 			PATH,
@@ -474,8 +461,7 @@ public class ValidationApiClientTests
 
 		fileSystem.SetContent(PATH, "oh?");
 
-		using var client = new ValidationApiClient();
-		client.Client = mockedHttp.ToHttpClient();
+		var client = new ValidationApiClient(mockedHttp.ToApiClient(), new RequestBuilder());
 
 		await Assert.ThrowsAsync<InvalidOperationException>(async () =>
 			await client.IsReadmeValid(PATH, fileSystem, "", TestContext.Current.CancellationToken)
@@ -494,8 +480,7 @@ public class ValidationApiClientTests
 
 		fileSystem.SetContent(PATH, "oh?");
 
-		using var client = new ValidationApiClient();
-		client.Client = mockedHttp.ToHttpClient();
+		var client = new ValidationApiClient(mockedHttp.ToApiClient(), new RequestBuilder());
 
 		var errors = await client.IsReadmeValid(
 			PATH,
