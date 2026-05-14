@@ -7,6 +7,7 @@ using ThunderPipe.Core.Models.API;
 using ThunderPipe.Core.Services.Implementations;
 using ThunderPipe.Core.Services.Interfaces;
 using ThunderPipe.Core.Utils;
+using ThunderPipe.MSBuild.Tasks.Factories;
 using ThunderPipe.MSBuild.Tasks.Helpers;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 using Task = Microsoft.Build.Utilities.Task;
@@ -51,7 +52,12 @@ public class ThunderPipePack : Task
 		if (!string.IsNullOrEmpty(Host))
 			builder.ToUri(new Uri(Host));
 
-		var validationService = new ValidationService(builder, new FileSystem(), logger);
+		var validationService = new ValidationService(
+			HttpApiClientFactory.Create(logger),
+			builder,
+			new FileSystem(),
+			logger
+		);
 
 		var tempDir = CreateTemporaryDirectory(TemporaryDir);
 
