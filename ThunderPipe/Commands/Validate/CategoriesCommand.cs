@@ -10,10 +10,12 @@ namespace ThunderPipe.Commands.Validate;
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 internal sealed class CategoriesCommand : AsyncCommand<CategoriesSettings>
 {
+	private readonly HttpApiClient _apiClient;
 	private readonly ILogger _logger;
 
-	public CategoriesCommand(ILogger logger)
+	public CategoriesCommand(HttpApiClient apiClient, ILogger logger)
 	{
+		_apiClient = apiClient;
 		_logger = logger;
 	}
 
@@ -25,9 +27,7 @@ internal sealed class CategoriesCommand : AsyncCommand<CategoriesSettings>
 	)
 	{
 		var builder = new RequestBuilder().ToUri(settings.Host!);
-		using var client = new CategoryApiClient();
-		client.Builder = builder;
-		client.Logger = _logger;
+		var client = new CategoryApiClient(_apiClient, builder, _logger);
 
 		var missingCategories = await client.GetMissing(
 			settings.Categories,

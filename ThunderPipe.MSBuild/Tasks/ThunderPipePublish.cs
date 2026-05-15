@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using ThunderPipe.Core.Models.API;
 using ThunderPipe.Core.Services.Implementations;
 using ThunderPipe.Core.Utils;
+using ThunderPipe.MSBuild.Tasks.Factories;
 using ThunderPipe.MSBuild.Tasks.Helpers;
 using Task = Microsoft.Build.Utilities.Task;
 
@@ -47,7 +48,12 @@ public class ThunderPipePublish : Task
 
 		builder.ToUri(new Uri(Host));
 
-		var publicationService = new PublicationService(builder, new FileSystem(), logger);
+		var publicationService = new PublicationService(
+			HttpApiClientFactory.Create(logger),
+			builder,
+			new FileSystem(),
+			logger
+		);
 
 		if (!System.IO.File.Exists(File))
 		{
@@ -82,6 +88,12 @@ public class ThunderPipePublish : Task
 			)
 			.GetAwaiter()
 			.GetResult();
+
+		logger.LogInformation(
+			"Successfully published '{VersionName}' v{VersionVersion}",
+			package.Name,
+			package.Version
+		);
 
 		Output = package.DownloadURL.ToString();
 		return true;

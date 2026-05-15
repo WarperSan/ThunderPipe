@@ -14,10 +14,10 @@ of [ThunderPipe.Core](https://github.com/WarperSan/ThunderPipe/tree/master/Thund
 
 ## Installation
 
-You can install and use ThunderPipe.Sdk by adding the following line to your `.csproj`:
+Go to [NuGet](https://www.nuget.org/packages/ThunderPipe.Sdk), and copy the Sdk XML node for the latest version into your project:
 
 ```xml
-<Sdk Name="ThunderPipe.Sdk" Version="0.1.1" />
+<Sdk Name="ThunderPipe.Sdk" Version="version.number.here" />
 ```
 
 ## Tasks

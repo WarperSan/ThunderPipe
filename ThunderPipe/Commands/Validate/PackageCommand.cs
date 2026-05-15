@@ -12,11 +12,13 @@ namespace ThunderPipe.Commands.Validate;
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 internal sealed class PackageCommand : AsyncCommand<PackageSettings>
 {
+	private readonly HttpApiClient _apiClient;
 	private readonly IFileSystem _fileSystem;
 	private readonly ILogger _logger;
 
-	public PackageCommand(ILogger logger, IFileSystem fileSystem)
+	public PackageCommand(HttpApiClient apiClient, ILogger logger, IFileSystem fileSystem)
 	{
+		_apiClient = apiClient;
 		_logger = logger;
 		_fileSystem = fileSystem;
 	}
@@ -38,7 +40,8 @@ internal sealed class PackageCommand : AsyncCommand<PackageSettings>
 		var readmePath = Path.GetFullPath(settings.ReadmePath!, settings.PackageFolder);
 
 		var builder = new RequestBuilder().ToUri(settings.Host!);
-		var service = new ValidationService(builder, _fileSystem, _logger);
+
+		var service = new ValidationService(_apiClient, builder, _fileSystem, _logger);
 
 		var errors = await service.ValidatePackage(
 			settings.Team,

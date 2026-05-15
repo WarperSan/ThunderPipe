@@ -11,11 +11,14 @@ public sealed class ValidationService : IValidationService
 	private readonly ValidationApiClient _client;
 	private readonly IFileSystem _fileSystem;
 
-	public ValidationService(RequestBuilder builder, IFileSystem fileSystem, ILogger logger)
+	public ValidationService(
+		HttpApiClient apiClient,
+		RequestBuilder builder,
+		IFileSystem fileSystem,
+		ILogger logger
+	)
 	{
-		_client = new ValidationApiClient();
-		_client.Builder = builder;
-		_client.Logger = logger;
+		_client = new ValidationApiClient(apiClient, builder, logger);
 
 		_fileSystem = fileSystem;
 	}
@@ -34,9 +37,16 @@ public sealed class ValidationService : IValidationService
 
 		try
 		{
-			errors.AddRange(
-				await _client.IsIconValid(iconPath, _fileSystem, token, cancellationToken)
+			var iconErrors = await _client.IsIconValid(
+				iconPath,
+				_fileSystem,
+				token,
+				cancellationToken
 			);
+
+			var errorPrefix = $"['{iconPath}']";
+
+			errors.AddRange(iconErrors.Select(error => $"{errorPrefix} {error}"));
 		}
 		catch (Exception e)
 		{
@@ -45,15 +55,17 @@ public sealed class ValidationService : IValidationService
 
 		try
 		{
-			errors.AddRange(
-				await _client.IsManifestValid(
-					manifestPath,
-					team,
-					_fileSystem,
-					token,
-					cancellationToken
-				)
+			var manifestErrors = await _client.IsManifestValid(
+				manifestPath,
+				team,
+				_fileSystem,
+				token,
+				cancellationToken
 			);
+
+			var errorPrefix = $"['{manifestPath}']";
+
+			errors.AddRange(manifestErrors.Select(error => $"{errorPrefix} {error}"));
 		}
 		catch (Exception e)
 		{
@@ -63,7 +75,16 @@ public sealed class ValidationService : IValidationService
 		try
 		{
 			// TODO: Check why this returns a 500
-			//errors.AddRange(await _client.IsReadmeValid(readmePath, _fileSystem, token, cancellationToken));
+			/*var readmeErrors = await _client.IsReadmeValid(
+				readmePath,
+				_fileSystem,
+				token,
+				cancellationToken
+			);
+
+			var errorPrefix = $"['{readmePath}']";
+
+			errors.AddRange(readmeErrors.Select(error => $"{errorPrefix} {error}"));*/
 		}
 		catch (Exception e)
 		{

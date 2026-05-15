@@ -12,24 +12,24 @@ namespace ThunderPipe.Core.Models.Web;
 public sealed class Response<T>
 	where T : class
 {
+	/// <summary>
+	/// Category used when the error is not related to a specific field
+	/// </summary>
 	public const string GLOBAL_ERRORS = "global";
 
-	private Response(T data)
+	private readonly HttpResponseMessage _response;
+
+	private Response(HttpResponseMessage response, T data)
 	{
+		_response = response;
 		IsSuccess = true;
 		Data = data;
 		Errors = new Dictionary<string, IEnumerable<string>>();
 	}
 
-	private Response(IEnumerable<string> errors)
+	private Response(HttpResponseMessage response, IDictionary<string, IEnumerable<string>> errors)
 	{
-		IsSuccess = false;
-		Data = null;
-		Errors = new Dictionary<string, IEnumerable<string>>() { [GLOBAL_ERRORS] = errors };
-	}
-
-	private Response(IDictionary<string, IEnumerable<string>> errors)
-	{
+		_response = response;
 		IsSuccess = false;
 		Data = null;
 		Errors = errors;
@@ -67,14 +67,17 @@ public sealed class Response<T>
 			return;
 
 		var output = new StringBuilder();
-		output.AppendLine("Errors:");
+		output.AppendLine($"Errors from '{_response.RequestMessage?.RequestUri}':");
 
 		foreach (var error in Errors)
 		{
-			output.AppendLine($"- [{error.Key}]:");
+			output.Append($"- [{error.Key}]:");
 
 			foreach (var errorValue in error.Value)
-				output.AppendLine($"    {errorValue}");
+			{
+				output.AppendLine();
+				output.Append($"    {errorValue}");
+			}
 		}
 
 		logger.LogError("{Errors}", output.ToString());
@@ -101,16 +104,16 @@ public sealed class Response<T>
 	public static Response<T> CreateResponse(HttpResponseMessage response, string content)
 	{
 		if (response.IsSuccessStatusCode)
-			return HandleSuccess(content);
+			return HandleSuccess(response, content);
 
 		var status = response.StatusCode;
 
 		var jToken = JToken.Parse(content);
 
 		if (status == HttpStatusCode.BadRequest)
-			return HandleBadRequest(jToken);
+			return HandleBadRequest(response, jToken);
 
-		return HandleError(jToken);
+		return HandleError(response, jToken);
 	}
 
 	private static TPayload ParseJson<TPayload>(string content)
@@ -137,38 +140,30 @@ public sealed class Response<T>
 		return json;
 	}
 
-	private static Response<T> HandleSuccess(string content)
+	private static Response<T> HandleSuccess(HttpResponseMessage response, string content)
 	{
 		var data = ParseJson<T>(content);
 
-		return new Response<T>(data);
+		return new Response<T>(response, data);
 	}
 
-	private static Response<T> HandleBadRequest(JToken jToken)
+	private static Response<T> HandleBadRequest(HttpResponseMessage response, JToken jToken)
 	{
 		switch (jToken)
 		{
 			case JObject jObject:
-			{
-				// if object, parse every error as field specific
-				var allErrors = new Dictionary<string, IEnumerable<string>>();
+				var objectErrors = ParseObjectError(jObject);
 
-				foreach (var property in jObject.Properties())
-				{
-					var category = property.Name;
-					var errors = property.Value.Values<string>().OfType<string>();
-
-					allErrors[category] = errors;
-				}
-
-				return new Response<T>(allErrors);
-			}
+				return new Response<T>(response, objectErrors);
 			case JArray jArray:
 			{
-				// if array, parse all errors as global
-				var errors = jArray.Values<string>().OfType<string>();
+				// if is array, parse all errors as global
+				var arrayErrors = jArray.Values<string>().OfType<string>();
 
-				return new Response<T>(errors);
+				return new Response<T>(
+					response,
+					new Dictionary<string, IEnumerable<string>>() { [GLOBAL_ERRORS] = arrayErrors }
+				);
 			}
 			default:
 				throw new InvalidOperationException(
@@ -177,15 +172,67 @@ public sealed class Response<T>
 		}
 	}
 
-	private static Response<T> HandleError(JToken jToken)
+	private static Response<T> HandleError(HttpResponseMessage response, JToken jToken)
 	{
 		// Parse details
 		if (jToken is JObject detailsObj && detailsObj.TryGetValue("detail", out var error))
 		{
 			var errorString = error.Value<string>() ?? "";
-			return new Response<T>([errorString]);
+
+			return new Response<T>(
+				response,
+				new Dictionary<string, IEnumerable<string>>() { [GLOBAL_ERRORS] = [errorString] }
+			);
 		}
 
 		throw new NotSupportedException($"Received a payload that was not supported:\n{jToken}");
+	}
+
+	private static Dictionary<string, IEnumerable<string>> ParseObjectError(JToken jToken)
+	{
+		var tokensToProcess = new Queue<JToken>();
+		var allErrors = new Dictionary<string, List<string>>();
+
+		tokensToProcess.Enqueue(jToken);
+
+		while (tokensToProcess.Count > 0)
+		{
+			var token = tokensToProcess.Dequeue();
+
+			switch (token)
+			{
+				case JObject jObject:
+				{
+					foreach (var property in jObject.Properties())
+						tokensToProcess.Enqueue(property.Value);
+					break;
+				}
+				case JArray jArray:
+					foreach (var item in jArray)
+						tokensToProcess.Enqueue(item);
+					break;
+				default:
+					var key = token.Path;
+
+					if (token.Parent != null && token.Parent.Type == JTokenType.Array)
+						key = token.Parent.Path;
+
+					if (!allErrors.ContainsKey(key))
+						allErrors.Add(key, []);
+
+					var error = token.Value<string>();
+
+					if (!string.IsNullOrEmpty(error))
+						allErrors[key].Add(error);
+					break;
+			}
+		}
+
+		var readOnlyErrors = new Dictionary<string, IEnumerable<string>>();
+
+		foreach (var error in allErrors)
+			readOnlyErrors[error.Key] = error.Value;
+
+		return readOnlyErrors;
 	}
 }
