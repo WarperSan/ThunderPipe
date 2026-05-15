@@ -24,7 +24,7 @@ internal sealed class PackageCommand : AsyncCommand<PackageSettings>
 	}
 
 	/// <inheritdoc />
-	public override async Task<int> ExecuteAsync(
+	protected override async Task<int> ExecuteAsync(
 		CommandContext context,
 		PackageSettings settings,
 		CancellationToken cancellationToken

@@ -20,7 +20,7 @@ internal sealed class DependenciesCommand : AsyncCommand<DependenciesSettings>
 	}
 
 	/// <inheritdoc />
-	public override async Task<int> ExecuteAsync(
+	protected override async Task<int> ExecuteAsync(
 		CommandContext context,
 		DependenciesSettings settings,
 		CancellationToken cancellationToken
