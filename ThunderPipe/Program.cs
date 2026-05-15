@@ -45,7 +45,7 @@ internal static class Program
 		});
 
 		services.AddSingleton<ILogger>(provider =>
-			provider.GetRequiredService<ILoggerFactory>().CreateLogger(ThisAssembly.Constants.Name)
+			provider.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(ThunderPipe))
 		);
 
 		services.AddSingleton<HttpApiClient>(sp =>
@@ -53,10 +53,7 @@ internal static class Program
 			var client = new HttpClient();
 
 			client.DefaultRequestHeaders.UserAgent.Add(
-				new ProductInfoHeaderValue(
-					ThisAssembly.Constants.Name,
-					ThisAssembly.Constants.Version
-				)
+				new ProductInfoHeaderValue(nameof(ThunderPipe), Metadata.VERSION)
 			);
 
 			return new HttpApiClient(client, sp.GetService<ILogger>());
@@ -70,8 +67,8 @@ internal static class Program
 
 		app.Configure(config =>
 		{
-			config.SetApplicationName(ThisAssembly.Constants.Name);
-			config.SetApplicationVersion(ThisAssembly.Constants.Version);
+			config.SetApplicationName(nameof(ThunderPipe));
+			config.SetApplicationVersion(Metadata.VERSION);
 			config.SetInterceptor(new LogInterceptor(logLevelContext));
 
 			config.SetExceptionHandler(
