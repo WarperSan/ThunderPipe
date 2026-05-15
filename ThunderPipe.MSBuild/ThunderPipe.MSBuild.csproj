@@ -16,8 +16,5 @@
 		<ProjectReference Include="../ThunderPipe.Core/ThunderPipe.Core.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<Constant Include="Name" Value="$(AssemblyName)" Visible="false" />
-		<Constant Include="Version" Value="$(Version)" Visible="false" />
-	</ItemGroup>
+	<Import Project="ThunderPipe.MSBuild.targets" />
 </Project>

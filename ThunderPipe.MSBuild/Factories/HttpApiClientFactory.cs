@@ -17,7 +17,7 @@ internal static class HttpApiClientFactory
 		var httpClient = new HttpClient();
 
 		httpClient.DefaultRequestHeaders.UserAgent.Add(
-			new ProductInfoHeaderValue(ThisAssembly.Constants.Name, ThisAssembly.Constants.Version)
+			new ProductInfoHeaderValue(nameof(MSBuild), Metadata.VERSION)
 		);
 
 		return new HttpApiClient(httpClient, logger);
