@@ -5,7 +5,6 @@ using Microsoft.Build.Framework;
 using Microsoft.Extensions.Logging;
 using ThunderPipe.Core.Models.API;
 using ThunderPipe.Core.Services.Implementations;
-using ThunderPipe.Core.Services.Interfaces;
 using ThunderPipe.Core.Utils;
 using ThunderPipe.MSBuild.Tasks.Factories;
 using ThunderPipe.MSBuild.Tasks.Helpers;
@@ -70,21 +69,7 @@ public class ThunderPipePack : Task
 			Version = Version,
 			Description = Description ?? "",
 			Website = Website ?? "",
-			Dependencies =
-				Dependencies
-					?.Select(d =>
-					{
-						PackageDependency package = d.ItemSpec + '-' + d.GetMetadata("Version");
-
-						if (!package.IsValid())
-							throw new InvalidDataException(
-								$"package dependency '{package}' is invalid."
-							);
-
-						return package;
-					})
-					.ToArray()
-				?? [],
+			Dependencies = ResolveDependencies(Dependencies),
 		};
 
 		creationService
@@ -124,6 +109,29 @@ public class ThunderPipePack : Task
 		logger.LogDebug("Plugin packed to '{OutputFile}'", OutputFile);
 
 		return true;
+	}
+
+	private static PackageDependency[] ResolveDependencies(ITaskItem[]? dependencies)
+	{
+		if (dependencies == null)
+			return [];
+
+		var resolvedDependencies = new PackageDependency[dependencies.Length];
+
+		for (var i = 0; i < dependencies.Length; i++)
+		{
+			var rawDependency = dependencies[i];
+
+			PackageDependency package =
+				rawDependency.ItemSpec + '-' + rawDependency.GetMetadata("Version");
+
+			if (!package.IsValid())
+				throw new InvalidDataException($"package dependency '{package}' is invalid.");
+
+			resolvedDependencies[i] = package;
+		}
+
+		return resolvedDependencies;
 	}
 
 	private static string CreateTemporaryDirectory(string? temporaryDir)
@@ -178,12 +186,8 @@ public class ThunderPipePack : Task
 		return destination;
 	}
 
-	[SuppressMessage(
-		"Performance",
-		"CA1859:Use concrete types when possible for improved performance"
-	)]
 	private static async Task<bool> ValidatePackage(
-		IValidationService service,
+		ValidationService service,
 		ILogger logger,
 		Team team,
 		string token,
