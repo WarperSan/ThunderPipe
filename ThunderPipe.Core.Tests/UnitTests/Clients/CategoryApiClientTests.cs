@@ -53,9 +53,7 @@ public class CategoryApiClientTests
 
 		var builder = new RequestBuilder().ToUri(new Uri(URL_1));
 
-		using var client = new CategoryApiClient();
-		client.Builder = builder;
-		client.Client = mockHttp.ToHttpClient();
+		var client = new CategoryApiClient(mockHttp.ToApiClient(), builder);
 
 		// Act
 		var requested = new Category[] { SLUG_1, SLUG_2, SLUG_3 };
@@ -78,9 +76,7 @@ public class CategoryApiClientTests
 		var mockHttp = new MockHttpMessageHandler();
 		var builder = new RequestBuilder().ToUri(new Uri(URL_1));
 
-		using var client = new CategoryApiClient();
-		client.Builder = builder;
-		client.Client = mockHttp.ToHttpClient();
+		var client = new CategoryApiClient(mockHttp.ToApiClient(), builder);
 
 		// Act
 		var missing = await client.GetMissing([], "test", TestContext.Current.CancellationToken);
@@ -120,9 +116,7 @@ public class CategoryApiClientTests
 
 		var builder = new RequestBuilder().ToUri(new Uri(URL_1));
 
-		using var client = new CategoryApiClient();
-		client.Builder = builder;
-		client.Client = mockHttp.ToHttpClient();
+		var client = new CategoryApiClient(mockHttp.ToApiClient(), builder);
 
 		// Act
 		var requested = new Category[] { "test" };
@@ -181,9 +175,7 @@ public class CategoryApiClientTests
 
 		var builder = new RequestBuilder().ToUri(new Uri(URL_1));
 
-		using var client = new CategoryApiClient();
-		client.Builder = builder;
-		client.Client = mockHttp.ToHttpClient();
+		var client = new CategoryApiClient(mockHttp.ToApiClient(), builder);
 
 		// Act
 		var requested = new Category[] { "temp" };
@@ -220,9 +212,7 @@ public class CategoryApiClientTests
 
 		var builder = new RequestBuilder().ToUri(new Uri(URL_1));
 
-		using var client = new CategoryApiClient();
-		client.Builder = builder;
-		client.Client = mockHttp.ToHttpClient();
+		var client = new CategoryApiClient(mockHttp.ToApiClient(), builder);
 
 		// Act
 		var requested = new Category[] { "temp", "test2" };

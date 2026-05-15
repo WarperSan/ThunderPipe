@@ -11,11 +11,14 @@ public sealed class ValidationService : IValidationService
 	private readonly ValidationApiClient _client;
 	private readonly IFileSystem _fileSystem;
 
-	public ValidationService(RequestBuilder builder, IFileSystem fileSystem, ILogger logger)
+	public ValidationService(
+		HttpApiClient apiClient,
+		RequestBuilder builder,
+		IFileSystem fileSystem,
+		ILogger logger
+	)
 	{
-		_client = new ValidationApiClient();
-		_client.Builder = builder;
-		_client.Logger = logger;
+		_client = new ValidationApiClient(apiClient, builder, logger);
 
 		_fileSystem = fileSystem;
 	}
