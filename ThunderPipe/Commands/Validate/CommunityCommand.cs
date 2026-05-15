@@ -20,7 +20,7 @@ internal sealed class CommunityCommand : AsyncCommand<CommunitySettings>
 	}
 
 	/// <inheritdoc />
-	public override async Task<int> ExecuteAsync(
+	protected override async Task<int> ExecuteAsync(
 		CommandContext context,
 		CommunitySettings settings,
 		CancellationToken cancellationToken

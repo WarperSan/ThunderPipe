@@ -19,7 +19,7 @@ internal sealed class ManifestCommand : AsyncCommand<ManifestSettings>
 	}
 
 	/// <inheritdoc />
-	public override async Task<int> ExecuteAsync(
+	protected override async Task<int> ExecuteAsync(
 		CommandContext context,
 		ManifestSettings settings,
 		CancellationToken cancellationToken

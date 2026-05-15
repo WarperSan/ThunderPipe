@@ -19,7 +19,7 @@ internal sealed class LatestVersionCommand : AsyncCommand<Settings.Fetch.LatestV
 	}
 
 	/// <inheritdoc />
-	public override async Task<int> ExecuteAsync(
+	protected override async Task<int> ExecuteAsync(
 		CommandContext context,
 		Settings.Fetch.LatestVersionSettings settings,
 		CancellationToken cancellationToken

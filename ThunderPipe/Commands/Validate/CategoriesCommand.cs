@@ -20,7 +20,7 @@ internal sealed class CategoriesCommand : AsyncCommand<CategoriesSettings>
 	}
 
 	/// <inheritdoc />
-	public override async Task<int> ExecuteAsync(
+	protected override async Task<int> ExecuteAsync(
 		CommandContext context,
 		CategoriesSettings settings,
 		CancellationToken cancellationToken
