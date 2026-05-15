@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using ThunderPipe.Core.Models.API;
 using ThunderPipe.Core.Services.Interfaces;
 using ThunderPipe.Core.Utils;
@@ -7,8 +8,19 @@ namespace ThunderPipe.Core.Clients;
 /// <summary>
 /// Client used to call validation API endpoints
 /// </summary>
-public sealed class ValidationApiClient : ThunderstoreClient
+public sealed class ValidationApiClient
 {
+	private readonly HttpApiClient _client;
+	private readonly RequestBuilder _builder;
+	private readonly ILogger? _logger;
+
+	public ValidationApiClient(HttpApiClient client, RequestBuilder builder, ILogger? logger = null)
+	{
+		_client = client;
+		_builder = builder;
+		_logger = logger;
+	}
+
 	/// <summary>
 	/// Checks if the icon at the given path is valid
 	/// </summary>
@@ -22,14 +34,15 @@ public sealed class ValidationApiClient : ThunderstoreClient
 		var data = await fileSystem.ReadAllBytesAsync(path, ct);
 
 		var payload = new Models.Web.ValidateIcon.Request { Data = Convert.ToBase64String(data) };
-		var request = new RequestBuilder(Builder)
+
+		var request = new RequestBuilder(_builder)
 			.Post()
 			.WithAuth(token)
 			.ToEndpoint("api/experimental/submission/validate/icon/")
 			.WithJSON(payload)
 			.Build();
 
-		var response = await SendRequest<Models.Web.ValidateIcon.Response>(request, ct);
+		var response = await _client.SendRequest<Models.Web.ValidateIcon.Response>(request, ct);
 
 		if (response.IsSuccess)
 		{
@@ -39,7 +52,7 @@ public sealed class ValidationApiClient : ThunderstoreClient
 			throw new InvalidOperationException("Icon was not marked as valid.");
 		}
 
-		response.LogErrors(Logger);
+		response.LogErrors(_logger);
 
 		return response.AllErrors.ToList();
 	}
@@ -63,14 +76,14 @@ public sealed class ValidationApiClient : ThunderstoreClient
 			Data = Convert.ToBase64String(data),
 		};
 
-		var request = new RequestBuilder(Builder)
+		var request = new RequestBuilder(_builder)
 			.Post()
 			.WithAuth(token)
 			.ToEndpoint("api/experimental/submission/validate/manifest-v1/")
 			.WithJSON(payload)
 			.Build();
 
-		var response = await SendRequest<Models.Web.ValidateManifest.Response>(request, ct);
+		var response = await _client.SendRequest<Models.Web.ValidateManifest.Response>(request, ct);
 
 		if (response.IsSuccess)
 		{
@@ -80,7 +93,7 @@ public sealed class ValidationApiClient : ThunderstoreClient
 			throw new InvalidOperationException("Manifest was not marked as valid.");
 		}
 
-		response.LogErrors(Logger);
+		response.LogErrors(_logger);
 
 		return response.AllErrors.ToList();
 	}
@@ -99,14 +112,14 @@ public sealed class ValidationApiClient : ThunderstoreClient
 
 		var payload = new Models.Web.ValidateReadme.Request { Data = Convert.ToBase64String(data) };
 
-		var request = new RequestBuilder(Builder)
+		var request = new RequestBuilder(_builder)
 			.Post()
 			.WithAuth(token)
 			.ToEndpoint("api/experimental/submission/validate/readme/")
 			.WithJSON(payload)
 			.Build();
 
-		var response = await SendRequest<Models.Web.ValidateReadme.Response>(request, ct);
+		var response = await _client.SendRequest<Models.Web.ValidateReadme.Response>(request, ct);
 
 		if (response.IsSuccess)
 		{
@@ -116,7 +129,7 @@ public sealed class ValidationApiClient : ThunderstoreClient
 			throw new InvalidOperationException("README was not marked as valid.");
 		}
 
-		response.LogErrors(Logger);
+		response.LogErrors(_logger);
 
 		return response.AllErrors.ToList();
 	}

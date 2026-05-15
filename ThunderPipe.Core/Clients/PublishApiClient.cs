@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.Extensions.Logging;
 using ThunderPipe.Core.Models.API;
 using ThunderPipe.Core.Models.Web.MultipartUpload;
 using ThunderPipe.Core.Services.Interfaces;
@@ -10,9 +11,20 @@ namespace ThunderPipe.Core.Clients;
 /// <summary>
 /// Client used to call API endpoints for publishing packages
 /// </summary>
-public sealed class PublishApiClient : ThunderstoreClient
+public sealed class PublishApiClient
 {
 	// TODO: Try to limit the amount of Models.Web returned
+
+	private readonly HttpApiClient _client;
+	private readonly RequestBuilder _builder;
+	private readonly ILogger? _logger;
+
+	public PublishApiClient(HttpApiClient client, RequestBuilder builder, ILogger? logger = null)
+	{
+		_client = client;
+		_builder = builder;
+		_logger = logger;
+	}
 
 	/// <summary>
 	/// Initiates a multipart upload
@@ -33,16 +45,19 @@ public sealed class PublishApiClient : ThunderstoreClient
 			FileSize = fileSystem.GetSize(path),
 		};
 
-		var request = new RequestBuilder(Builder)
+		var request = new RequestBuilder(_builder)
 			.Post()
 			.WithAuth(token)
 			.ToEndpoint("api/experimental/usermedia/initiate-upload/")
 			.WithJSON(payload)
 			.Build();
 
-		var response = await SendRequest<Models.Web.InitiateMultipartUpload.Response>(request, ct);
+		var response = await _client.SendRequest<Models.Web.InitiateMultipartUpload.Response>(
+			request,
+			ct
+		);
 
-		response.LogErrors(Logger);
+		response.LogErrors(_logger);
 		response.EnsureSuccess(out var data);
 
 		var parts = data.UploadParts.Select(p => new UploadPartDescriptor
@@ -142,7 +157,7 @@ public sealed class PublishApiClient : ThunderstoreClient
 
 		var request = new RequestBuilder().ToUri(url).Put().WithContent(content).Build();
 
-		var response = await SendRequest(request, ct);
+		var response = await _client.SendRequest(request, ct);
 
 		var etag = response.Headers.ETag?.Tag;
 
@@ -161,13 +176,13 @@ public sealed class PublishApiClient : ThunderstoreClient
 		CancellationToken ct = default
 	)
 	{
-		var request = new RequestBuilder(Builder)
+		var request = new RequestBuilder(_builder)
 			.Post()
 			.WithAuth(token)
 			.ToEndpoint($"api/experimental/usermedia/{uuid}/abort-upload/")
 			.Build();
 
-		await SendRequest(request, ct);
+		await _client.SendRequest(request, ct);
 	}
 
 	/// <summary>
@@ -194,14 +209,14 @@ public sealed class PublishApiClient : ThunderstoreClient
 				.ToArray(),
 		};
 
-		var request = new RequestBuilder(Builder)
+		var request = new RequestBuilder(_builder)
 			.Post()
 			.WithAuth(token)
 			.ToEndpoint($"api/experimental/usermedia/{uuid}/finish-upload/")
 			.WithJSON(payload)
 			.Build();
 
-		var response = await SendRequest(request, ct);
+		var response = await _client.SendRequest(request, ct);
 
 		return response.IsSuccessStatusCode;
 	}
@@ -233,16 +248,16 @@ public sealed class PublishApiClient : ThunderstoreClient
 			UploadUUID = sessionUUID,
 		};
 
-		var request = new RequestBuilder(Builder)
+		var request = new RequestBuilder(_builder)
 			.Post()
 			.WithAuth(token)
 			.ToEndpoint("api/experimental/submission/submit/")
 			.WithJSON(payload)
 			.Build();
 
-		var response = await SendRequest<Models.Web.SubmitPackage.Response>(request, ct);
+		var response = await _client.SendRequest<Models.Web.SubmitPackage.Response>(request, ct);
 
-		response.LogErrors(Logger);
+		response.LogErrors(_logger);
 		response.EnsureSuccess(out var data);
 
 		return new Package(data.Version.Name, data.Version.Version, data.Version.DownloadURL);

@@ -1,8 +1,6 @@
 <Project>
 	<Target Name="GenerateMetadata" BeforeTargets="BeforeCompile">
 		<PropertyGroup>
-			<GUID>dev.$([System.String]::Copy('$(Authors)').ToLower()).$([System.String]::Copy('$(AssemblyName)').ToLower())</GUID>
-
 			<Version Condition="'$(Version)' == ''">0.0.0</Version>
 
 			<FileContent>
@@ -13,7 +11,6 @@ namespace $(RootNamespace)
 {
     public static class Metadata
     {
-    	public const string GUID = "$(GUID)"%3B
     	public const string VERSION = "$(Version)"%3B
     }
 }

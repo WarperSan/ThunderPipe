@@ -29,9 +29,7 @@ public class DependencyApiClientTests
 
 		var builder = new RequestBuilder().ToUri(new Uri(URL));
 
-		using var client = new DependencyApiClient();
-		client.Builder = builder;
-		client.Client = mockHttp.ToHttpClient();
+		var client = new DependencyApiClient(mockHttp.ToApiClient(), builder);
 
 		// Act
 		var requested = new[]
@@ -66,9 +64,7 @@ public class DependencyApiClientTests
 
 		var builder = new RequestBuilder().ToUri(new Uri(URL));
 
-		using var client = new DependencyApiClient();
-		client.Builder = builder;
-		client.Client = mockHttp.ToHttpClient();
+		var client = new DependencyApiClient(mockHttp.ToApiClient(), builder);
 
 		// Act
 		var requested = new[]
@@ -92,9 +88,7 @@ public class DependencyApiClientTests
 		var mockHttp = new MockHttpMessageHandler();
 		var builder = new RequestBuilder().ToUri(new Uri(URL));
 
-		using var client = new DependencyApiClient();
-		client.Builder = builder;
-		client.Client = mockHttp.ToHttpClient();
+		var client = new DependencyApiClient(mockHttp.ToApiClient(), builder);
 
 		// Act
 		var missing = await client.GetMissing([], TestContext.Current.CancellationToken);
@@ -119,9 +113,7 @@ public class DependencyApiClientTests
 
 		var builder = new RequestBuilder().ToUri(new Uri(URL));
 
-		using var client = new DependencyApiClient();
-		client.Builder = builder;
-		client.Client = mockHttp.ToHttpClient();
+		var client = new DependencyApiClient(mockHttp.ToApiClient(), builder);
 
 		// Act
 		var requested = new[]
@@ -158,9 +150,7 @@ public class DependencyApiClientTests
 
 		var builder = new RequestBuilder().ToUri(new Uri(URL));
 
-		using var client = new DependencyApiClient();
-		client.Builder = builder;
-		client.Client = mockHttp.ToHttpClient();
+		var client = new DependencyApiClient(mockHttp.ToApiClient(), builder);
 
 		// Act
 		var requested = new[] { new PackageDependency(SLUG_1), new PackageDependency(SLUG_2) };

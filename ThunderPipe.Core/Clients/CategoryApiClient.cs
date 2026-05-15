@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using ThunderPipe.Core.Models.API;
 using ThunderPipe.Core.Utils;
 
@@ -6,8 +7,19 @@ namespace ThunderPipe.Core.Clients;
 /// <summary>
 /// Client used to call API endpoints related to categories
 /// </summary>
-public sealed class CategoryApiClient : ThunderstoreClient
+public sealed class CategoryApiClient
 {
+	private readonly HttpApiClient _client;
+	private readonly RequestBuilder _builder;
+	private readonly ILogger? _logger;
+
+	public CategoryApiClient(HttpApiClient client, RequestBuilder builder, ILogger? logger = null)
+	{
+		_client = client;
+		_builder = builder;
+		_logger = logger;
+	}
+
 	/// <summary>
 	/// Finds the missing categories in the given community
 	/// </summary>
@@ -17,7 +29,7 @@ public sealed class CategoryApiClient : ThunderstoreClient
 		CancellationToken ct = default
 	)
 	{
-		var tempBuilder = new RequestBuilder(Builder)
+		var tempBuilder = new RequestBuilder(_builder)
 			.Get()
 			.ToEndpoint($"api/experimental/community/{community}/category/");
 
@@ -35,9 +47,9 @@ public sealed class CategoryApiClient : ThunderstoreClient
 			if (!visitedPages.Add(request.RequestUri!.AbsoluteUri))
 				break;
 
-			var response = await SendRequest<Models.Web.GetCategory.Response>(request, ct);
+			var response = await _client.SendRequest<Models.Web.GetCategory.Response>(request, ct);
 
-			response.LogErrors(Logger);
+			response.LogErrors(_logger);
 			response.EnsureSuccess(out var data);
 
 			foreach (var category in data.Items)
@@ -50,7 +62,7 @@ public sealed class CategoryApiClient : ThunderstoreClient
 			if (!Uri.TryCreate(data.Pagination.NextPage, UriKind.Absolute, out var uri))
 				break;
 
-			tempBuilder = new RequestBuilder(Builder).Get().ToUri(uri);
+			tempBuilder = new RequestBuilder(_builder).Get().ToUri(uri);
 		}
 
 		return categoriesToFind.Values;
