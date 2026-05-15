@@ -43,15 +43,20 @@ internal static class Program
 			});
 			builder.AddFilter(level => level >= logLevelContext.Level);
 		});
+
 		services.AddSingleton<ILogger>(provider =>
-			provider.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(ThunderPipe))
+			provider.GetRequiredService<ILoggerFactory>().CreateLogger(ThisAssembly.Constants.Name)
 		);
 
 		services.AddSingleton<HttpApiClient>(sp =>
 		{
 			var client = new HttpClient();
+
 			client.DefaultRequestHeaders.UserAgent.Add(
-				new ProductInfoHeaderValue(nameof(ThunderPipe), Metadata.VERSION)
+				new ProductInfoHeaderValue(
+					ThisAssembly.Constants.Name,
+					ThisAssembly.Constants.Version
+				)
 			);
 
 			return new HttpApiClient(client, sp.GetService<ILogger>());
@@ -65,8 +70,8 @@ internal static class Program
 
 		app.Configure(config =>
 		{
-			config.SetApplicationName(nameof(ThunderPipe));
-			config.SetApplicationVersion(Metadata.VERSION);
+			config.SetApplicationName(ThisAssembly.Constants.Name);
+			config.SetApplicationVersion(ThisAssembly.Constants.Version);
 			config.SetInterceptor(new LogInterceptor(logLevelContext));
 
 			config.SetExceptionHandler(

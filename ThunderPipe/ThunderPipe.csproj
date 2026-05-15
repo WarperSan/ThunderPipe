@@ -27,6 +27,10 @@
 
 	<!-- Packages -->
 	<ItemGroup>
+		<PackageReference Include="ThisAssembly.Constants" Version="2.1.2">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
 		<ProjectReference Include="../ThunderPipe.Core/ThunderPipe.Core.csproj" />
 
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.7" />
@@ -44,5 +48,8 @@
 		<MinVerTagPrefix>cli-v</MinVerTagPrefix>
 	</PropertyGroup>
 
-	<Import Project="ThunderPipe.targets" />
+	<ItemGroup>
+		<Constant Include="Name" Value="$(AssemblyName)" Visible="false" />
+		<Constant Include="Version" Value="$(Version)" Visible="false" />
+	</ItemGroup>
 </Project>
