@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-	<Import Project="../ThunderPipe.Sdk/Sdk/Sdk.props" />
+	<Sdk Name="ThunderPipe.Sdk" Version="1.0.0" />
 
 	<PropertyGroup>
-		<TargetFramework>net10.0</TargetFramework>
+		<TargetFramework>netstandard2.0</TargetFramework>
 	</PropertyGroup>
 
 	<!-- Thunderstore package properties -->
@@ -44,18 +44,17 @@
 			Optionally configure exact location & file name for zip
 			<ThunderPipeOutputFile>./bin/file.zip</ThunderPipeOutputFile>
 		-->
+
+		<!--
+			Optionally configure the Thunderstore host for testing
+			<ThunderstoreHost>http://thunderstore.localhost</ThunderstoreHost>
+		-->
 	</PropertyGroup>
 
 	<!-- Nuget Properties -->
 	<PropertyGroup>
 		<IsPackable>false</IsPackable>
 	</PropertyGroup>
-
-	<ItemGroup>
-		<ProjectReference Include="../ThunderPipe.Core/ThunderPipe.Core.csproj" />
-		<ProjectReference Include="../ThunderPipe.MSBuild/ThunderPipe.MSBuild.csproj" />
-		<ProjectReference Include="../ThunderPipe.Sdk/ThunderPipe.Sdk.csproj" />
-	</ItemGroup>
 
 	<ItemGroup>
 		<ThunderstoreFile Include="$(TargetPath)" Destination="plugins/" />
@@ -68,9 +67,8 @@
 		<ThunderstoreDependency Include="BepInEx-BepInExPack" Version="1.2.3" />
 	</ItemGroup>
 
-	<Import Project="../ThunderPipe.Sdk/Sdk/Sdk.targets" />
-
-	<PropertyGroup>
-		<MSBuildTasksAssemblyFile>$(MSBuildThisFileDirectory)bin/$(Configuration)/$(TargetFramework)/ThunderPipe.MSBuild.dll</MSBuildTasksAssemblyFile>
-	</PropertyGroup>
+	<Target Name="PackSdk" BeforeTargets="Restore">
+		<Exec Command="rm -rf $(MSBuildThisFileDirectory)bin/packages/thunderpipe.sdk" />
+		<Exec Command="dotnet pack $(SolutionRoot)ThunderPipe.Sdk -o $(MSBuildThisFileDirectory)bin/local-feed -p:MinVerVersionOverride=1.0.0" />
+	</Target>
 </Project>
