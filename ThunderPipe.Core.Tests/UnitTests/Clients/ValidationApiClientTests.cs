@@ -1,5 +1,4 @@
 using ThunderPipe.Core.Clients;
-using ThunderPipe.Core.Tests.Helpers;
 using ThunderPipe.Core.Tests.MockedObjects;
 using ThunderPipe.Core.Utils;
 using ValidateIcon = ThunderPipe.Core.Models.Web.ValidateIcon;
@@ -24,7 +23,7 @@ public class ValidationApiClientTests
 			.When("*")
 			.RespondErrors(new Dictionary<string, string[]> { [CATEGORY] = [ERROR] });
 
-		fileSystem.SetContent(PATH, await ImageHelper.CreateImage(1, 1));
+		fileSystem.SetContent(PATH, Array.Empty<byte>());
 
 		var client = new ValidationApiClient(mockedHttp.ToApiClient(), new RequestBuilder());
 
@@ -53,7 +52,7 @@ public class ValidationApiClientTests
 			.When("*")
 			.RespondErrors(new Dictionary<string, string[]> { [CATEGORY] = [ERROR] });
 
-		fileSystem.SetContent(PATH, await ImageHelper.CreateImage(1, 1));
+		fileSystem.SetContent(PATH, Array.Empty<byte>());
 
 		var client = new ValidationApiClient(mockedHttp.ToApiClient(), new RequestBuilder());
 
@@ -92,7 +91,7 @@ public class ValidationApiClientTests
 				}
 			);
 
-		fileSystem.SetContent(PATH, await ImageHelper.CreateImage(1, 1));
+		fileSystem.SetContent(PATH, Array.Empty<byte>());
 
 		var client = new ValidationApiClient(mockedHttp.ToApiClient(), new RequestBuilder());
 
@@ -121,7 +120,7 @@ public class ValidationApiClientTests
 
 		mockedHttp.When("*").RespondJSON(new ValidateIcon.Response { Valid = false });
 
-		fileSystem.SetContent(PATH, await ImageHelper.CreateImage(1, 1));
+		fileSystem.SetContent(PATH, Array.Empty<byte>());
 
 		var client = new ValidationApiClient(mockedHttp.ToApiClient(), new RequestBuilder());
 
@@ -140,7 +139,7 @@ public class ValidationApiClientTests
 
 		mockedHttp.When("*").RespondJSON(new ValidateIcon.Response { Valid = true });
 
-		fileSystem.SetContent(PATH, await ImageHelper.CreateImage(1, 1));
+		fileSystem.SetContent(PATH, Array.Empty<byte>());
 
 		var client = new ValidationApiClient(mockedHttp.ToApiClient(), new RequestBuilder());
 
