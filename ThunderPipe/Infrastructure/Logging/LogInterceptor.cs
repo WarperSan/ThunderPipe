@@ -6,11 +6,11 @@ namespace ThunderPipe.Infrastructure.Logging;
 
 internal sealed class LogInterceptor : ICommandInterceptor
 {
-	#if DEBUG
+#if DEBUG
 	public const LogLevel MINIMUM_LEVEL = LogLevel.Debug;
-	#else
+#else
 	public const LogLevel MINIMUM_LEVEL = LogLevel.Information;
-	#endif
+#endif
 
 	private readonly LogLevelContext _context;
 

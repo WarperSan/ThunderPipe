@@ -1,30 +1,42 @@
 <Project>
-	<Import Project="Sdk.tasks"/>
+	<Import Project="Sdk.tasks" />
 
 	<ItemGroup Condition="'@(ThunderstorePackageFile)' == ''">
-		<ThunderstorePackageFile Include="icon.png"/>
-		<ThunderstorePackageFile Include="README.md"/>
-		<ThunderstorePackageFile Include="LICENSE"/>
-		<ThunderstorePackageFile Include="CHANGELOG.md" Condition="Exists('CHANGELOG.md')"/>
+		<ThunderstorePackageFile Include="icon.png" />
+		<ThunderstorePackageFile Include="README.md" />
+		<ThunderstorePackageFile Include="LICENSE" />
+		<ThunderstorePackageFile Include="CHANGELOG.md" Condition="Exists('CHANGELOG.md')" />
 	</ItemGroup>
 
 	<PropertyGroup>
 		<ThunderstoreName Condition="'$(ThunderstoreName)' == ''">$(Product)</ThunderstoreName>
 		<ThunderstoreName Condition="'$(ThunderstoreName)' == ''">$(AssemblyName)</ThunderstoreName>
-		<ThunderstoreName Condition="'$(ThunderstoreName)' == ''">$(RootNamespace)</ThunderstoreName>
+		<ThunderstoreName Condition="'$(ThunderstoreName)' == ''"
+			>$(RootNamespace)</ThunderstoreName
+		>
 
-		<ThunderstoreVersion Condition="'$(ThunderstoreVersion)' == ''">$(Version)</ThunderstoreVersion>
+		<ThunderstoreVersion Condition="'$(ThunderstoreVersion)' == ''"
+			>$(Version)</ThunderstoreVersion
+		>
 
-		<ThunderstoreDescription Condition="'$(ThunderstoreDescription)' == ''">$(Description)</ThunderstoreDescription>
+		<ThunderstoreDescription Condition="'$(ThunderstoreDescription)' == ''"
+			>$(Description)</ThunderstoreDescription
+		>
 
 		<ThunderstoreTeam Condition="'$(ThunderstoreTeam)' == ''">$(Authors)</ThunderstoreTeam>
 
-		<ThunderstoreWebsite Condition="'$(ThunderstoreWebsite)' == ''">$(RepositoryUrl)</ThunderstoreWebsite>
-		<ThunderstoreWebsite Condition="'$(ThunderstoreWebsite)' == ''">$(PackageProjectUrl)</ThunderstoreWebsite>
+		<ThunderstoreWebsite Condition="'$(ThunderstoreWebsite)' == ''"
+			>$(RepositoryUrl)</ThunderstoreWebsite
+		>
+		<ThunderstoreWebsite Condition="'$(ThunderstoreWebsite)' == ''"
+			>$(PackageProjectUrl)</ThunderstoreWebsite
+		>
 
 		<ThunderstoreNSFW Condition="'$(ThunderstoreNSFW)' == ''">false</ThunderstoreNSFW>
 
-		<ThunderstoreHost Condition="'$(ThunderstoreHost)' == ''">https://thunderstore.io/</ThunderstoreHost>
+		<ThunderstoreHost Condition="'$(ThunderstoreHost)' == ''"
+			>https://thunderstore.io/</ThunderstoreHost
+		>
 	</PropertyGroup>
 
 	<Target Name="_EvaluateThunderPipeOutputDir" AfterTargets="ResolveAssemblyReferences">
