@@ -2,6 +2,7 @@
 	<!-- Default Project Properties -->
 	<PropertyGroup>
 		<ImplicitUsings>true</ImplicitUsings>
+		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
