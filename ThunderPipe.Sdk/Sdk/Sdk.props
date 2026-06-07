@@ -20,5 +20,11 @@
 		<ThunderstoreDependency>
 			<Visible>false</Visible>
 		</ThunderstoreDependency>
+		<ThunderstorePackageFile>
+			<Visible>false</Visible>
+		</ThunderstorePackageFile>
+		<ThunderstoreFile>
+			<Visible>false</Visible>
+		</ThunderstoreFile>
 	</ItemDefinitionGroup>
 </Project>
