@@ -4,7 +4,6 @@ using Microsoft.Extensions.Logging;
 using ThunderPipe.Core.Models;
 using ThunderPipe.Core.Services.Implementations;
 using ThunderPipe.Core.Utils;
-using ThunderPipe.MSBuild.Tasks.Factories;
 using ThunderPipe.MSBuild.Tasks.Helpers;
 using Task = Microsoft.Build.Utilities.Task;
 
@@ -49,7 +48,7 @@ public class ThunderPipePublish : Task
 		builder.ToUri(new Uri(Host));
 
 		var publicationService = new PublicationService(
-			HttpApiClientFactory.Create(logger),
+			Shared.Client.Value,
 			builder,
 			new FileSystem(),
 			logger

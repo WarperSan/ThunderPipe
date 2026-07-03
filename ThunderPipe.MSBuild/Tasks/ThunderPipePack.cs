@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using ThunderPipe.Core.Models;
 using ThunderPipe.Core.Services.Implementations;
 using ThunderPipe.Core.Utils;
-using ThunderPipe.MSBuild.Tasks.Factories;
 using ThunderPipe.MSBuild.Tasks.Helpers;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 using Task = Microsoft.Build.Utilities.Task;
@@ -46,15 +45,16 @@ public class ThunderPipePack : Task
 	{
 		var builder = new RequestBuilder();
 		var logger = new MSBuildLogger(Log);
-		var creationService = new CreationService(new FileSystem(), logger);
+		var fileSystem = new FileSystem();
+		var creationService = new CreationService(fileSystem, logger);
 
 		if (!string.IsNullOrEmpty(Host))
 			builder.ToUri(new Uri(Host));
 
 		var validationService = new ValidationService(
-			HttpApiClientFactory.Create(logger),
+			Shared.Client.Value,
 			builder,
-			new FileSystem(),
+			fileSystem,
 			logger
 		);
 
