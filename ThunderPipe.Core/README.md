@@ -19,20 +19,17 @@ If the existing tools don't meet your needs, you can build your own by referenci
 
 ## Architecture
 
-### API calls
+### Clients
 
-Clients are responsible for communicating with individual API endpoints, each exposing a method that targets a single endpoint. To understand how requests are constructed, follow the usage of `RequestBuilder` through the codebase.
-
-### `Models/API` vs `Models/Web`
-
-`Models/API` contains types intended for consumers of this library — wrappers around useful data that external programs work with directly.
-
-`Models/Web` contains types used internally for API communication — what Thunderstore expects to receive and what it returns.
+Clients execute a single action against the server. Each client calls the appropriate API endpoint and performs its designated task.
 
 ### Services
 
-Services standardize multi-step API procedures. Rather than requiring every consumer to orchestrate a sequence of calls correctly, a service exposes a single method that handles the procedure end to end. This also insulates dependants from changes to Thunderstore's internals, unless the procedure itself changes significantly.
+Services coordinate a sequence of actions to accomplish a more complex task. Rather than requiring every consumer to orchestrate a multistep procedure correctly, a service exposes a single method that handles the entire flow. This also protects consumers from changes to Thunderstore's internals, unless the underlying procedure itself changes significantly.
 
-### Services vs Clients
+> [!IMPORTANT]
+> Services are reserved for complex actions. When an operation maps to a single API call, it stays at the client level.
 
-Services are for multi-step procedures. When an operation maps to a single API call, it stays at the client level — wrapping it in a service would add complexity without benefit.
+### Models
+
+Models wrap around data, and ensure its validity. Instead of passing an arbitrary `string`, methods can pass an instance of the model, guaranteeing the intent and the validity of the data.
