@@ -43,7 +43,7 @@ jobs:
                     CONFIGURATION: ${{ env.DOTNET_CONFIGURATION }}
 
             -   name: Test
-                run: dotnet test "$FILE_PATH" --no-build --configuration "$CONFIGURATION"
+                run: dotnet test "$FILE_PATH" --configuration "$CONFIGURATION"
                 env:
                     FILE_PATH: ${{ env.TEST_PROJECT_FILE }}
                     CONFIGURATION: ${{ env.DOTNET_CONFIGURATION }}

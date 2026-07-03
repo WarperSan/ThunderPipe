@@ -46,7 +46,6 @@ jobs:
             -   name: Test
                 run: |
                     dotnet test "$FILE_PATH" \
-                        --no-build \
                         --configuration "$CONFIGURATION" \
                         --collect:"XPlat Code Coverage" \
                         --settings coverlet.runsettings \
