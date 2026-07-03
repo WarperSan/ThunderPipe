@@ -37,7 +37,7 @@ public sealed class PackageApiClient
 	/// <summary>
 	/// Gets the package by the given team by the given name
 	/// </summary>
-	private async Task<Models.Web.GetPackage.Response> GetPackage(
+	private async Task<DTOs.GetPackage.Response> GetPackage(
 		Team team,
 		PackageName name,
 		CancellationToken ct
@@ -48,7 +48,7 @@ public sealed class PackageApiClient
 			.ToEndpoint($"api/experimental/package/{team}/{name}/")
 			.Build();
 
-		var response = await _client.SendRequest<Models.Web.GetPackage.Response>(request, ct);
+		var response = await _client.SendRequest<DTOs.GetPackage.Response>(request, ct);
 
 		response.LogErrors(_logger);
 		response.EnsureSuccess(out var data);

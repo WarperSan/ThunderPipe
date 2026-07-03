@@ -1,8 +1,8 @@
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Logging;
+using ThunderPipe.Core.DTOs.MultipartUpload;
 using ThunderPipe.Core.Models.API;
-using ThunderPipe.Core.Models.Web.MultipartUpload;
 using ThunderPipe.Core.Services.Interfaces;
 using ThunderPipe.Core.Utils;
 
@@ -13,7 +13,7 @@ namespace ThunderPipe.Core.Clients;
 /// </summary>
 public sealed class PublishApiClient
 {
-	// TODO: Try to limit the amount of Models.Web returned
+	// TODO: Try to limit the amount of DTOs returned
 
 	private readonly HttpApiClient _client;
 	private readonly RequestBuilder _builder;
@@ -39,7 +39,7 @@ public sealed class PublishApiClient
 		CancellationToken ct = default
 	)
 	{
-		var payload = new Models.Web.InitiateMultipartUpload.Request
+		var payload = new DTOs.InitiateMultipartUpload.Request
 		{
 			File = fileSystem.GetName(path),
 			FileSize = fileSystem.GetSize(path),
@@ -52,7 +52,7 @@ public sealed class PublishApiClient
 			.WithJSON(payload)
 			.Build();
 
-		var response = await _client.SendRequest<Models.Web.InitiateMultipartUpload.Response>(
+		var response = await _client.SendRequest<DTOs.InitiateMultipartUpload.Response>(
 			request,
 			ct
 		);
@@ -198,14 +198,10 @@ public sealed class PublishApiClient
 		CancellationToken ct = default
 	)
 	{
-		var payload = new Models.Web.FinishMultipartUpload.Request
+		var payload = new DTOs.FinishMultipartUpload.Request
 		{
 			Parts = parts
-				.Select(p => new Models.Web.UploadPart.Response
-				{
-					PartNumber = p.Id,
-					ETag = p.ETag,
-				})
+				.Select(p => new DTOs.UploadPart.Response { PartNumber = p.Id, ETag = p.ETag })
 				.ToArray(),
 		};
 
@@ -239,7 +235,7 @@ public sealed class PublishApiClient
 			kvp => kvp.Value.Select(c => (string)c).ToArray()
 		);
 
-		var payload = new Models.Web.SubmitPackage.Request
+		var payload = new DTOs.SubmitPackage.Request
 		{
 			AuthorName = team,
 			Communities = communities.Select(c => (string)c).ToArray(),
@@ -255,7 +251,7 @@ public sealed class PublishApiClient
 			.WithJSON(payload)
 			.Build();
 
-		var response = await _client.SendRequest<Models.Web.SubmitPackage.Response>(request, ct);
+		var response = await _client.SendRequest<DTOs.SubmitPackage.Response>(request, ct);
 
 		response.LogErrors(_logger);
 		response.EnsureSuccess(out var data);

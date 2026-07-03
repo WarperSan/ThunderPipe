@@ -1,5 +1,5 @@
 using ThunderPipe.Core.Clients;
-using ThunderPipe.Core.Models.Web.GetCommunity;
+using ThunderPipe.Core.DTOs.GetCommunity;
 using ThunderPipe.Core.Utils;
 
 namespace ThunderPipe.Core.Tests.UnitTests.Clients;

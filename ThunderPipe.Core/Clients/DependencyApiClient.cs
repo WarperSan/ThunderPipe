@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
+using ThunderPipe.Core.DTOs.GetDependency;
 using ThunderPipe.Core.Models.API;
-using ThunderPipe.Core.Models.Web.GetDependency;
 using ThunderPipe.Core.Utils;
 
 namespace ThunderPipe.Core.Clients;

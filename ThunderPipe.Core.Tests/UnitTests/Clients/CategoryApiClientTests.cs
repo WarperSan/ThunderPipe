@@ -1,6 +1,6 @@
 using ThunderPipe.Core.Clients;
+using ThunderPipe.Core.DTOs.GetCategory;
 using ThunderPipe.Core.Models.API;
-using ThunderPipe.Core.Models.Web.GetCategory;
 using ThunderPipe.Core.Utils;
 
 namespace ThunderPipe.Core.Tests.UnitTests.Clients;

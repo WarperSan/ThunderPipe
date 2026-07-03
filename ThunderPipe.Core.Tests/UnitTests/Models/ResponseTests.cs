@@ -1,7 +1,7 @@
 using System.Net;
 using System.Text;
 using Newtonsoft.Json;
-using ThunderPipe.Core.Models.Web;
+using ThunderPipe.Core.DTOs;
 
 namespace ThunderPipe.Core.Tests.UnitTests.Models;
 

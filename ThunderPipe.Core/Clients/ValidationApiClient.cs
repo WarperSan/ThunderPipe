@@ -33,7 +33,7 @@ public sealed class ValidationApiClient
 	{
 		var data = await fileSystem.ReadAllBytesAsync(path, ct);
 
-		var payload = new Models.Web.ValidateIcon.Request { Data = Convert.ToBase64String(data) };
+		var payload = new DTOs.ValidateIcon.Request { Data = Convert.ToBase64String(data) };
 
 		var request = new RequestBuilder(_builder)
 			.Post()
@@ -42,7 +42,7 @@ public sealed class ValidationApiClient
 			.WithJSON(payload)
 			.Build();
 
-		var response = await _client.SendRequest<Models.Web.ValidateIcon.Response>(request, ct);
+		var response = await _client.SendRequest<DTOs.ValidateIcon.Response>(request, ct);
 
 		if (response.IsSuccess)
 		{
@@ -70,7 +70,7 @@ public sealed class ValidationApiClient
 	{
 		var data = await fileSystem.ReadAllBytesAsync(path, ct);
 
-		var payload = new Models.Web.ValidateManifest.Request
+		var payload = new DTOs.ValidateManifest.Request
 		{
 			AuthorName = team,
 			Data = Convert.ToBase64String(data),
@@ -83,7 +83,7 @@ public sealed class ValidationApiClient
 			.WithJSON(payload)
 			.Build();
 
-		var response = await _client.SendRequest<Models.Web.ValidateManifest.Response>(request, ct);
+		var response = await _client.SendRequest<DTOs.ValidateManifest.Response>(request, ct);
 
 		if (response.IsSuccess)
 		{
@@ -110,7 +110,7 @@ public sealed class ValidationApiClient
 	{
 		var data = await fileSystem.ReadAllBytesAsync(path, ct);
 
-		var payload = new Models.Web.ValidateReadme.Request { Data = Convert.ToBase64String(data) };
+		var payload = new DTOs.ValidateReadme.Request { Data = Convert.ToBase64String(data) };
 
 		var request = new RequestBuilder(_builder)
 			.Post()
@@ -119,7 +119,7 @@ public sealed class ValidationApiClient
 			.WithJSON(payload)
 			.Build();
 
-		var response = await _client.SendRequest<Models.Web.ValidateReadme.Response>(request, ct);
+		var response = await _client.SendRequest<DTOs.ValidateReadme.Response>(request, ct);
 
 		if (response.IsSuccess)
 		{

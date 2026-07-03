@@ -1,5 +1,5 @@
 using Microsoft.Extensions.Logging;
-using ThunderPipe.Core.Models.Web;
+using ThunderPipe.Core.DTOs;
 
 namespace ThunderPipe.Core.Utils;
 

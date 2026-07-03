@@ -47,7 +47,7 @@ public sealed class CategoryApiClient
 			if (!visitedPages.Add(request.RequestUri!.AbsoluteUri))
 				break;
 
-			var response = await _client.SendRequest<Models.Web.GetCategory.Response>(request, ct);
+			var response = await _client.SendRequest<DTOs.GetCategory.Response>(request, ct);
 
 			response.LogErrors(_logger);
 			response.EnsureSuccess(out var data);

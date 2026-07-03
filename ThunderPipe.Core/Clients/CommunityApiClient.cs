@@ -46,7 +46,7 @@ public sealed class CommunityApiClient
 			if (!visitedPages.Add(request.RequestUri!.AbsoluteUri))
 				break;
 
-			var response = await _client.SendRequest<Models.Web.GetCommunity.Response>(request, ct);
+			var response = await _client.SendRequest<DTOs.GetCommunity.Response>(request, ct);
 
 			response.LogErrors(_logger);
 			response.EnsureSuccess(out var data);
