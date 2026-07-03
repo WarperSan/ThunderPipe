@@ -13,6 +13,7 @@ on:
             - 'ThunderPipe.Core.Tests/**/*.cs'
             - 'ThunderPipe.Core.Tests/*.csproj'
             - 'coverlet.runsettings'
+            - '.github/workflows/test-core.yml'
     push:
         branches: [ master ]
         paths: *src_files
