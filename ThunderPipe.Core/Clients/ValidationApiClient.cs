@@ -1,5 +1,5 @@
 using Microsoft.Extensions.Logging;
-using ThunderPipe.Core.Models.API;
+using ThunderPipe.Core.Models;
 using ThunderPipe.Core.Services.Interfaces;
 using ThunderPipe.Core.Utils;
 

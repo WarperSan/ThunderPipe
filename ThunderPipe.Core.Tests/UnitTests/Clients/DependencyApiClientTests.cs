@@ -1,7 +1,7 @@
 using System.Net;
 using ThunderPipe.Core.Clients;
 using ThunderPipe.Core.DTOs.GetDependency;
-using ThunderPipe.Core.Models.API;
+using ThunderPipe.Core.Models;
 using ThunderPipe.Core.Utils;
 
 namespace ThunderPipe.Core.Tests.UnitTests.Clients;

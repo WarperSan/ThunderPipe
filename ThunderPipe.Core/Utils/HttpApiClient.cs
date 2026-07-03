@@ -33,7 +33,7 @@ public sealed class HttpApiClient
 	/// <summary>
 	/// Sends the given request
 	/// </summary>
-	public async Task<HttpResponseMessage> SendRequest(
+	internal async Task<HttpResponseMessage> SendRequest(
 		HttpRequestMessage request,
 		CancellationToken ct
 	)
@@ -48,7 +48,10 @@ public sealed class HttpApiClient
 	/// <summary>
 	/// Sends the given request, and parses the returning JSON
 	/// </summary>
-	public async Task<Response<T>> SendRequest<T>(HttpRequestMessage request, CancellationToken ct)
+	internal async Task<Response<T>> SendRequest<T>(
+		HttpRequestMessage request,
+		CancellationToken ct
+	)
 		where T : class
 	{
 		var response = await SendRequest(request, ct);

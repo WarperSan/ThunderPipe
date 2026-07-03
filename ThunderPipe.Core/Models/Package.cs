@@ -1,4 +1,4 @@
-namespace ThunderPipe.Core.Models.API;
+namespace ThunderPipe.Core.Models;
 
 /// <summary>
 /// Object that represents a released package

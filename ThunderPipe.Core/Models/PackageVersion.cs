@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using ThunderPipe.Core.Converters;
 
-namespace ThunderPipe.Core.Models.API;
+namespace ThunderPipe.Core.Models;
 
 /// <summary>
 /// Object that represents a package's version

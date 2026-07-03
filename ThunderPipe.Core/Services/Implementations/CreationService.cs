@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using ThunderPipe.Core.Models.API;
+using ThunderPipe.Core.Models;
 using ThunderPipe.Core.Services.Interfaces;
 
 namespace ThunderPipe.Core.Services.Implementations;

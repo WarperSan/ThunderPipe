@@ -1,4 +1,4 @@
-using ThunderPipe.Core.Models.API;
+using ThunderPipe.Core.Models;
 
 namespace ThunderPipe.Core.Tests.UnitTests.Models;
 

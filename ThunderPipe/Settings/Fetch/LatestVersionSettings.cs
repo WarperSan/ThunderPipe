@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using ThunderPipe.Commands.Fetch;
-using ThunderPipe.Core.Models.API;
+using ThunderPipe.Core.Models;
 
 namespace ThunderPipe.Settings.Fetch;
 

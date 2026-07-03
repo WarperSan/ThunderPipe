@@ -1,7 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Build.Framework;
 using Microsoft.Extensions.Logging;
-using ThunderPipe.Core.Models.API;
+using ThunderPipe.Core.Models;
 using ThunderPipe.Core.Services.Implementations;
 using ThunderPipe.Core.Utils;
 using ThunderPipe.MSBuild.Tasks.Factories;

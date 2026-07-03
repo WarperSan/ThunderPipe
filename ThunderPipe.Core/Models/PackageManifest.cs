@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace ThunderPipe.Core.Models.API;
+namespace ThunderPipe.Core.Models;
 
 public sealed record PackageManifest
 {
