@@ -37,7 +37,7 @@ public class RequestBuilderTests
 				builder.Put();
 				break;
 			default:
-				throw new NotImplementedException();
+				throw new InvalidOperationException($"Method '{method.Method}' is not valid.");
 		}
 
 		var request = builder.Build();
