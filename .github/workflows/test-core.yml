@@ -33,26 +33,26 @@ jobs:
             -   uses: actions/setup-dotnet@v4
 
             -   name: Restore
-                run: dotnet restore "$PATH"
+                run: dotnet restore "$FILE_PATH"
                 env:
-                    PATH: ${{ env.PROJECT_FILE }}
+                    FILE_PATH: ${{ env.PROJECT_FILE }}
 
             -   name: Build
-                run: dotnet build "$PATH" --no-restore --configuration "$CONFIGURATION"
+                run: dotnet build "$FILE_PATH" --no-restore --configuration "$CONFIGURATION"
                 env:
-                    PATH: ${{ env.PROJECT_FILE }}
+                    FILE_PATH: ${{ env.PROJECT_FILE }}
                     CONFIGURATION: ${{ env.DOTNET_CONFIGURATION }}
 
             -   name: Test
                 run: |
-                    dotnet test "$PATH" \
+                    dotnet test "$FILE_PATH" \
                         --no-build \
                         --configuration "$CONFIGURATION" \
                         --collect:"XPlat Code Coverage" \
                         --settings coverlet.runsettings \
                         --results-directory 'results/'
                 env:
-                    PATH: ${{ env.TEST_PROJECT_FILE }}
+                    FILE_PATH: ${{ env.TEST_PROJECT_FILE }}
                     CONFIGURATION: ${{ env.DOTNET_CONFIGURATION }}
 
             -   name: Upload coverage to Codecov
