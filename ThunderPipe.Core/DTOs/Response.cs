@@ -9,7 +9,7 @@ namespace ThunderPipe.Core.DTOs;
 /// <summary>
 /// Wrapper to handle <see cref="HttpResponseMessage"/> better
 /// </summary>
-public sealed class Response<T>
+internal sealed class Response<T>
 	where T : class
 {
 	/// <summary>
