@@ -27,6 +27,8 @@ jobs:
                 os: [ ubuntu-latest, windows-latest, macOS-latest ]
         env:
             OS: ${{ matrix.os }}
+        defaults:
+            shell: bash
         steps:
             -   uses: actions/checkout@v4
 
