@@ -27,7 +27,7 @@ public class HttpApiClientTests
 
 		var builder = new RequestBuilder().ToUri(new Uri(URL));
 
-		var client = new HttpApiClient(mockHttp.ToHttpClient());
+		var client = new HttpApiClient(mockHttp.ToHttpClient(), null);
 
 		var ex = await Assert.ThrowsAsync<InvalidOperationException>(async () =>
 		{
@@ -51,7 +51,7 @@ public class HttpApiClientTests
 
 		var builder = new RequestBuilder().ToUri(new Uri(URL));
 
-		var client = new HttpApiClient(mockHttp.ToHttpClient());
+		var client = new HttpApiClient(mockHttp.ToHttpClient(), null);
 
 		var ex = await Assert.ThrowsAsync<InvalidOperationException>(async () =>
 		{
@@ -75,7 +75,7 @@ public class HttpApiClientTests
 
 		var builder = new RequestBuilder().ToUri(new Uri(URL));
 
-		var client = new HttpApiClient(mockHttp.ToHttpClient());
+		var client = new HttpApiClient(mockHttp.ToHttpClient(), null);
 
 		await Assert.ThrowsAsync<NullReferenceException>(async () =>
 		{
@@ -89,7 +89,7 @@ public class HttpApiClientTests
 	public async Task Dispose_WhenDisposed_ThrowException()
 	{
 		var client = new HttpClient();
-		var apiClient = new HttpApiClient(client);
+		var apiClient = new HttpApiClient(client, null);
 
 		client.Dispose();
 

@@ -52,7 +52,7 @@ public class CommunityApiClientTests
 
 		var builder = new RequestBuilder().ToUri(new Uri(URL_1));
 
-		var client = new CommunityApiClient(mockHttp.ToApiClient(), builder);
+		var client = new CommunityApiClient(mockHttp.ToHttpClient(), builder);
 
 		// Act
 		var doesCommunityExist = await client.Exists(SLUG_3, TestContext.Current.CancellationToken);
@@ -92,7 +92,7 @@ public class CommunityApiClientTests
 
 		var builder = new RequestBuilder().ToUri(new Uri(URL_1));
 
-		var client = new CommunityApiClient(mockHttp.ToApiClient(), builder);
+		var client = new CommunityApiClient(mockHttp.ToHttpClient(), builder);
 
 		// Act
 		var wasCommunityFound = await client.Exists("test", TestContext.Current.CancellationToken);
@@ -143,7 +143,7 @@ public class CommunityApiClientTests
 
 		var builder = new RequestBuilder().ToUri(new Uri(URL_1));
 
-		var client = new CommunityApiClient(mockHttp.ToApiClient(), builder);
+		var client = new CommunityApiClient(mockHttp.ToHttpClient(), builder);
 
 		// Act
 		var wasCommunityFound = await client.Exists("test", TestContext.Current.CancellationToken);
@@ -172,7 +172,7 @@ public class CommunityApiClientTests
 
 		var builder = new RequestBuilder().ToUri(new Uri(URL_1));
 
-		var client = new CommunityApiClient(mockHttp.ToApiClient(), builder);
+		var client = new CommunityApiClient(mockHttp.ToHttpClient(), builder);
 
 		// Act
 		var wasCommunityFound = await client.Exists("test2", TestContext.Current.CancellationToken);

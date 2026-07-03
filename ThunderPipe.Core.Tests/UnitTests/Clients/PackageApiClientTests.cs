@@ -24,7 +24,7 @@ public class PackageApiClientTests
 
 		var builder = new RequestBuilder().ToUri(new Uri(URL));
 
-		var client = new PackageApiClient(mockHttp.ToApiClient(), builder);
+		var client = new PackageApiClient(mockHttp.ToHttpClient(), builder);
 
 		var version = await client.GetVersion(TEAM, NAME, TestContext.Current.CancellationToken);
 
@@ -49,7 +49,7 @@ public class PackageApiClientTests
 
 		var builder = new RequestBuilder().ToUri(new Uri(URL));
 
-		var client = new PackageApiClient(mockHttp.ToApiClient(), builder);
+		var client = new PackageApiClient(mockHttp.ToHttpClient(), builder);
 
 		var version = await client.GetVersion(TEAM, NAME, TestContext.Current.CancellationToken);
 
