@@ -14,13 +14,13 @@ public sealed class PublicationService : IPublicationService
 	private readonly IFileSystem _fileSystem;
 
 	public PublicationService(
-		HttpApiClient apiClient,
+		HttpClient client,
 		RequestBuilder builder,
 		IFileSystem fileSystem,
 		ILogger logger
 	)
 	{
-		_client = new PublishApiClient(apiClient, builder, logger);
+		_client = new PublishApiClient(client, builder, logger);
 
 		_logger = logger;
 		_fileSystem = fileSystem;

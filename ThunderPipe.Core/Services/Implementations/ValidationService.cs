@@ -12,13 +12,13 @@ public sealed class ValidationService : IValidationService
 	private readonly IFileSystem _fileSystem;
 
 	public ValidationService(
-		HttpApiClient apiClient,
+		HttpClient client,
 		RequestBuilder builder,
 		IFileSystem fileSystem,
 		ILogger logger
 	)
 	{
-		_client = new ValidationApiClient(apiClient, builder, logger);
+		_client = new ValidationApiClient(client, builder, logger);
 
 		_fileSystem = fileSystem;
 	}
