@@ -1,0 +1,66 @@
+name: 'Test ThunderPipe.Core'
+
+env:
+    DOTNET_CONFIGURATION: 'Release'
+    PROJECT_FILE: 'ThunderPipe.Core/ThunderPipe.Core.csproj'
+    TEST_PROJECT_FILE: 'ThunderPipe.Core.Tests/ThunderPipe.Core.Tests.csproj'
+
+on:
+    pull_request:
+        paths: &src_files
+            - 'ThunderPipe.Core/**/*.cs'
+            - 'ThunderPipe.Core/*.csproj'
+            - 'ThunderPipe.Core.Tests/**/*.cs'
+            - 'ThunderPipe.Core.Tests/*.csproj'
+            - 'coverlet.runsettings'
+            - '.github/workflows/test-core.yml'
+    push:
+        branches: [ master ]
+        paths: *src_files
+
+jobs:
+    test:
+        name: 'Test on ${{ matrix.os }}'
+        runs-on: ${{ matrix.os }}
+        strategy:
+            matrix:
+                os: [ ubuntu-latest, windows-latest, macOS-latest ]
+        env:
+            OS: ${{ matrix.os }}
+        defaults:
+            run:
+                shell: bash
+        steps:
+            -   uses: actions/checkout@v4
+
+            -   uses: actions/setup-dotnet@v4
+
+            -   name: Restore
+                run: dotnet restore "$FILE_PATH"
+                env:
+                    FILE_PATH: ${{ env.PROJECT_FILE }}
+
+            -   name: Build
+                run: dotnet build "$FILE_PATH" --no-restore --configuration "$CONFIGURATION"
+                env:
+                    FILE_PATH: ${{ env.PROJECT_FILE }}
+                    CONFIGURATION: ${{ env.DOTNET_CONFIGURATION }}
+
+            -   name: Test
+                run: |
+                    dotnet test "$FILE_PATH" \
+                        --configuration "$CONFIGURATION" \
+                        --collect:"XPlat Code Coverage" \
+                        --settings coverlet.runsettings \
+                        --results-directory 'results/'
+                env:
+                    FILE_PATH: ${{ env.TEST_PROJECT_FILE }}
+                    CONFIGURATION: ${{ env.DOTNET_CONFIGURATION }}
+
+            -   name: Upload coverage to Codecov
+                uses: codecov/codecov-action@v3
+                with:
+                    directory: results/
+                    env_vars: OS
+                    fail_ci_if_error: 'false'
+                    token: ${{ secrets.CODECOV_TOKEN }}
