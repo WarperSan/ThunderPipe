@@ -17,7 +17,8 @@ jobs:
     release:
         runs-on: ubuntu-latest
         defaults:
-            shell: bash
+            run:
+                shell: bash
         steps:
             -   name: Find Version
                 id: detect
