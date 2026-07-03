@@ -10,12 +10,12 @@ namespace ThunderPipe.Commands.Validate;
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 internal sealed class CommunityCommand : AsyncCommand<CommunitySettings>
 {
-	private readonly HttpApiClient _apiClient;
+	private readonly HttpClient _client;
 	private readonly ILogger _logger;
 
-	public CommunityCommand(HttpApiClient apiClient, ILogger logger)
+	public CommunityCommand(HttpClient client, ILogger logger)
 	{
-		_apiClient = apiClient;
+		_client = client;
 		_logger = logger;
 	}
 
@@ -28,7 +28,7 @@ internal sealed class CommunityCommand : AsyncCommand<CommunitySettings>
 	{
 		var community = settings.Community;
 		var builder = new RequestBuilder().ToUri(settings.Host!);
-		var client = new CommunityApiClient(_apiClient, builder, _logger);
+		var client = new CommunityApiClient(_client, builder, _logger);
 
 		var doesCommunityExist = await client.Exists(community, cancellationToken);
 

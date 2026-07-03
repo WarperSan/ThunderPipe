@@ -9,12 +9,12 @@ namespace ThunderPipe.Commands.Fetch;
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 internal sealed class LatestVersionCommand : AsyncCommand<Settings.Fetch.LatestVersionSettings>
 {
-	private readonly HttpApiClient _apiClient;
+	private readonly HttpClient _client;
 	private readonly ILogger _logger;
 
-	public LatestVersionCommand(HttpApiClient apiClient, ILogger logger)
+	public LatestVersionCommand(HttpClient client, ILogger logger)
 	{
-		_apiClient = apiClient;
+		_client = client;
 		_logger = logger;
 	}
 
@@ -26,7 +26,7 @@ internal sealed class LatestVersionCommand : AsyncCommand<Settings.Fetch.LatestV
 	)
 	{
 		var builder = new RequestBuilder().ToUri(settings.Host!);
-		var client = new PackageApiClient(_apiClient, builder, _logger);
+		var client = new PackageApiClient(_client, builder, _logger);
 
 		var version = await client.GetVersion(settings.Team, settings.Name, cancellationToken);
 		Console.WriteLine(version);

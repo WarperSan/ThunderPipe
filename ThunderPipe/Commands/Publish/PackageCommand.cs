@@ -11,13 +11,13 @@ namespace ThunderPipe.Commands.Publish;
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 internal sealed class PackageCommand : AsyncCommand<Settings.Publish.PackageSettings>
 {
-	private readonly HttpApiClient _apiClient;
+	private readonly HttpClient _client;
 	private readonly ILogger _logger;
 	private readonly IFileSystem _fileSystem;
 
-	public PackageCommand(HttpApiClient apiClient, ILogger logger, IFileSystem fileSystem)
+	public PackageCommand(HttpClient client, ILogger logger, IFileSystem fileSystem)
 	{
-		_apiClient = apiClient;
+		_client = client;
 		_logger = logger;
 		_fileSystem = fileSystem;
 	}
@@ -37,7 +37,7 @@ internal sealed class PackageCommand : AsyncCommand<Settings.Publish.PackageSett
 
 		_logger.LogInformation("Publishing '{File}'", file);
 
-		var service = new PublicationService(_apiClient, builder, _fileSystem, _logger);
+		var service = new PublicationService(_client, builder, _fileSystem, _logger);
 
 		var package = await service.PublishPackage(
 			file,

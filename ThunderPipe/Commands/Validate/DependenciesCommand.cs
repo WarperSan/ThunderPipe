@@ -10,12 +10,12 @@ namespace ThunderPipe.Commands.Validate;
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 internal sealed class DependenciesCommand : AsyncCommand<DependenciesSettings>
 {
-	private readonly HttpApiClient _apiClient;
+	private readonly HttpClient _client;
 	private readonly ILogger _logger;
 
-	public DependenciesCommand(HttpApiClient apiClient, ILogger logger)
+	public DependenciesCommand(HttpClient client, ILogger logger)
 	{
-		_apiClient = apiClient;
+		_client = client;
 		_logger = logger;
 	}
 
@@ -27,7 +27,7 @@ internal sealed class DependenciesCommand : AsyncCommand<DependenciesSettings>
 	)
 	{
 		var builder = new RequestBuilder().ToUri(settings.Host!);
-		var client = new DependencyApiClient(_apiClient, builder, _logger);
+		var client = new DependencyApiClient(_client, builder, _logger);
 
 		var missingDependencies = await client.GetMissing(settings.Dependencies, cancellationToken);
 

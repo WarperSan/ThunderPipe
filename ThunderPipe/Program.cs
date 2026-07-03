@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging.Console;
 using Spectre.Console.Cli;
 using ThunderPipe.Core.Services.Implementations;
 using ThunderPipe.Core.Services.Interfaces;
-using ThunderPipe.Core.Utils;
 using ThunderPipe.Infrastructure;
 using ThunderPipe.Infrastructure.Logging;
 
@@ -48,7 +47,7 @@ internal static class Program
 			provider.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(ThunderPipe))
 		);
 
-		services.AddSingleton<HttpApiClient>(sp =>
+		services.AddSingleton<HttpClient>(_ =>
 		{
 			var client = new HttpClient();
 
@@ -56,7 +55,7 @@ internal static class Program
 				new ProductInfoHeaderValue(nameof(ThunderPipe), Metadata.VERSION)
 			);
 
-			return new HttpApiClient(client, sp.GetService<ILogger>());
+			return client;
 		});
 
 		services.AddSingleton<IFileSystem>(new FileSystem());
