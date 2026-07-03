@@ -11,7 +11,7 @@ public class TestFileSystem : IFileSystem
 	#region IFileSystem
 
 	/// <inheritdoc />
-	public Stream OpenRead(string path) => throw new NotImplementedException();
+	public Stream OpenRead(string path) => throw new FileNotFoundException();
 
 	/// <inheritdoc />
 	public Task<byte[]> ReadAllBytesAsync(string path, CancellationToken cancellationToken)
@@ -30,13 +30,13 @@ public class TestFileSystem : IFileSystem
 		string path,
 		string? contents,
 		CancellationToken cancellationToken
-	) => throw new NotImplementedException();
+	) => throw new FileNotFoundException();
 
 	/// <inheritdoc />
-	public string GetName(string path) => throw new NotImplementedException();
+	public string GetName(string path) => throw new FileNotFoundException();
 
 	/// <inheritdoc />
-	public long GetSize(string path) => throw new NotImplementedException();
+	public long GetSize(string path) => throw new FileNotFoundException();
 
 	#endregion
 
