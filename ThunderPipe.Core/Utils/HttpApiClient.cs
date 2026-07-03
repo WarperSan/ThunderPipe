@@ -6,9 +6,9 @@ namespace ThunderPipe.Core.Utils;
 /// <summary>
 /// Wrapper around <see cref="HttpClient"/>
 /// </summary>
-public sealed class HttpApiClient
+internal sealed class HttpApiClient
 {
-	public HttpApiClient(HttpClient client, ILogger? logger = null)
+	public HttpApiClient(HttpClient client, ILogger? logger)
 	{
 		_client = client;
 		_logger = logger;
@@ -33,7 +33,7 @@ public sealed class HttpApiClient
 	/// <summary>
 	/// Sends the given request
 	/// </summary>
-	internal async Task<HttpResponseMessage> SendRequest(
+	public async Task<HttpResponseMessage> SendRequest(
 		HttpRequestMessage request,
 		CancellationToken ct
 	)
@@ -48,10 +48,7 @@ public sealed class HttpApiClient
 	/// <summary>
 	/// Sends the given request, and parses the returning JSON
 	/// </summary>
-	internal async Task<Response<T>> SendRequest<T>(
-		HttpRequestMessage request,
-		CancellationToken ct
-	)
+	public async Task<Response<T>> SendRequest<T>(HttpRequestMessage request, CancellationToken ct)
 		where T : class
 	{
 		var response = await SendRequest(request, ct);
