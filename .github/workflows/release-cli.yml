@@ -1,0 +1,75 @@
+name: 'Release ThunderPipe.CLI'
+
+env:
+    DOTNET_CONFIGURATION: 'Release'
+    PROJECT_FILE: 'ThunderPipe/ThunderPipe.csproj'
+
+on:
+    push:
+        tags:
+            - "cli-v*"
+
+permissions:
+    contents: write
+
+jobs:
+    release:
+        runs-on: ubuntu-latest
+        steps:
+            -   name: Find Version
+                id: detect
+                run: |
+                    TAG="${GITHUB_REF_NAME}"
+                    VERSION="${TAG#*-v}"
+                    echo "Releasing 'v$VERSION'"
+                    echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+            -   uses: actions/checkout@v4
+                with:
+                    fetch-depth: 0
+
+            -   uses: actions/setup-dotnet@v4
+
+            -   name: Restore
+                run: dotnet restore '$PATH'
+                env:
+                    PATH: ${{ env.PROJECT_FILE }}
+
+            -   name: Build
+                run: dotnet build '$PATH' --no-restore --configuration '$CONFIGURATION'
+                env:
+                    PATH: ${{ env.PROJECT_FILE }}
+                    CONFIGURATION: ${{ env.DOTNET_CONFIGURATION }}
+
+            -   name: Test
+                run: dotnet test '$PATH' --no-build --configuration '$CONFIGURATION'
+                env:
+                    PATH: ${{ env.PROJECT_FILE }}
+                    CONFIGURATION: ${{ env.DOTNET_CONFIGURATION }}
+
+            -   name: Pack
+                run: |
+                    dotnet pack '$PATH' \
+                      --no-build \
+                      --configuration '$CONFIGURATION' \
+                      --output "build/"
+                env:
+                    PATH: ${{ env.PROJECT_FILE }}
+                    CONFIGURATION: ${{ env.DOTNET_CONFIGURATION }}
+
+            -   name: Publish to NuGet
+                run: |
+                    dotnet nuget push 'build/*.nupkg' \
+                      --api-key "$API_KEY" \
+                      --source https://api.nuget.org/v3/index.json \
+                      --skip-duplicate
+                env:
+                    API_KEY: ${{ secrets.NUGET_API_KEY }}
+
+            -   name: Publish GitHub Release
+                uses: softprops/action-gh-release@v2
+                with:
+                    name: ThunderPipe.CLI v${{ steps.detect.outputs.version }}
+                    tag_name: ${{ github.ref_name }}
+                    generate_release_notes: true
+                    files: build/*.nupkg
