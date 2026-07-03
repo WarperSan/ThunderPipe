@@ -32,27 +32,27 @@ jobs:
             -   uses: actions/setup-dotnet@v4
 
             -   name: Restore
-                run: dotnet restore '$PATH'
+                run: dotnet restore "$PATH"
                 env:
                     PATH: ${{ env.PROJECT_FILE }}
 
             -   name: Build
-                run: dotnet build '$PATH' --no-restore --configuration '$CONFIGURATION'
+                run: dotnet build "$PATH" --no-restore --configuration "$CONFIGURATION"
                 env:
                     PATH: ${{ env.PROJECT_FILE }}
                     CONFIGURATION: ${{ env.DOTNET_CONFIGURATION }}
 
             -   name: Test
-                run: dotnet test '$PATH' --no-build --configuration '$CONFIGURATION'
+                run: dotnet test "$PATH" --no-build --configuration "$CONFIGURATION"
                 env:
                     PATH: ${{ env.TEST_PROJECT_FILE }}
                     CONFIGURATION: ${{ env.DOTNET_CONFIGURATION }}
 
             -   name: Pack
                 run: |
-                    dotnet pack '$PATH' \
+                    dotnet pack "$PATH" \
                       --no-build \
-                      --configuration '$CONFIGURATION' \
+                      --configuration "$CONFIGURATION" \
                       --output "build/"
                 env:
                     PATH: ${{ env.PROJECT_FILE }}
@@ -60,7 +60,7 @@ jobs:
 
             -   name: Publish to NuGet
                 run: |
-                    dotnet nuget push 'build/*.nupkg' \
+                    dotnet nuget push "build/*.nupkg" \
                       --api-key "$API_KEY" \
                       --source https://api.nuget.org/v3/index.json \
                       --skip-duplicate
