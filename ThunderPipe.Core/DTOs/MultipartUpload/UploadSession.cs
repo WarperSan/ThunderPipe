@@ -1,5 +1,7 @@
 namespace ThunderPipe.Core.DTOs.MultipartUpload;
 
+// TODO: Make internal
+
 public sealed record UploadSession
 {
 	/// <summary>
