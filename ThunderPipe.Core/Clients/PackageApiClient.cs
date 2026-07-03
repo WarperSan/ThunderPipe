@@ -13,9 +13,9 @@ public sealed class PackageApiClient
 	private readonly RequestBuilder _builder;
 	private readonly ILogger? _logger;
 
-	public PackageApiClient(HttpApiClient client, RequestBuilder builder, ILogger? logger = null)
+	public PackageApiClient(HttpClient client, RequestBuilder builder, ILogger? logger = null)
 	{
-		_client = client;
+		_client = new HttpApiClient(client, logger);
 		_builder = builder;
 		_logger = logger;
 	}

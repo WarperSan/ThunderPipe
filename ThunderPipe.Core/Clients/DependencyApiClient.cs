@@ -15,9 +15,9 @@ public sealed class DependencyApiClient
 	private readonly RequestBuilder _builder;
 	private readonly ILogger? _logger;
 
-	public DependencyApiClient(HttpApiClient client, RequestBuilder builder, ILogger? logger = null)
+	public DependencyApiClient(HttpClient client, RequestBuilder builder, ILogger? logger = null)
 	{
-		_client = client;
+		_client = new HttpApiClient(client, logger);
 		_builder = builder;
 		_logger = logger;
 	}

@@ -19,9 +19,9 @@ public sealed class PublishApiClient
 	private readonly RequestBuilder _builder;
 	private readonly ILogger? _logger;
 
-	public PublishApiClient(HttpApiClient client, RequestBuilder builder, ILogger? logger = null)
+	public PublishApiClient(HttpClient client, RequestBuilder builder, ILogger? logger = null)
 	{
-		_client = client;
+		_client = new HttpApiClient(client, logger);
 		_builder = builder;
 		_logger = logger;
 	}

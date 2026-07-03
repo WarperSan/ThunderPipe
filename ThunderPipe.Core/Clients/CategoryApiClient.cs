@@ -13,9 +13,9 @@ public sealed class CategoryApiClient
 	private readonly RequestBuilder _builder;
 	private readonly ILogger? _logger;
 
-	public CategoryApiClient(HttpApiClient client, RequestBuilder builder, ILogger? logger = null)
+	public CategoryApiClient(HttpClient client, RequestBuilder builder, ILogger? logger = null)
 	{
-		_client = client;
+		_client = new HttpApiClient(client, logger);
 		_builder = builder;
 		_logger = logger;
 	}

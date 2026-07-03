@@ -13,9 +13,9 @@ public sealed class CommunityApiClient
 	private readonly RequestBuilder _builder;
 	private readonly ILogger? _logger;
 
-	public CommunityApiClient(HttpApiClient client, RequestBuilder builder, ILogger? logger = null)
+	public CommunityApiClient(HttpClient client, RequestBuilder builder, ILogger? logger = null)
 	{
-		_client = client;
+		_client = new HttpApiClient(client, logger);
 		_builder = builder;
 		_logger = logger;
 	}
@@ -42,7 +42,7 @@ public sealed class CommunityApiClient
 		{
 			var request = tempBuilder.Build();
 
-			// Prevent loopstrue
+			// Prevent infinite loop
 			if (!visitedPages.Add(request.RequestUri!.AbsoluteUri))
 				break;
 

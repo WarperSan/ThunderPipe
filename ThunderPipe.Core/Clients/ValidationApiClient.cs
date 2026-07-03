@@ -14,9 +14,9 @@ public sealed class ValidationApiClient
 	private readonly RequestBuilder _builder;
 	private readonly ILogger? _logger;
 
-	public ValidationApiClient(HttpApiClient client, RequestBuilder builder, ILogger? logger = null)
+	public ValidationApiClient(HttpClient client, RequestBuilder builder, ILogger? logger = null)
 	{
-		_client = client;
+		_client = new HttpApiClient(client, logger);
 		_builder = builder;
 		_logger = logger;
 	}
