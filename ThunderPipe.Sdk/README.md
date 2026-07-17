@@ -9,15 +9,52 @@
 
 ## Overview
 
-ThunderPipe.Sdk is the MSBuild integration
-of [ThunderPipe.Core](https://github.com/WarperSan/ThunderPipe/tree/master/ThunderPipe.Core).
+ThunderPipe.Sdk is a MSBuild integration
+of [ThunderPipe.Core](https://github.com/WarperSan/ThunderPipe/tree/master/ThunderPipe.Core). It implements the core features of the library into MSBuild tasks.
 
-## Installation
+## Key Features
+- Provides a MSBuild task and target to package a Thunderstore package.
+- Provides a MSBuild task and target to publish a Thunderstore package.
 
-Go to [NuGet](https://www.nuget.org/packages/ThunderPipe.Sdk), and copy the Sdk XML node for the latest version into your project:
+## Usage
 
+To use this package, go to [NuGet](https://www.nuget.org/packages/ThunderPipe.Sdk), and copy the SDK XML node at the top of your `.csproj` file.
+
+It is recommended to create and import a `Thunderstore.props` file next to your project file.
+
+Here is a template for the file:
 ```xml
-<Sdk Name="ThunderPipe.Sdk" Version="version.number.here" />
+<Project>
+	<!-- Package metadata -->
+	<PropertyGroup>
+		<ThunderstoreTeam>$(Authors)</ThunderstoreTeam>
+		<ThunderstoreName>$(AssemblyTitle.Replace('.', '_'))</ThunderstoreName>
+		<ThunderstoreDescription>$(Description)</ThunderstoreDescription>
+		<ThunderstoreWebsite>$(RepositoryUrl)</ThunderstoreWebsite>
+
+		<ThunderstoreCommunities><!-- TODO: Set the slug of the community to publish to --></ThunderstoreCommunities>
+		<ThunderstoreCategories><!-- TODO: Set the slugs of the categories to use --></ThunderstoreCategories>
+
+		<ThunderstoreToken>$(THUNDERSTORE_TOKEN)</ThunderstoreToken>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<!-- Mod Files -->
+		<ThunderstoreFile Include="$(TargetPath)" Destination="plugins/" />
+
+		<!-- Package Files -->
+		<ThunderstorePackageFile Include="README.md" />
+		<ThunderstorePackageFile Include="CHANGELOG.md" />
+		<ThunderstorePackageFile Include="LICENSE" />
+		<ThunderstorePackageFile Include="icon.png" />
+
+		<!-- Thunderstore Dependencies -->
+		<!--
+			Add the hard dependencies of your package:
+			<ThunderstoreDependency Include="TEAM-NAME" Version="VERSION" />
+		-->
+	</ItemGroup>
+</Project>
 ```
 
 ## Tasks
@@ -56,20 +93,20 @@ Or use the ThunderPipePack Task in your own Target:
 </ThunderPipePack>
 ```
 
-| Argument  | Description                                    |
-|-----------|------------------------------------------------|
-| `Token`   | API token of the service account to use        |
-| `Team`    | Name of the team that owns the service account |
-| `Name`    | Name of the package                            |
-| `Version` | Version of the package                         |
-| `Description` | Description of the package |
-| `Website` | The website for the package project |
-| `Dependencies` | A list of Thunderstore dependencies |
-| `PackageFiles` | Metadata files for the package |
-| `Files` | Files to include in the package |
-| `Host` | Thunderstore repository URL (optional) for package validation if `Token` is set  |
-| `OutputDir`| Where the package will be built |
-| `OutputFile` | The full path for the package (overrides `OutputDir` if set) |
+| Argument       | Description                                                                     |
+|----------------|---------------------------------------------------------------------------------|
+| `Token`        | API token of the service account to use                                         |
+| `Team`         | Name of the team that owns the service account                                  |
+| `Name`         | Name of the package                                                             |
+| `Version`      | Version of the package                                                          |
+| `Description`  | Description of the package                                                      |
+| `Website`      | The website for the package project                                             |
+| `Dependencies` | A list of Thunderstore dependencies                                             |
+| `PackageFiles` | Metadata files for the package                                                  |
+| `Files`        | Files to include in the package                                                 |
+| `Host`         | Thunderstore repository URL (optional) for package validation if `Token` is set |
+| `OutputDir`    | Where the package will be built                                                 |
+| `OutputFile`   | The full path for the package (overrides `OutputDir` if set)                    |
 
 ### ThunderPipePublish
 
@@ -100,16 +137,16 @@ Or use the ThunderPipePublish Task in your own Target:
 </ThunderPipePublish>
 ```
 
-| Argument | Description                                    |
-|----------|------------------------------------------------|
-| `Token`  | API token of the service account to use        |
-| `File`   | Path to your `.zip` package                    |
-| `Team`   | Name of the team that owns the service account |
-| `Communities` | A list of community slugs to upload to |
-| `Categories` | A list of categories that apply to all communities to upload to |
-| `CommunityCategories` | A list of communities and their individual categories |
-| `Host` | Thunderstore repository URL to upload the package to (optional) |
-| `HasNSFW` | Whether or not the package should be marked as NSFW |
+| Argument              | Description                                                     |
+|-----------------------|-----------------------------------------------------------------|
+| `Token`               | API token of the service account to use                         |
+| `File`                | Path to your `.zip` package                                     |
+| `Team`                | Name of the team that owns the service account                  |
+| `Communities`         | A list of community slugs to upload to                          |
+| `Categories`          | A list of categories that apply to all communities to upload to |
+| `CommunityCategories` | A list of communities and their individual categories           |
+| `Host`                | Thunderstore repository URL to upload the package to (optional) |
+| `HasNSFW`             | Whether or not the package should be marked as NSFW             |
 
 ## Default Values
 
@@ -201,3 +238,5 @@ You can see more [here](https://github.com/WarperSan/ThunderPipe/blob/master/Thu
   <ThunderstoreDependency Include="BepInEx-BepInExPack" Version="5.4.2305" />
 </ItemGroup>
 ```
+
+If needed, there is a [concrete example project](https://github.com/WarperSan/ThunderPipe/tree/master/ThunderPipe.Sdk.TestProject) available.
