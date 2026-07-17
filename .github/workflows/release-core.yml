@@ -35,18 +35,24 @@ jobs:
             -   uses: actions/setup-dotnet@v4
 
             -   name: Restore
-                run: dotnet restore "$FILE_PATH"
+                run: |
+                    dotnet restore "$PROJECT_FILE"
+                    dotnet restore "$TEST_PROJECT_FILE"
                 env:
-                    FILE_PATH: ${{ env.PROJECT_FILE }}
+                    PROJECT_FILE: ${{ env.PROJECT_FILE }}
+                    TEST_PROJECT_FILE: ${{ env.TEST_PROJECT_FILE }}
 
             -   name: Build
-                run: dotnet build "$FILE_PATH" --no-restore --configuration "$CONFIGURATION"
+                run: |
+                    dotnet build "$PROJECT_FILE" --no-restore --configuration "$CONFIGURATION"
+                    dotnet build "$TEST_PROJECT_FILE" --no-restore --configuration "$CONFIGURATION"
                 env:
-                    FILE_PATH: ${{ env.PROJECT_FILE }}
+                    PROJECT_FILE: ${{ env.PROJECT_FILE }}
+                    TEST_PROJECT_FILE: ${{ env.TEST_PROJECT_FILE }}
                     CONFIGURATION: ${{ env.DOTNET_CONFIGURATION }}
 
             -   name: Test
-                run: dotnet test "$FILE_PATH" --configuration "$CONFIGURATION"
+                run: dotnet test "$FILE_PATH" --no-build --configuration "$CONFIGURATION"
                 env:
                     FILE_PATH: ${{ env.TEST_PROJECT_FILE }}
                     CONFIGURATION: ${{ env.DOTNET_CONFIGURATION }}
