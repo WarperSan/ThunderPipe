@@ -5,6 +5,7 @@
 		<IsPackable>false</IsPackable>
 		<IsTestProject>true</IsTestProject>
 		<RootNamespace>ThunderPipe.Tests</RootNamespace>
+		<UseAppHost>false</UseAppHost>
 	</PropertyGroup>
 
 	<!-- Dependencies -->
