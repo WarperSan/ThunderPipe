@@ -34,8 +34,6 @@ jobs:
             -   uses: actions/checkout@v4
 
             -   uses: actions/setup-dotnet@v4
-                with:
-                    dotnet-version: '8.0.x'
 
             -   name: Restore
                 run: dotnet restore "$FILE_PATH"
@@ -50,7 +48,7 @@ jobs:
 
             -   name: Test
                 run: |
-                    dotnet test "$FILE_PATH" \
+                    dotnet test --project "$FILE_PATH" \
                         --configuration "$CONFIGURATION" \
                         --collect:"XPlat Code Coverage" \
                         --settings coverlet.runsettings \
