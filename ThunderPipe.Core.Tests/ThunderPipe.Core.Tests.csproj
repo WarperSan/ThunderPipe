@@ -23,5 +23,13 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
+		<PackageReference Include="coverlet.MTP" Version="10.0.1" />
+	</ItemGroup>
+
+	<!-- Test Properties -->
+	<ItemGroup>
+		<None Update="testconfig.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
 	</ItemGroup>
 </Project>
