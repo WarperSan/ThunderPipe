@@ -1,7 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
-		<UseAppHost>false</UseAppHost>
+		<OutputType>Exe</OutputType>
+		<UseAppHost>true</UseAppHost>
 		<IsPackable>false</IsPackable>
 		<IsTestProject>true</IsTestProject>
 		<RootNamespace>ThunderPipe.Tests</RootNamespace>
