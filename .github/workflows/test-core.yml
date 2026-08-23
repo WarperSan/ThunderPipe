@@ -4,6 +4,7 @@ env:
     DOTNET_CONFIGURATION: 'Release'
     PROJECT_FILE: 'ThunderPipe.Core/ThunderPipe.Core.csproj'
     TEST_PROJECT_FILE: 'ThunderPipe.Core.Tests/ThunderPipe.Core.Tests.csproj'
+    TEST_RESULT_DIRECTORY: 'results/'
 
 on:
     pull_request:
@@ -48,19 +49,21 @@ jobs:
 
             -   name: Test
                 run: |
-                    dotnet test --project "$FILE_PATH" \
+                    dotnet test \
+                        --project "$FILE_PATH" \
                         --configuration "$CONFIGURATION" \
                         --collect:"XPlat Code Coverage" \
                         --settings coverlet.runsettings \
-                        --results-directory 'results/'
+                        --results-directory '$RESULTS_PATH'
                 env:
                     FILE_PATH: ${{ env.TEST_PROJECT_FILE }}
                     CONFIGURATION: ${{ env.DOTNET_CONFIGURATION }}
+                    RESULTS_PATH: ${{ env.TEST_RESULT_DIRECTORY }}
 
             -   name: Upload coverage to Codecov
                 uses: codecov/codecov-action@v3
                 with:
-                    directory: results/
+                    directory: ${{ env.TEST_RESULT_DIRECTORY }}
                     env_vars: OS
                     fail_ci_if_error: 'false'
                     token: ${{ secrets.CODECOV_TOKEN }}
