@@ -52,8 +52,7 @@ jobs:
                     dotnet test \
                         --project "$FILE_PATH" \
                         --configuration "$CONFIGURATION" \
-                        --collect:"XPlat Code Coverage" \
-                        --settings coverlet.runsettings \
+                        --coverlet \
                         --results-directory '$RESULTS_PATH'
                 env:
                     FILE_PATH: ${{ env.TEST_PROJECT_FILE }}
