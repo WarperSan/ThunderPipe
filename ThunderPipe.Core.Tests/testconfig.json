@@ -1,0 +1,14 @@
+{
+	"platformOptions": {
+		"Coverlet": {
+			"include": "[ThunderPipe.Core]*",
+			"format": "opencover,cobertura",
+			"useSourceLink": true,
+			"singleHit": false,
+			"includeTestAssembly": false,
+			"skipAutoProps": true,
+			"deterministicReport": false,
+			"excludeAssembliesWithoutSources": "None"
+		}
+	}
+}
