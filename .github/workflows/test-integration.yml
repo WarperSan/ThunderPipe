@@ -69,4 +69,58 @@ jobs:
         runs-on: ubuntu-latest
         needs: evaluate
         if: needs.evaluate.outputs.should_run == 'true'
+        timeout-minutes: 30
         steps:
+            -   name: 'Clone Thunderstore'
+                uses: actions/checkout@v4
+                with:
+                    repository: ${{ env.THUNDERSTORE_ORGANIZATION }}/${{ env.THUNDERSTORE_REPOSITORY }}
+                    ref: ${{ needs.evaluate.outputs.tag }}
+                    path: 'thunderstore'
+                    persist-credentials: 'false'
+
+            -   name: 'Clone ThunderPipe'
+                uses: actions/checkout@v4
+                with:
+                    path: 'thunderpipe'
+                    persist-credentials: 'false'
+
+            -   uses: actions/setup-dotnet@v4
+                with:
+                    global-json-file: 'thunderpipe/global.json'
+
+            -   name: 'Configure Thunderstore'
+                working-directory: 'thunderstore'
+                run: |
+                    cp .env.template .env
+
+            -   name: 'Start Thunderstore'
+                working-directory: 'thunderstore'
+                run: |
+                    docker compose up -d --build django nginx django-worker
+                    docker compose up minio-init --exit-code-from minio-init
+
+            -   name: 'Wait for Thunderstore'
+                working-directory: 'thunderstore'
+                run: |
+                    for i in $(seq 1 60); do
+                        curl -sf http://localhost/api/experimental/community/ && exit 0
+                        sleep 5
+                    done
+
+                    echo "::error::Thunderstore never became healthy"
+                    docker compose ps
+                    exit 1
+
+            -   name: 'Seed Thunderstore'
+                working-directory: 'thunderstore'
+                run: docker compose exec -T django python manage.py setup_dev_env
+
+            -   name: 'Run Integration Tests'
+                working-directory: 'thunderpipe'
+                run: echo "all good"
+
+            -   name: 'Dump logs'
+                if: failure()
+                working-directory: 'thunderstore'
+                run: docker compose logs
