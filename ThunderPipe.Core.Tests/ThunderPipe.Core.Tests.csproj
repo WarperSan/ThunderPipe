@@ -5,7 +5,7 @@
 		<UseAppHost>true</UseAppHost>
 		<IsPackable>false</IsPackable>
 		<IsTestProject>true</IsTestProject>
-		<RootNamespace>ThunderPipe.Tests</RootNamespace>
+		<RootNamespace>ThunderPipe.Core.Tests</RootNamespace>
 	</PropertyGroup>
 
 	<!-- Dependencies -->
