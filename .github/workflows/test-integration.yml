@@ -68,5 +68,5 @@ jobs:
         name: 'Run Tests'
         runs-on: ubuntu-latest
         needs: evaluate
-        if: ${{ !cancelled() && needs.evaluate.result != 'failure' }}
+        if: needs.evaluate.outputs.should_run == 'true'
         steps:
