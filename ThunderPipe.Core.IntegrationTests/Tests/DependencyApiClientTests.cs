@@ -21,9 +21,10 @@ public sealed class DependencyApiClientTests(ThunderstoreFixture service)
 	[Fact]
 	public async Task GetMissing_WhenWrongVersion_ReturnMissing()
 	{
+		var version = PackageVersionGenerator.GenerateGreater(Settings.ExistingPackage.Version);
 		var dependency = PackageDependencyGenerator.ChangeVersion(
 			Settings.ExistingPackage,
-			"999.999.999"
+			version
 		);
 
 		var missing = await service.Dependencies.GetMissing(
@@ -39,7 +40,7 @@ public sealed class DependencyApiClientTests(ThunderstoreFixture service)
 	{
 		var dependency = PackageDependencyGenerator.ChangeName(
 			Settings.ExistingPackage,
-			$"NoSuchPackage_{Guid.NewGuid():N}"
+			PackageNameGenerator.GenerateMissing()
 		);
 
 		var missing = await service.Dependencies.GetMissing(
@@ -55,7 +56,7 @@ public sealed class DependencyApiClientTests(ThunderstoreFixture service)
 	{
 		var dependency = PackageDependencyGenerator.ChangeTeam(
 			Settings.ExistingPackage,
-			$"NoSuchTeam_{Guid.NewGuid():N}"
+			TeamGenerator.GenerateMissing()
 		);
 
 		var missing = await service.Dependencies.GetMissing(
