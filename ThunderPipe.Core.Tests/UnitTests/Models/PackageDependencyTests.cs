@@ -10,7 +10,7 @@ public class PackageDependencyTests
 	[InlineData("Rune580-Risk_Of_Options-2.8.5")]
 	public void IsValid_WhenValid_ReturnTrue(string dependencyString)
 	{
-		var packageDependency = new PackageDependency(dependencyString);
+		var packageDependency = PackageDependency.FromDependencyString(dependencyString);
 		Assert.True(packageDependency.IsValid());
 	}
 
@@ -19,7 +19,7 @@ public class PackageDependencyTests
 	[InlineData("rob-Belmont-uwu-2.0.1")]
 	public void IsValid_WhenInvalid_ReturnFalse(string dependencyString)
 	{
-		var packageDependency = new PackageDependency(dependencyString);
+		var packageDependency = PackageDependency.FromDependencyString(dependencyString);
 		Assert.False(packageDependency.IsValid());
 	}
 
@@ -33,7 +33,7 @@ public class PackageDependencyTests
 		string version
 	)
 	{
-		var packageDependency = new PackageDependency(dependencyString);
+		var packageDependency = PackageDependency.FromDependencyString(dependencyString);
 
 		Assert.True(packageDependency.IsValid());
 		Assert.Equal(@namespace, packageDependency.Team);
@@ -48,7 +48,7 @@ public class PackageDependencyTests
 	[InlineData("sunnobunnoYippeeMod1.2.4")]
 	public void ctor_WhenIsInvalid_ReturnEmpties(string dependencyString)
 	{
-		var packageDependency = new PackageDependency(dependencyString);
+		var packageDependency = PackageDependency.FromDependencyString(dependencyString);
 
 		Assert.False(packageDependency.IsValid());
 		Assert.Equal(string.Empty, packageDependency.Team);
