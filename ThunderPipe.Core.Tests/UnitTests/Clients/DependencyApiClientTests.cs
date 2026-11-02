@@ -104,8 +104,7 @@ public class DependencyApiClientTests
 		const string URL = "http://localhost:5050";
 
 		const string SLUG_1 = "ItsEmul-1.2.0";
-		const string SLUG_2 = "BetterScoutReport-0.1.6";
-		const string SLUG_3 = "SavageCore-PEAK_BritishEnglish_Translation-0.2.1";
+		const string SLUG_2 = "SavageCore-PEAK_BritishEnglish_Translation-0.2.1";
 
 		var mockHttp = new MockHttpMessageHandler();
 
@@ -118,19 +117,14 @@ public class DependencyApiClientTests
 		// Act
 		var requested = new[]
 		{
-			new PackageDependency(SLUG_1),
-			new PackageDependency(SLUG_2),
-			new PackageDependency(SLUG_3),
+			PackageDependency.FromDependencyString(SLUG_1),
+			PackageDependency.FromDependencyString(SLUG_2),
 		};
 		var missing = await client.GetMissing(requested, TestContext.Current.CancellationToken);
 
 		// Assert
-		var expected = new[] { new PackageDependency(SLUG_1), new PackageDependency(SLUG_2) };
-
-		Assert.Equal(missing.Count, expected.Length);
-
-		foreach (var slug in expected)
-			Assert.Contains(slug, missing);
+		Assert.Single(missing);
+		Assert.Contains(PackageDependency.FromDependencyString(SLUG_1), missing);
 	}
 
 	[Fact]
@@ -157,6 +151,46 @@ public class DependencyApiClientTests
 		{
 			PackageDependency.FromDependencyString(SLUG_1),
 			PackageDependency.FromDependencyString(SLUG_2),
+		};
+		var missing = await client.GetMissing(requested, TestContext.Current.CancellationToken);
+
+		// Assert
+		var expected = new[]
+		{
+			PackageDependency.FromDependencyString(SLUG_1),
+			PackageDependency.FromDependencyString(SLUG_2),
+		};
+
+		Assert.Equal(missing.Count, expected.Length);
+
+		foreach (var slug in expected)
+			Assert.Contains(slug, missing);
+	}
+
+	[Fact]
+	public async Task GetMissing_WhenMultipleInvalidFormat_ShouldReturnAllInvalid()
+	{
+		// Arrange
+		const string URL = "http://localhost:5050";
+
+		const string SLUG_1 = "ItsEmul-1.2.0";
+		const string SLUG_2 = "BetterScoutReport-0.1.6";
+		const string SLUG_3 = "SavageCore-PEAK_BritishEnglish_Translation-0.2.1";
+
+		var mockHttp = new MockHttpMessageHandler();
+
+		mockHttp.Expect(URL + "/*").RespondJSON(new Response { IsActive = true });
+
+		var builder = new RequestBuilder().ToUri(new Uri(URL));
+
+		var client = new DependencyApiClient(mockHttp.ToHttpClient(), builder);
+
+		// Act
+		var requested = new[]
+		{
+			PackageDependency.FromDependencyString(SLUG_1),
+			PackageDependency.FromDependencyString(SLUG_2),
+			PackageDependency.FromDependencyString(SLUG_3),
 		};
 		var missing = await client.GetMissing(requested, TestContext.Current.CancellationToken);
 
