@@ -34,8 +34,7 @@ public class ValidationApiClientTests
 			TestContext.Current.CancellationToken
 		);
 
-		Assert.Single(errors);
-		Assert.Contains(ERROR, errors);
+		Assert.Single(errors, ERROR);
 	}
 
 	[Fact]
@@ -63,8 +62,7 @@ public class ValidationApiClientTests
 			TestContext.Current.CancellationToken
 		);
 
-		Assert.Single(errors);
-		Assert.Contains(ERROR, errors);
+		Assert.Single(errors, ERROR);
 	}
 
 	[Fact]
@@ -180,8 +178,7 @@ public class ValidationApiClientTests
 			TestContext.Current.CancellationToken
 		);
 
-		Assert.Single(errors);
-		Assert.Contains(ERROR, errors);
+		Assert.Single(errors, ERROR);
 	}
 
 	[Fact]
@@ -211,8 +208,7 @@ public class ValidationApiClientTests
 			TestContext.Current.CancellationToken
 		);
 
-		Assert.Single(errors);
-		Assert.Contains(ERROR, errors);
+		Assert.Single(errors, ERROR);
 	}
 
 	[Fact]
@@ -242,8 +238,7 @@ public class ValidationApiClientTests
 			TestContext.Current.CancellationToken
 		);
 
-		Assert.Single(errors);
-		Assert.Contains(ERROR, errors);
+		Assert.Single(errors, ERROR);
 	}
 
 	[Fact]
@@ -372,8 +367,7 @@ public class ValidationApiClientTests
 			TestContext.Current.CancellationToken
 		);
 
-		Assert.Single(errors);
-		Assert.Contains(ERROR, errors);
+		Assert.Single(errors, ERROR);
 	}
 
 	[Fact]
@@ -401,8 +395,7 @@ public class ValidationApiClientTests
 			TestContext.Current.CancellationToken
 		);
 
-		Assert.Single(errors);
-		Assert.Contains(ERROR, errors);
+		Assert.Single(errors, ERROR);
 	}
 
 	[Fact]

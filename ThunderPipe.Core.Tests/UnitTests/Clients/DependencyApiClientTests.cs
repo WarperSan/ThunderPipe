@@ -123,8 +123,7 @@ public class DependencyApiClientTests
 		var missing = await client.GetMissing(requested, TestContext.Current.CancellationToken);
 
 		// Assert
-		Assert.Single(missing);
-		Assert.Contains(PackageDependency.FromDependencyString(SLUG_1), missing);
+		Assert.Single(missing, PackageDependency.FromDependencyString(SLUG_1));
 	}
 
 	[Fact]
