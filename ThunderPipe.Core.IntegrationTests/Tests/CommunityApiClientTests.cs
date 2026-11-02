@@ -1,5 +1,5 @@
 using ThunderPipe.Core.IntegrationTests.Infrastructure;
-using ThunderPipe.Core.Models;
+using ThunderPipe.Core.IntegrationTests.Infrastructure.Generators;
 
 namespace ThunderPipe.Core.IntegrationTests.Tests;
 
@@ -7,8 +7,6 @@ namespace ThunderPipe.Core.IntegrationTests.Tests;
 [Trait("Category", "Integration")]
 public sealed class CommunityApiClientTests(ThunderstoreFixture service)
 {
-	private static Community Unknown() => $"no-such-community-{Guid.NewGuid():N}";
-
 	[Fact]
 	public async Task GetMissing_WhenFound_ReturnEmpty()
 	{
@@ -23,29 +21,27 @@ public sealed class CommunityApiClientTests(ThunderstoreFixture service)
 	[Fact]
 	public async Task GetMissing_WhenNotFound_ReturnMissing()
 	{
-		var community = Unknown();
+		var community = CommunityGenerator.GenerateMissing();
 
 		var missing = await service.Communities.GetMissing(
 			[community],
 			TestContext.Current.CancellationToken
 		);
 
-		Assert.Single(missing);
-		Assert.Contains(community, missing);
+		Assert.Single(missing, community);
 	}
 
 	[Fact]
 	public async Task GetMissing_WhenFoundSome_ReturnMissing()
 	{
-		var community = Unknown();
+		var community = CommunityGenerator.GenerateMissing();
 
 		var missing = await service.Communities.GetMissing(
 			[Settings.ExistingCommunity, community],
 			TestContext.Current.CancellationToken
 		);
 
-		Assert.Single(missing);
-		Assert.Contains(community, missing);
+		Assert.Single(missing, community);
 	}
 
 	[Fact]
@@ -62,7 +58,7 @@ public sealed class CommunityApiClientTests(ThunderstoreFixture service)
 	[Fact]
 	public async Task Exists_WhenNotFound_ReturnFalse()
 	{
-		var community = Unknown();
+		var community = CommunityGenerator.GenerateMissing();
 
 		var exists = await service.Communities.Exists(
 			community,
