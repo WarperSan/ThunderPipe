@@ -1,0 +1,39 @@
+name: Check Thunderstore release for integration tests
+
+on:
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: thunderstore-release-check
+  cancel-in-progress: false
+
+jobs:
+  check-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      should_test: ${{ steps.check.outputs.should_test }}
+      release_tag: ${{ steps.check.outputs.release_tag }}
+    steps:
+      - name: Check out ThunderPipe
+        uses: actions/checkout@v4
+
+      - name: Check Thunderstore release and persist state
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          STATE_BRANCH: thunderstore-integration-state
+        run: python3 scripts/check_thunderstore_release.py
+
+      - name: Explain current phase
+        run: |
+          echo "Release: ${{ steps.check.outputs.release_tag }}"
+          echo "API/model changes requiring tests: ${{ steps.check.outputs.should_test }}"
+          echo 'Integration tests are NOT implemented or executed in this phase.'
