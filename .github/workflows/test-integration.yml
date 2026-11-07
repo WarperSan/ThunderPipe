@@ -33,7 +33,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           REPOSITORY: ${{ github.repository }}
           STATE_BRANCH: thunderstore-integration-state
-          run: python3 ThunderPipe.Core.IntegrationTests/scripts/check_thunderstore_release.py
+        run: python3 ThunderPipe.Core.IntegrationTests/scripts/check_thunderstore_release.py
 
       - name: Explain current phase
         run: |
