@@ -20,6 +20,36 @@ setup() {
   # These are the release's own local-development settings, not production data.
   cp "$TS_DIR/.env.template" "$TS_DIR/.env"
 
+  # The historical release's python-packages gitlink is inaccessible. Its
+  # plugins are optional (BUILD_INSTALL_EXTRAS is empty for this CI run), but
+  # its Dockerfile still COPYs this directory.
+  mkdir -p "$TS_DIR/python-packages"
+
+  # Apply MinIO fixes to the disposable upstream checkout, never to the
+  # upstream Git repository or ThunderPipe's production source.
+  cp "$ROOT/ThunderPipe.Core.IntegrationTests/ci/minio.Dockerfile" \
+    "$TS_DIR/minio/Dockerfile"
+  sed -i -e 's/mc anonymous set download/mc policy set download/g' \
+    -e 's#^source /usr/bin/docker-entrypoint.sh#exec /usr/bin/docker-entrypoint.sh#' \
+    -e 's/\r$//' "$TS_DIR/minio/thunderstore-entrypoint.sh"
+  chmod +x "$TS_DIR/minio/thunderstore-entrypoint.sh"
+
+  # The CI does not start Remix; package downloads must be forwarded to
+  # Django, exactly as in the locally validated Thunderstore setup.
+  python3 - "$TS_DIR/nginx/conf/default.conf" <<'NGINX_CI_PATCH'
+from pathlib import Path
+import sys
+
+path = Path(sys.argv[1])
+config = path.read_text(encoding='utf-8')
+config = config.replace(
+    '    location /api/             { proxy_pass http://django:8000; }',
+    '    location /api/             { proxy_pass http://django:8000; }\n'
+    '    location /package/download/ { proxy_pass http://django:8000; }',
+)
+path.write_text(config, encoding='utf-8')
+NGINX_CI_PATCH
+
   # Build ThunderPipe before creating the token fixture. The .dockerignore
   # also prevents fixture/token material from entering the Docker build context.
   docker build -f "$ROOT/ThunderPipe.Core.IntegrationTests/Dockerfile" \

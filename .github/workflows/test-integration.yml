@@ -68,7 +68,7 @@ jobs:
           repository: thunderstore-io/Thunderstore
           ref: ${{ needs.check-release.outputs.release_tag }}
           path: thunderstore-src
-          submodules: recursive
+          submodules: false
           persist-credentials: false
 
       - name: Prepare isolated Docker environment and fixture
