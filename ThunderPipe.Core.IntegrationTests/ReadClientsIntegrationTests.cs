@@ -13,14 +13,23 @@ public sealed class ReadClientsIntegrationTests : IClassFixture<IntegrationEnvir
 	[Fact]
 	public async Task Community_GetMissing_ExistingAndAbsent_AcrossPages()
 	{
-		Community present = _env.Data.Community;
+		// The seed creates 105 distinct pagination fixtures. Request ALL of them,
+		// so a client that stops after the first 100-item page cannot pass,
+		// regardless of the server's ordering of records.
+		var existing = Enumerable.Range(0, 105)
+			.Select(i => (Community)$"tp-integration-page-{i:000}")
+			.ToArray();
 		Community missing = "tp-integration-missing-community";
+		var requested = existing.Append(missing).ToArray();
+
 		var absent = await _env.Communities.GetMissing(
-			[present, missing],
+			requested,
 			TestContext.Current.CancellationToken
 		);
+
 		Assert.Single(absent);
 		Assert.Contains(missing, absent);
+		Assert.All(existing, community => Assert.DoesNotContain(community, absent));
 	}
 
 	[Fact]
@@ -34,15 +43,23 @@ public sealed class ReadClientsIntegrationTests : IClassFixture<IntegrationEnvir
 	[Fact]
 	public async Task Category_GetMissing_ExistingAndAbsent_AcrossPages()
 	{
-		Category existing = _env.Data.Category;
-		Category absentCategory = "tp-integration-no-category";
+		// As above, require all 105 seeded categories to be discovered.
+		// This makes a first-page-only implementation fail deterministically.
+		var existing = Enumerable.Range(0, 105)
+			.Select(i => (Category)$"tp-integration-page-{i:000}")
+			.ToArray();
+		Category missingCategory = "tp-integration-no-category";
+		var requested = existing.Append(missingCategory).ToArray();
+
 		var missing = await _env.Categories.GetMissing(
-			[existing, absentCategory],
+			requested,
 			_env.Data.Community,
 			TestContext.Current.CancellationToken
 		);
+
 		Assert.Single(missing);
-		Assert.Contains(absentCategory, missing);
+		Assert.Contains(missingCategory, missing);
+		Assert.All(existing, category => Assert.DoesNotContain(category, missing));
 	}
 
 	[Fact]

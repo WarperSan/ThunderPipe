@@ -1,23 +1,30 @@
-name: Check Thunderstore release for integration tests
+name: Thunderstore release compatibility integration tests
 
 on:
   schedule:
     - cron: '17 3 * * *'
-  workflow_dispatch:
   push:
     branches:
       - feature/integration-tests
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Retest the latest stable release even if it was already tested'
+        type: boolean
+        default: true
+        required: true
 
 permissions:
   contents: read
 
 concurrency:
-  group: thunderstore-release-check
+  group: thunderstore-release-compatibility
   cancel-in-progress: false
 
 jobs:
   check-release:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     permissions:
       contents: write
     outputs:
@@ -26,17 +33,98 @@ jobs:
     steps:
       - name: Check out ThunderPipe
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
-      - name: Check Thunderstore release and persist state
+      - name: Discover latest stable Thunderstore release
         id: check
         env:
           GH_TOKEN: ${{ github.token }}
           REPOSITORY: ${{ github.repository }}
           STATE_BRANCH: thunderstore-integration-state
-        run: python3 ThunderPipe.Core.IntegrationTests/scripts/check_thunderstore_release.py
+          FORCE_TEST: ${{ (github.event_name == 'workflow_dispatch' && inputs.force) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[retest-integration]')) }}
+        run: python3 ThunderPipe.Core.IntegrationTests/scripts/check_thunderstore_release.py discover
 
-      - name: Explain current phase
+  integration:
+    needs: check-release
+    if: needs.check-release.outputs.should_test == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions:
+      contents: write
+    env:
+      THUNDERSTORE_DIR: ${{ github.workspace }}/thunderstore-src
+      INTEGRATION_ARTIFACTS: ${{ github.workspace }}/ThunderPipe.Core.IntegrationTests/artifacts
+      THUNDERSTORE_RELEASE: ${{ needs.check-release.outputs.release_tag }}
+    steps:
+      - name: Check out current ThunderPipe source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Check out the exact Thunderstore release
+        uses: actions/checkout@v4
+        with:
+          repository: thunderstore-io/Thunderstore
+          ref: ${{ needs.check-release.outputs.release_tag }}
+          path: thunderstore-src
+          submodules: recursive
+          persist-credentials: false
+
+      - name: Prepare isolated Docker environment and fixture
+        shell: bash
         run: |
-          echo "Release: ${{ steps.check.outputs.release_tag }}"
-          echo "API/model changes requiring tests: ${{ steps.check.outputs.should_test }}"
-          echo 'Integration tests are NOT implemented or executed in this phase.'
+          set -euo pipefail
+          mkdir -p "$INTEGRATION_ARTIFACTS"
+          echo environment_failure > "$INTEGRATION_ARTIFACTS/result-category"
+          bash ThunderPipe.Core.IntegrationTests/scripts/run-integration-linux.sh setup \
+            2>&1 | tee "$INTEGRATION_ARTIFACTS/setup.log"
+
+      - name: Run only ThunderPipe.Core.IntegrationTests
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash ThunderPipe.Core.IntegrationTests/scripts/run-integration-linux.sh test \
+            2>&1 | tee "$INTEGRATION_ARTIFACTS/test.log"
+
+      - name: Collect Docker and server-side evidence
+        if: always()
+        shell: bash
+        run: bash ThunderPipe.Core.IntegrationTests/scripts/run-integration-linux.sh collect || true
+
+      - name: Persist terminal outcome (environment failures remain retryable)
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          STATE_BRANCH: thunderstore-integration-state
+        shell: bash
+        run: |
+          set -euo pipefail
+          CATEGORY=environment_failure
+          if [[ -f "$INTEGRATION_ARTIFACTS/result-category" ]]; then
+            CATEGORY="$(cat "$INTEGRATION_ARTIFACTS/result-category")"
+          fi
+          python3 ThunderPipe.Core.IntegrationTests/scripts/check_thunderstore_release.py \
+            record "$THUNDERSTORE_RELEASE" "$CATEGORY"
+
+      - name: Upload diagnostic artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: thunderstore-${{ needs.check-release.outputs.release_tag }}-integration-${{ github.run_attempt }}
+          if-no-files-found: warn
+          retention-days: 14
+          path: |
+            ThunderPipe.Core.IntegrationTests/artifacts/*.trx
+            ThunderPipe.Core.IntegrationTests/artifacts/client-http.log
+            ThunderPipe.Core.IntegrationTests/artifacts/docker-server.log
+            ThunderPipe.Core.IntegrationTests/artifacts/server-state.json
+            ThunderPipe.Core.IntegrationTests/artifacts/setup.log
+            ThunderPipe.Core.IntegrationTests/artifacts/test.log
+            ThunderPipe.Core.IntegrationTests/artifacts/result-category
+
+      - name: Stop and remove local Docker test resources
+        if: always()
+        shell: bash
+        run: bash ThunderPipe.Core.IntegrationTests/scripts/run-integration-linux.sh cleanup || true

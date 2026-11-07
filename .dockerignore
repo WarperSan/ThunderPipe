@@ -1,0 +1,8 @@
+**/bin/
+**/obj/
+.git/
+thunderstore-src/
+**/artifacts/
+**/thunderpipe-fixture.json
+**/django-seed-raw.log
+**/.env
