@@ -50,6 +50,11 @@ config = config.replace(
 path.write_text(config, encoding='utf-8')
 NGINX_CI_PATCH
 
+  # CI-only workaround for Thunderstore issue #1343.
+  sed -i \
+    's/validate_markdown(serializer.validated_data\["readme_data"\])/validate_markdown(filename="README.md", readme_data=serializer.validated_data["readme_data"])/' \
+    "$TS_DIR/django/thunderstore/repository/api/experimental/views/validators.py"
+
   # Build ThunderPipe before creating the token fixture. The .dockerignore
   # also prevents fixture/token material from entering the Docker build context.
   docker build -f "$ROOT/ThunderPipe.Core.IntegrationTests/Dockerfile" \
