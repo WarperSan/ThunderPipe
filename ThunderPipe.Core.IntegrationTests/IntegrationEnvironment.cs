@@ -23,7 +23,16 @@ public sealed class IntegrationEnvironment : IDisposable
 	{
 		string file =
 			Environment.GetEnvironmentVariable("THUNDERPIPE_FIXTURE_PATH")
-			?? Path.Combine("artifacts", "thunderpipe-fixture.json");
+			?? Path.GetFullPath(
+				Path.Combine(
+					AppContext.BaseDirectory,
+					"..",
+					"..",
+					"..",
+					"artifacts",
+					"thunderpipe-fixture.json"
+				)
+			);
 		string json = File.ReadAllText(file);
 		Data =
 			JsonSerializer.Deserialize<FixtureData>(json, JsonOptions)
@@ -41,7 +50,16 @@ public sealed class IntegrationEnvironment : IDisposable
 
 		_traceFile =
 			Environment.GetEnvironmentVariable("THUNDERPIPE_HTTP_TRACE")
-			?? Path.Combine("artifacts", "thunderpipe-http.log");
+			?? Path.GetFullPath(
+				Path.Combine(
+					AppContext.BaseDirectory,
+					"..",
+					"..",
+					"..",
+					"artifacts",
+					"thunderpipe-http.log"
+				)
+			);
 		Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(_traceFile))!);
 		var handler = new LocalOnlyHandler(
 			new HttpClientHandler { AllowAutoRedirect = false, UseProxy = false },
