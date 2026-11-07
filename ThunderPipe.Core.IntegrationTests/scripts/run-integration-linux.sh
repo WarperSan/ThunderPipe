@@ -115,17 +115,39 @@ NGINX_CI_PATCH
     return 1
   fi
 
+  # Run the readiness probe in the worker's own environment, and preserve
+  # diagnostics rather than hiding Celery's stderr. Do not mistake a running
+  # container for a functioning task queue.
+  local celery_diag="$ART_DIR/celery-readiness.log"
+  local ping_output
+  : > "$celery_diag"
   ready=0
   for i in $(seq 1 30); do
-    if compose exec -T django celery -A thunderstore.core inspect ping --timeout=3 \
-       2>/dev/null | grep -q 'pong'; then
-      ready=1
-      break
+    if ! compose ps --status running django-worker | grep -q 'django-worker'; then
+      echo "Attempt $i: django-worker container is not running" >> "$celery_diag"
+    else
+      ping_output="$(compose exec -T django-worker celery -A thunderstore.core inspect ping --timeout=10 2>&1)" || true
+      if grep -q 'pong' <<< "$ping_output"; then
+        ready=1
+        echo "Attempt $i: worker responded to inspect ping" >> "$celery_diag"
+        break
+      fi
+      printf 'Attempt %s: worker inspect ping returned:\n%s\n' "$i" "$ping_output" >> "$celery_diag"
     fi
     sleep 5
   done
   if [[ "$ready" -ne 1 ]]; then
-    echo 'Celery worker was not ready before the deadline' >&2
+    echo 'Celery worker did not respond to inspect ping before the deadline' >&2
+    echo '--- Worker container status ---' | tee -a "$celery_diag" >&2
+    compose ps django-worker rabbitmq 2>&1 | tee -a "$celery_diag" >&2 || true
+    echo '--- Django-side Celery inspect (comparison) ---' | tee -a "$celery_diag" >&2
+    compose exec -T django celery -A thunderstore.core inspect ping --timeout=10 \
+      2>&1 | tee -a "$celery_diag" >&2 || true
+    echo '--- Recent worker and broker logs ---' | tee -a "$celery_diag" >&2
+    compose logs --no-color --tail=100 django-worker rabbitmq \
+      2>&1 | tee -a "$celery_diag" >&2 || true
+    echo '--- Worker probe attempts (last 80 lines) ---' >&2
+    tail -n 80 "$celery_diag" >&2
     return 1
   fi
 }
