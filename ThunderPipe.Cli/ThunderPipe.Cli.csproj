@@ -3,12 +3,13 @@
 		<OutputType>Exe</OutputType>
 		<TargetFramework>net8.0</TargetFramework>
 		<SatelliteResourceLanguages>none</SatelliteResourceLanguages>
+		<RootNamespace>ThunderPipe</RootNamespace>
 	</PropertyGroup>
 
 	<!-- Nuget Properties -->
 	<PropertyGroup>
 		<PackAsTool>true</PackAsTool>
-		<PackageId>ThunderPipe</PackageId>
+		<PackageId>ThunderPipe.Cli</PackageId>
 		<PackageTags>Modding;CD</PackageTags>
 
 		<Title>ThunderPipe</Title>
