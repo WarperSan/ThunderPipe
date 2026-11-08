@@ -2,25 +2,25 @@
     <img src="https://raw.githubusercontent.com/WarperSan/ThunderPipe/refs/heads/master/icon.png" alt="Logo" height="128"/>
 </p>
 
-# ThunderPipe
-[![NuGet Badge](https://img.shields.io/nuget/v/ThunderPipe)](https://www.nuget.org/packages/ThunderPipe)
-[![NuGet Downloads](https://img.shields.io/nuget/dt/ThunderPipe?color=purple)](https://www.nuget.org/packages/ThunderPipe)
+# ThunderPipe.Cli
+[![NuGet Badge](https://img.shields.io/nuget/v/ThunderPipe.Cli)](https://www.nuget.org/packages/ThunderPipe.Cli)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/ThunderPipe.Cli?color=purple)](https://www.nuget.org/packages/ThunderPipe.Cli)
 [![License](https://img.shields.io/github/license/WarperSan/ThunderPipe)](https://raw.githubusercontent.com/WarperSan/ThunderPipe/master/LICENSE)
 
-ThunderPipe is a command-line tool for validating and publishing mod packages to [Thunderstore](https://thunderstore.io/).
+ThunderPipe.Cli is a command-line tool for validating and publishing mod packages to [Thunderstore](https://thunderstore.io/).
 
 ## Installation
 
-Install ThunderPipe from NuGet:
+Install ThunderPipe.Cli from NuGet:
 
 ```bash
-dotnet tool install ThunderPipe
+dotnet tool install ThunderPipe.Cli
 ```
 
-Alternatively, download the package from [NuGet](https://www.nuget.org/packages/ThunderPipe/latest) or [GitHub Releases](https://github.com/WarperSan/ThunderPipe/releases/latest) and install it from a local file:
+Alternatively, download the package from [NuGet](https://www.nuget.org/packages/ThunderPipe.Cli/latest) or [GitHub Releases](https://github.com/WarperSan/ThunderPipe/releases/latest) and install it from a local file:
 
 ```bash
-dotnet tool install ThunderPipe --add-source <path-to-download>
+dotnet tool install ThunderPipe.Cli --add-source <path-to-download>
 ```
 
 > [!IMPORTANT]
@@ -33,7 +33,7 @@ dotnet tool install ThunderPipe --add-source <path-to-download>
 Uploads a `.zip` package directly to Thunderstore.
 
 ```bash
-ThunderPipe publish <file> <team> <community> --token <your-token>
+ThunderPipe.Cli publish <file> <team> <community> --token <your-token>
 ```
 
 | Argument | Description |
@@ -48,7 +48,7 @@ ThunderPipe publish <file> <team> <community> --token <your-token>
 Checks if a package meets [Thunderstore's requirements](https://thunderstore.io/package/create/docs/) before publishing.
 
 ```bash
-ThunderPipe validate package <package-folder>
+ThunderPipe.Cli validate package <package-folder>
 ```
 
 | Argument | Description |
@@ -60,7 +60,7 @@ ThunderPipe validate package <package-folder>
 Generates a `manifest.json` that meets [Thunderstore's requirements](https://thunderstore.io/package/create/docs/).
 
 ```bash
-ThunderPipe create manifest <name> <version>
+ThunderPipe.Cli create manifest <name> <version>
 ```
 
 | Argument | Description |
