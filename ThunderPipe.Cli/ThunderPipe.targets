@@ -11,6 +11,7 @@ namespace $(RootNamespace)
 {
     public static class Metadata
     {
+    	public const string NAME = "$(Title)"%3B
     	public const string VERSION = "$(Version)"%3B
     }
 }

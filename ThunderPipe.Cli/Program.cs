@@ -66,7 +66,7 @@ internal static class Program
 
 		app.Configure(config =>
 		{
-			config.SetApplicationName(nameof(ThunderPipe));
+			config.SetApplicationName(Metadata.NAME);
 			config.SetApplicationVersion(Metadata.VERSION);
 			config.SetInterceptor(new LogInterceptor(logLevelContext));
 
