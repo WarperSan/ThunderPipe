@@ -2,7 +2,7 @@ name: 'Release ThunderPipe.CLI'
 
 env:
     DOTNET_CONFIGURATION: 'Release'
-    PROJECT_FILE: 'ThunderPipe/ThunderPipe.csproj'
+    PROJECT_FILE: 'ThunderPipe.Cli/ThunderPipe.Cli.csproj'
 
 on:
     push:
