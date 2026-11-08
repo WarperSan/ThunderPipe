@@ -4,7 +4,7 @@ using Spectre.Console;
 using Spectre.Console.Cli;
 using ThunderPipe.Core.Models;
 
-namespace ThunderPipe.Settings.Create;
+namespace ThunderPipe.Cli.Settings.Create;
 
 /// <summary>
 /// Settings used by <see cref="Commands.Create.ManifestCommand"/>

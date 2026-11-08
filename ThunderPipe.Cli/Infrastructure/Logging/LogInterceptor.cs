@@ -1,8 +1,8 @@
 using Microsoft.Extensions.Logging;
 using Spectre.Console.Cli;
-using ThunderPipe.Settings;
+using ThunderPipe.Cli.Settings;
 
-namespace ThunderPipe.Infrastructure.Logging;
+namespace ThunderPipe.Cli.Infrastructure.Logging;
 
 internal sealed class LogInterceptor : ICommandInterceptor
 {

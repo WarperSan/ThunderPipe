@@ -2,7 +2,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Logging.Console;
 
-namespace ThunderPipe.Infrastructure;
+namespace ThunderPipe.Cli.Infrastructure;
 
 /// <summary>
 /// Console formatter used to create simplistic logs

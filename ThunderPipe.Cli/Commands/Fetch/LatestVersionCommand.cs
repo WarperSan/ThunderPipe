@@ -4,7 +4,7 @@ using Spectre.Console.Cli;
 using ThunderPipe.Core.Clients;
 using ThunderPipe.Core.Utils;
 
-namespace ThunderPipe.Commands.Fetch;
+namespace ThunderPipe.Cli.Commands.Fetch;
 
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 internal sealed class LatestVersionCommand : AsyncCommand<Settings.Fetch.LatestVersionSettings>

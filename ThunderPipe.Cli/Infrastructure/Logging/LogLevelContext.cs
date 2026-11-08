@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Logging;
 
-namespace ThunderPipe.Infrastructure.Logging;
+namespace ThunderPipe.Cli.Infrastructure.Logging;
 
 /// <summary>
 /// Holds the current <see cref="LogLevel"/>

@@ -6,7 +6,7 @@ using ThunderPipe.Core.Services.Implementations;
 using ThunderPipe.Core.Services.Interfaces;
 using ThunderPipe.Core.Utils;
 
-namespace ThunderPipe.Commands.Publish;
+namespace ThunderPipe.Cli.Commands.Publish;
 
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 internal sealed class PackageCommand : AsyncCommand<Settings.Publish.PackageSettings>

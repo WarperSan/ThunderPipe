@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using System.Globalization;
 
-namespace ThunderPipe.Infrastructure.TypeConverters;
+namespace ThunderPipe.Cli.Infrastructure.TypeConverters;
 
 /// <summary>
 /// Converts a <see cref="string"/> to a valid absolute path

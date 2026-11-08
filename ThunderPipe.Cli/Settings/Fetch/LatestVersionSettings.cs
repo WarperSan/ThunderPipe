@@ -2,10 +2,10 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using Spectre.Console;
 using Spectre.Console.Cli;
-using ThunderPipe.Commands.Fetch;
+using ThunderPipe.Cli.Commands.Fetch;
 using ThunderPipe.Core.Models;
 
-namespace ThunderPipe.Settings.Fetch;
+namespace ThunderPipe.Cli.Settings.Fetch;
 
 /// <summary>
 /// Settings used by <see cref="LatestVersionCommand"/>

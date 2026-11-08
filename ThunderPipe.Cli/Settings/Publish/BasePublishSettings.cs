@@ -2,7 +2,7 @@ using System.ComponentModel;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace ThunderPipe.Settings.Publish;
+namespace ThunderPipe.Cli.Settings.Publish;
 
 /// <summary>
 /// Settings used by any publishing command

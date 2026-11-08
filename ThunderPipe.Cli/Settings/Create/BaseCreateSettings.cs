@@ -1,9 +1,9 @@
 using System.ComponentModel;
 using Spectre.Console;
 using Spectre.Console.Cli;
-using ThunderPipe.Infrastructure.TypeConverters;
+using ThunderPipe.Cli.Infrastructure.TypeConverters;
 
-namespace ThunderPipe.Settings.Create;
+namespace ThunderPipe.Cli.Settings.Create;
 
 /// <summary>
 /// Settings used by any creation command

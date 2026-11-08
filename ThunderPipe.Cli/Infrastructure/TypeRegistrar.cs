@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
 
-namespace ThunderPipe.Infrastructure;
+namespace ThunderPipe.Cli.Infrastructure;
 
 internal sealed class TypeRegistrar(IServiceCollection services) : ITypeRegistrar
 {

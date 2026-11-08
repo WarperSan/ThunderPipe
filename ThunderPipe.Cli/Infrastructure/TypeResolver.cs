@@ -1,6 +1,6 @@
 using Spectre.Console.Cli;
 
-namespace ThunderPipe.Infrastructure;
+namespace ThunderPipe.Cli.Infrastructure;
 
 internal sealed class TypeResolver(IServiceProvider provider) : ITypeResolver
 {

@@ -3,12 +3,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using Spectre.Console.Cli;
+using ThunderPipe.Cli.Infrastructure;
+using ThunderPipe.Cli.Infrastructure.Logging;
 using ThunderPipe.Core.Services.Implementations;
 using ThunderPipe.Core.Services.Interfaces;
-using ThunderPipe.Infrastructure;
-using ThunderPipe.Infrastructure.Logging;
 
-namespace ThunderPipe;
+namespace ThunderPipe.Cli;
 
 internal static class Program
 {

@@ -1,12 +1,12 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 using Spectre.Console.Cli;
+using ThunderPipe.Cli.Settings.Create;
 using ThunderPipe.Core.Models;
 using ThunderPipe.Core.Services.Implementations;
 using ThunderPipe.Core.Services.Interfaces;
-using ThunderPipe.Settings.Create;
 
-namespace ThunderPipe.Commands.Create;
+namespace ThunderPipe.Cli.Commands.Create;
 
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 internal sealed class ManifestCommand : AsyncCommand<ManifestSettings>

@@ -4,7 +4,7 @@ using Spectre.Console;
 using Spectre.Console.Cli;
 using ThunderPipe.Core.Models;
 
-namespace ThunderPipe.Settings.Validate;
+namespace ThunderPipe.Cli.Settings.Validate;
 
 /// <summary>
 /// Settings used by <see cref="Commands.Validate.CommunityCommand"/>

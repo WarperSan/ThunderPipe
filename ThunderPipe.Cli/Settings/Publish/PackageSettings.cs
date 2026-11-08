@@ -2,11 +2,11 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using Spectre.Console;
 using Spectre.Console.Cli;
-using ThunderPipe.Commands.Publish;
+using ThunderPipe.Cli.Commands.Publish;
+using ThunderPipe.Cli.Infrastructure.TypeConverters;
 using ThunderPipe.Core.Models;
-using ThunderPipe.Infrastructure.TypeConverters;
 
-namespace ThunderPipe.Settings.Publish;
+namespace ThunderPipe.Cli.Settings.Publish;
 
 /// <summary>
 /// Settings used by <see cref="PackageCommand"/>

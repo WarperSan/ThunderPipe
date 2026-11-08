@@ -2,7 +2,7 @@ using System.ComponentModel;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace ThunderPipe.Settings.Fetch;
+namespace ThunderPipe.Cli.Settings.Fetch;
 
 /// <summary>
 /// Settings used by any fetching command

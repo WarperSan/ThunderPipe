@@ -2,10 +2,10 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using Spectre.Console;
 using Spectre.Console.Cli;
+using ThunderPipe.Cli.Infrastructure.TypeConverters;
 using ThunderPipe.Core.Models;
-using ThunderPipe.Infrastructure.TypeConverters;
 
-namespace ThunderPipe.Settings.Validate;
+namespace ThunderPipe.Cli.Settings.Validate;
 
 /// <summary>
 /// Settings used by <see cref="Commands.Validate.PackageCommand"/>

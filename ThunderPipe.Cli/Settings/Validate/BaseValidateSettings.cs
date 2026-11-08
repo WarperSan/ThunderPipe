@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace ThunderPipe.Settings.Validate;
+namespace ThunderPipe.Cli.Settings.Validate;
 
 /// <summary>
 /// Settings used by any validation command

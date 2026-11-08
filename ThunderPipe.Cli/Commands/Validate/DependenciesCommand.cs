@@ -1,11 +1,11 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 using Spectre.Console.Cli;
+using ThunderPipe.Cli.Settings.Validate;
 using ThunderPipe.Core.Clients;
 using ThunderPipe.Core.Utils;
-using ThunderPipe.Settings.Validate;
 
-namespace ThunderPipe.Commands.Validate;
+namespace ThunderPipe.Cli.Commands.Validate;
 
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 internal sealed class DependenciesCommand : AsyncCommand<DependenciesSettings>

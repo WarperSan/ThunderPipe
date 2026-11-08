@@ -1,9 +1,9 @@
 using System.ComponentModel;
 using Microsoft.Extensions.Logging;
 using Spectre.Console.Cli;
-using ThunderPipe.Infrastructure.Logging;
+using ThunderPipe.Cli.Infrastructure.Logging;
 
-namespace ThunderPipe.Settings;
+namespace ThunderPipe.Cli.Settings;
 
 /// <summary>
 /// Settings used by any command

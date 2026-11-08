@@ -3,7 +3,7 @@
 		<OutputType>Exe</OutputType>
 		<TargetFramework>net8.0</TargetFramework>
 		<SatelliteResourceLanguages>none</SatelliteResourceLanguages>
-		<RootNamespace>ThunderPipe</RootNamespace>
+		<RootNamespace>ThunderPipe.Cli</RootNamespace>
 	</PropertyGroup>
 
 	<!-- Nuget Properties -->
@@ -12,7 +12,7 @@
 		<PackageId>ThunderPipe.Cli</PackageId>
 		<PackageTags>Modding;CD</PackageTags>
 
-		<Title>ThunderPipe</Title>
+		<Title>ThunderPipe.Cli</Title>
 		<Description>A CLI tool for building and publishing Thunderstore packages</Description>
 
 		<PackageIcon>icon.png</PackageIcon>
