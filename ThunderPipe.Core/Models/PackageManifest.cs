@@ -2,6 +2,8 @@ using Newtonsoft.Json;
 
 namespace ThunderPipe.Core.Models;
 
+// TODO: Rework / Complete
+
 public sealed record PackageManifest
 {
 	[JsonProperty("name")]
