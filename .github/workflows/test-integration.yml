@@ -3,9 +3,6 @@ name: Thunderstore release compatibility integration tests
 on:
   schedule:
     - cron: '17 3 * * *'
-  push:
-    branches:
-      - feature/integration-tests
   workflow_dispatch:
     inputs:
       force:
@@ -42,7 +39,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           REPOSITORY: ${{ github.repository }}
           STATE_BRANCH: thunderstore-integration-state
-          FORCE_TEST: ${{ (github.event_name == 'workflow_dispatch' && inputs.force) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[retest-integration]')) }}
+          FORCE_TEST: ${{ github.event_name == 'workflow_dispatch' && inputs.force }}
         run: python3 ThunderPipe.Core.IntegrationTests/scripts/check_thunderstore_release.py discover
 
   integration:
