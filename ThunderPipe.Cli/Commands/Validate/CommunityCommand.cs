@@ -1,0 +1,43 @@
+using System.Diagnostics.CodeAnalysis;
+using Microsoft.Extensions.Logging;
+using Spectre.Console.Cli;
+using ThunderPipe.Cli.Settings.Validate;
+using ThunderPipe.Core.Clients;
+using ThunderPipe.Core.Utils;
+
+namespace ThunderPipe.Cli.Commands.Validate;
+
+[SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
+internal sealed class CommunityCommand : AsyncCommand<CommunitySettings>
+{
+	private readonly HttpClient _client;
+	private readonly ILogger _logger;
+
+	public CommunityCommand(HttpClient client, ILogger logger)
+	{
+		_client = client;
+		_logger = logger;
+	}
+
+	/// <inheritdoc />
+	protected override async Task<int> ExecuteAsync(
+		CommandContext context,
+		CommunitySettings settings,
+		CancellationToken cancellationToken
+	)
+	{
+		var community = settings.Community;
+		var builder = new RequestBuilder().ToUri(settings.Host!);
+		var client = new CommunityApiClient(_client, builder, _logger);
+
+		var doesCommunityExist = await client.Exists(community, cancellationToken);
+
+		if (!doesCommunityExist)
+			throw new KeyNotFoundException(
+				$"Could not find a community with the slug '{community}'."
+			);
+
+		_logger.LogInformation("A community was found for '{Slug}'!", community);
+		return 0;
+	}
+}

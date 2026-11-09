@@ -1,0 +1,17 @@
+using System.ComponentModel;
+using Microsoft.Extensions.Logging;
+using Spectre.Console.Cli;
+using ThunderPipe.Cli.Infrastructure.Logging;
+
+namespace ThunderPipe.Cli.Settings;
+
+/// <summary>
+/// Settings used by any command
+/// </summary>
+internal abstract class BaseCommandSettings : CommandSettings
+{
+	[CommandOption("--log-level")]
+	[Description("Minimum level of messages to display")]
+	[DefaultValue(LogInterceptor.MINIMUM_LEVEL)]
+	public LogLevel LogLevel { get; init; }
+}
