@@ -131,27 +131,8 @@ jobs:
           cp "$THUNDERSTORE_DIR/.env.template" "$THUNDERSTORE_DIR/.env"
           mkdir -p "$THUNDERSTORE_DIR/python-packages"
 
-          # Recreate the legacy MinIO build from mirror images in the temporary checkout.
-          # Thunderstore 0.188.0 may not contain minio/; create it before writing.
-          mkdir -p "$THUNDERSTORE_DIR/minio"
-          cat > "$THUNDERSTORE_DIR/minio/Dockerfile" <<'MINIO_DOCKERFILE'
-          FROM swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/minio/mc:RELEASE.2021-06-13T17-48-22Z AS mc
-          FROM swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/minio/minio:RELEASE.2021-06-17T00-10-46Z
-          RUN microdnf install netcat
-          COPY --from=mc /usr/bin/mc /usr/bin/mc
-          COPY ./minio/thunderstore-entrypoint.sh /usr/bin/thunderstore-entrypoint.sh
-          RUN chmod +x /usr/bin/thunderstore-entrypoint.sh
-          EXPOSE 9000
-          ENTRYPOINT ["/usr/bin/thunderstore-entrypoint.sh"]
-          VOLUME ["/data"]
-          CMD ["minio"]
-          MINIO_DOCKERFILE
-
-          # Fix older release entrypoint syntax in this disposable checkout only.
-          sed -i -e 's/mc anonymous set download/mc policy set download/g' \
-            -e 's#^source /usr/bin/docker-entrypoint.sh#exec /usr/bin/docker-entrypoint.sh#' \
-            -e 's/\r$//' "$THUNDERSTORE_DIR/minio/thunderstore-entrypoint.sh"
-          chmod +x "$THUNDERSTORE_DIR/minio/thunderstore-entrypoint.sh"
+          # Thunderstore 0.188.0 supplies RustFS under the existing minio service name.
+          # Its minio-init service creates the S3 buckets and public-read policies.
 
           # No Remix frontend is running in CI: route package downloads to Django.
           if ! grep -q 'location /package/download/' "$THUNDERSTORE_DIR/nginx/conf/default.conf"; then
@@ -182,7 +163,7 @@ jobs:
             -f "$THUNDERSTORE_DIR/docker-compose.yml"
             -f "$GITHUB_WORKSPACE/thunderpipe/ThunderPipe.Core.IntegrationTests/docker-compose.integration.yml"
             -p thunderpipe-integration)
-          "${compose[@]}" up -d --build db dbpool redis rabbitmq minio builder django nginx django-worker
+          "${compose[@]}" up -d --build db dbpool redis rabbitmq minio minio-init builder django nginx django-worker
 
       - name: 'Wait for Django database'
         shell: bash
