@@ -1,24 +1,14 @@
-# Compose overrides used only by the isolated GitHub Actions integration environment.
-# Keep the pinned Thunderstore release's original Dockerfile/services/dependencies.
 services:
-  nginx:
-    networks:
-      default:
-        aliases:
-          - thunderstore.localhost
   minio:
     networks:
       default:
         aliases:
           - minio.localhost
+
   django:
     environment:
-      # The test client only permits .localhost URLs, including S3 presigned URLs.
       USERMEDIA_S3_SIGNING_ENDPOINT_URL: http://minio.localhost:9000/
-      AWS_S3_CUSTOM_DOMAIN: minio.localhost:9000/thunderstore
-      CACHE_S3_CUSTOM_DOMAIN: minio.localhost:9000/thunderstore
+
   django-worker:
     environment:
       USERMEDIA_S3_SIGNING_ENDPOINT_URL: http://minio.localhost:9000/
-      AWS_S3_CUSTOM_DOMAIN: minio.localhost:9000/thunderstore
-      CACHE_S3_CUSTOM_DOMAIN: minio.localhost:9000/thunderstore
