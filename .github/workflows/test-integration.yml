@@ -1,15 +1,9 @@
 name: 'Test Integration'
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: '0 0 1,15 * *'
-  workflow_dispatch:
-    inputs:
-      force:
-        description: 'Retest the latest stable release even if it was already tested'
-        type: boolean
-        default: true
-        required: true
 
 permissions:
   contents: read
@@ -18,110 +12,366 @@ concurrency:
   group: thunderstore-release-compatibility
   cancel-in-progress: false
 
+env:
+  THUNDERSTORE_ORGANIZATION: thunderstore-io
+  THUNDERSTORE_REPOSITORY: Thunderstore
+  # Based on the maintainer's proposed filter. Adjust if upstream moves API code.
+  THUNDERSTORE_API_REGEX: '(^|/)(models|api)(/|\.py$)'
+  STATE_BRANCH: thunderstore-integration-state
+  STATE_FILE: thunderstore-release-state.json
+
 jobs:
-  check-release:
+  evaluate:
+    name: 'Evaluate Thunderstore Release'
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    permissions:
-      contents: write
     outputs:
-      should_test: ${{ steps.check.outputs.should_test }}
-      release_tag: ${{ steps.check.outputs.release_tag }}
+      should_run: ${{ steps.release.outputs.should_run }}
+      tag: ${{ steps.release.outputs.tag }}
     steps:
-      - name: Check out ThunderPipe
-        uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-
-      - name: Discover latest stable Thunderstore release
-        id: check
+      - name: 'Fetch release and evaluate API changes (no checkout)'
+        id: release
+        shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
-          REPOSITORY: ${{ github.repository }}
-          STATE_BRANCH: thunderstore-integration-state
-          FORCE_TEST: ${{ github.event_name == 'workflow_dispatch' && inputs.force }}
-        run: python3 ThunderPipe.Core.IntegrationTests/scripts/check_thunderstore_release.py discover
+          STATE_REPOSITORY: ${{ github.repository }}
+          MANUAL: ${{ github.event_name == 'workflow_dispatch' }}
+        run: |
+          set -euo pipefail
+          current="$(gh api "repos/$THUNDERSTORE_ORGANIZATION/$THUNDERSTORE_REPOSITORY/releases/latest" --jq '.tag_name')"
+          echo "tag=$current" >> "$GITHUB_OUTPUT"
 
-  integration:
-    needs: check-release
-    if: needs.check-release.outputs.should_test == 'true'
+          # Manual runs do not evaluate release state or file changes.
+          if [[ "$MANUAL" == 'true' ]]; then
+            echo 'Manual dispatch: run tests unconditionally.'
+            echo 'should_run=true' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # State lives in a separate branch. Only a GitHub API request is needed.
+          if encoded="$(gh api "repos/$STATE_REPOSITORY/contents/$STATE_FILE?ref=$STATE_BRANCH" --jq '.content' 2>/dev/null)"; then
+            state="$(printf '%s' "$encoded" | base64 --decode)"
+          else
+            state='{}'
+          fi
+
+          status="$(jq -r --arg tag "$current" '.tested_releases[$tag].status // ""' <<< "$state")"
+          if [[ "$status" == 'success' || "$status" == 'test_failure' ]]; then
+            echo "Release $current has a terminal test outcome ($status)."
+            echo 'should_run=false' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          previous="$(jq -r '(.tested_releases // {} | to_entries | sort_by(.value.recorded_at // "") | last | .key) // empty' <<< "$state")"
+          if [[ -z "$previous" ]]; then
+            echo 'No previously tested release: run the baseline integration test.'
+            echo 'should_run=true' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # A failed comparison must never hide possible incompatibilities.
+          if ! files="$(gh api "repos/$THUNDERSTORE_ORGANIZATION/$THUNDERSTORE_REPOSITORY/compare/$previous...$current" --jq '.files[].filename')"; then
+            echo 'Could not compare releases: run tests conservatively.'
+            echo 'should_run=true' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          changed="$(grep -E "$THUNDERSTORE_API_REGEX" <<< "$files" || true)"
+          if [[ -n "$changed" ]]; then
+            printf 'Relevant changes:\n%s\n' "$changed"
+            echo 'should_run=true' >> "$GITHUB_OUTPUT"
+          else
+            echo "No matching API changes from $previous to $current."
+            echo 'should_run=false' >> "$GITHUB_OUTPUT"
+          fi
+
+  test:
+    name: 'Run C# Integration Tests'
+    needs: evaluate
+    if: needs.evaluate.outputs.should_run == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 120
     permissions:
       contents: write
     env:
-      THUNDERSTORE_DIR: ${{ github.workspace }}/thunderstore-src
-      INTEGRATION_ARTIFACTS: ${{ github.workspace }}/ThunderPipe.Core.IntegrationTests/artifacts
-      THUNDERSTORE_RELEASE: ${{ needs.check-release.outputs.release_tag }}
+      THUNDERSTORE_DIR: ${{ github.workspace }}/thunderstore
+      ARTIFACT_DIR: ${{ github.workspace }}/ThunderPipe.Core.IntegrationTests/artifacts
+      THUNDERSTORE_TAG: ${{ needs.evaluate.outputs.tag }}
+      THUNDERPIPE_BASE_URL: http://thunderstore.localhost/
+      THUNDERPIPE_FIXTURE_PATH: ${{ github.workspace }}/ThunderPipe.Core.IntegrationTests/artifacts/thunderpipe-fixture.json
+      THUNDERPIPE_HTTP_TRACE: ${{ github.workspace }}/ThunderPipe.Core.IntegrationTests/artifacts/client-http.log
     steps:
-      - name: Check out current ThunderPipe source
-        uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-
-      - name: Check out the exact Thunderstore release
+      - name: 'Clone Thunderstore release'
         uses: actions/checkout@v4
         with:
           repository: thunderstore-io/Thunderstore
-          ref: ${{ needs.check-release.outputs.release_tag }}
-          path: thunderstore-src
+          ref: ${{ needs.evaluate.outputs.tag }}
+          path: thunderstore
+          persist-credentials: false
           submodules: false
+
+      - name: 'Clone ThunderPipe'
+        uses: actions/checkout@v4
+        with:
+          path: thunderpipe
           persist-credentials: false
 
-      - name: Prepare isolated Docker environment and fixture
+      - name: 'Set up .NET 8 and 10'
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: thunderpipe/global.json
+          dotnet-version: 8.0.x
+
+      - name: 'Configure isolated Thunderstore'
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p "$INTEGRATION_ARTIFACTS"
-          echo environment_failure > "$INTEGRATION_ARTIFACTS/result-category"
-          bash ThunderPipe.Core.IntegrationTests/scripts/run-integration-linux.sh setup \
-            2>&1 | tee "$INTEGRATION_ARTIFACTS/setup.log"
+          mkdir -p "$ARTIFACT_DIR"
+          echo environment_failure > "$ARTIFACT_DIR/result-category"
+          cp "$THUNDERSTORE_DIR/.env.template" "$THUNDERSTORE_DIR/.env"
+          mkdir -p "$THUNDERSTORE_DIR/python-packages"
 
-      - name: Run only ThunderPipe.Core.IntegrationTests
+          # Replace the legacy MinIO build only in the temporary Thunderstore checkout.
+          # Mirror images and mc avoid unavailable upstream image and dl.min.io download.
+          cat > "$THUNDERSTORE_DIR/minio/Dockerfile" <<'MINIO_DOCKERFILE'
+          FROM swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/minio/mc:RELEASE.2021-06-13T17-48-22Z AS mc
+          FROM swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/minio/minio:RELEASE.2021-06-17T00-10-46Z
+          RUN microdnf install netcat
+          COPY --from=mc /usr/bin/mc /usr/bin/mc
+          COPY ./minio/thunderstore-entrypoint.sh /usr/bin/thunderstore-entrypoint.sh
+          RUN chmod +x /usr/bin/thunderstore-entrypoint.sh
+          EXPOSE 9000
+          ENTRYPOINT ["/usr/bin/thunderstore-entrypoint.sh"]
+          VOLUME ["/data"]
+          CMD ["minio"]
+          MINIO_DOCKERFILE
+
+          # Fix older release entrypoint syntax in this disposable checkout only.
+          sed -i -e 's/mc anonymous set download/mc policy set download/g' \
+            -e 's#^source /usr/bin/docker-entrypoint.sh#exec /usr/bin/docker-entrypoint.sh#' \
+            -e 's/\r$//' "$THUNDERSTORE_DIR/minio/thunderstore-entrypoint.sh"
+          chmod +x "$THUNDERSTORE_DIR/minio/thunderstore-entrypoint.sh"
+
+          # No Remix frontend is running in CI: route package downloads to Django.
+          if ! grep -q 'location /package/download/' "$THUNDERSTORE_DIR/nginx/conf/default.conf"; then
+            sed -i '/location \/api\//a\    location /package/download/ { proxy_pass http://django:8000; }' \
+              "$THUNDERSTORE_DIR/nginx/conf/default.conf"
+          fi
+
+          # Workaround for Thunderstore's historical experimental upload validator.
+          sed -i 's/validate_markdown(serializer.validated_data\["readme_data"\])/validate_markdown(filename="README.md", readme_data=serializer.validated_data["readme_data"])/' \
+            "$THUNDERSTORE_DIR/django/thunderstore/repository/api/experimental/views/validators.py"
+
+          # The test client intentionally permits only .localhost endpoints.
+          echo '127.0.0.1 thunderstore.localhost minio.localhost' | sudo tee -a /etc/hosts >/dev/null
+
+      - name: 'Build C# integration test project'
+        working-directory: thunderpipe
         shell: bash
         run: |
           set -euo pipefail
-          bash ThunderPipe.Core.IntegrationTests/scripts/run-integration-linux.sh test \
-            2>&1 | tee "$INTEGRATION_ARTIFACTS/test.log"
+          HUSKY=0 dotnet restore ThunderPipe.Core.IntegrationTests/ThunderPipe.Core.IntegrationTests.csproj
+          HUSKY=0 dotnet build ThunderPipe.Core.IntegrationTests/ThunderPipe.Core.IntegrationTests.csproj -c Release --no-restore
 
-      - name: Collect Docker and server-side evidence
+      - name: 'Start Thunderstore services'
+        shell: bash
+        run: |
+          set -euo pipefail
+          compose=(docker compose --project-directory "$THUNDERSTORE_DIR"
+            -f "$THUNDERSTORE_DIR/docker-compose.yml"
+            -f "$GITHUB_WORKSPACE/thunderpipe/ThunderPipe.Core.IntegrationTests/docker-compose.integration.yml"
+            -p thunderpipe-integration)
+          "${compose[@]}" up -d --build db dbpool redis rabbitmq minio builder django nginx django-worker
+
+      - name: 'Wait for Django database'
+        shell: bash
+        run: |
+          set -euo pipefail
+          compose=(docker compose --project-directory "$THUNDERSTORE_DIR"
+            -f "$THUNDERSTORE_DIR/docker-compose.yml"
+            -f "$GITHUB_WORKSPACE/thunderpipe/ThunderPipe.Core.IntegrationTests/docker-compose.integration.yml"
+            -p thunderpipe-integration)
+          for i in $(seq 1 45); do
+            if "${compose[@]}" exec -T django python manage.py shell -c \
+              'from django.db import connection; connection.ensure_connection()' >/dev/null 2>&1; then
+              exit 0
+            fi
+            sleep 10
+          done
+          echo 'Django database did not become ready.' >&2
+          exit 1
+
+      - name: 'Seed Django test data'
+        shell: bash
+        run: |
+          set -euo pipefail
+          compose=(docker compose --project-directory "$THUNDERSTORE_DIR"
+            -f "$THUNDERSTORE_DIR/docker-compose.yml"
+            -f "$GITHUB_WORKSPACE/thunderpipe/ThunderPipe.Core.IntegrationTests/docker-compose.integration.yml"
+            -p thunderpipe-integration)
+          "${compose[@]}" exec -T django python manage.py setup_dev_env --skip-test-data
+          "${compose[@]}" exec -T django python manage.py shell -c \
+            "exec(__import__('sys').stdin.read())" \
+            < thunderpipe/ThunderPipe.Core.IntegrationTests/scripts/seed_thunderstore.py \
+            > "$ARTIFACT_DIR/django-seed-raw.log"
+          tail -n 1 "$ARTIFACT_DIR/django-seed-raw.log" \
+            | jq -ce 'select(.token and .team and .community and .category and .seedPackage and .seedVersion and .oldVersion)' \
+            > "$THUNDERPIPE_FIXTURE_PATH"
+
+      - name: 'Wait for HTTP, S3, and Celery'
+        shell: bash
+        run: |
+          set -euo pipefail
+          compose=(docker compose --project-directory "$THUNDERSTORE_DIR"
+            -f "$THUNDERSTORE_DIR/docker-compose.yml"
+            -f "$GITHUB_WORKSPACE/thunderpipe/ThunderPipe.Core.IntegrationTests/docker-compose.integration.yml"
+            -p thunderpipe-integration)
+          ready=0
+          for i in $(seq 1 30); do
+            if curl -fsS --max-time 5 -H 'Host: thunderstore.localhost' \
+              http://127.0.0.1/api/experimental/community/ >/dev/null; then ready=1; break; fi
+            sleep 5
+          done
+          if [[ "$ready" -ne 1 ]]; then echo 'HTTP API not ready.' >&2; exit 1; fi
+
+          ready=0
+          for i in $(seq 1 30); do
+            if "${compose[@]}" exec -T django python -c \
+              "import boto3; s=boto3.client('s3',endpoint_url='http://minio:9000',aws_access_key_id='thunderstore',aws_secret_access_key='thunderstore',region_name='us-east-1'); s.head_bucket(Bucket='thunderstore')" \
+              >/dev/null 2>&1; then ready=1; break; fi
+            sleep 5
+          done
+          if [[ "$ready" -ne 1 ]]; then echo 'S3 bucket not ready.' >&2; exit 1; fi
+
+          ready=0
+          for i in $(seq 1 30); do
+            if "${compose[@]}" exec -T django-worker celery -A thunderstore.core inspect ping --timeout=10 \
+              2>&1 | grep -q pong; then ready=1; break; fi
+            sleep 5
+          done
+          if [[ "$ready" -ne 1 ]]; then echo 'Celery worker not ready.' >&2; exit 1; fi
+
+      - name: 'Run C# integration tests (dotnet test)'
+        id: integration_tests
+        working-directory: thunderpipe
+        shell: bash
+        run: |
+          set -euo pipefail
+          dotnet test ThunderPipe.Core.IntegrationTests/ThunderPipe.Core.IntegrationTests.csproj \
+            -c Release --no-build --no-restore \
+            --results-directory "$ARTIFACT_DIR" -- \
+            --report-xunit-trx --report-xunit-trx-filename integration.trx \
+            2>&1 | tee "$ARTIFACT_DIR/test.log"
+
+      - name: 'Classify test outcome from TRX'
         if: always()
         shell: bash
-        run: bash ThunderPipe.Core.IntegrationTests/scripts/run-integration-linux.sh collect || true
+        env:
+          TEST_STEP_OUTCOME: ${{ steps.integration_tests.outcome }}
+        run: |
+          set -euo pipefail
+          status=environment_failure
+          trx="$ARTIFACT_DIR/integration.trx"
+          if [[ -s "$trx" ]]; then
+            counters="$(grep -oE '<Counters[^>]*>' "$trx" | head -n 1 || true)"
+            total="$(grep -oE 'total="[0-9]+"' <<< "$counters" | cut -d '"' -f2 || true)"
+            executed="$(grep -oE 'executed="[0-9]+"' <<< "$counters" | cut -d '"' -f2 || true)"
+            failed="$(grep -oE 'failed="[0-9]+"' <<< "$counters" | cut -d '"' -f2 || true)"
+            if [[ "${total:-0}" -gt 0 && "${executed:-0}" -gt 0 ]]; then
+              if [[ "${failed:-0}" -gt 0 ]]; then
+                status=test_failure
+              elif [[ "$TEST_STEP_OUTCOME" == 'success' ]]; then
+                status=success
+              fi
+            fi
+          fi
+          echo "$status" > "$ARTIFACT_DIR/result-category"
+          echo "Integration result: $status"
 
-      - name: Persist terminal outcome (environment failures remain retryable)
+      - name: 'Collect server diagnostics'
         if: always()
+        shell: bash
+        run: |
+          mkdir -p "$ARTIFACT_DIR"
+          compose=(docker compose --project-directory "$THUNDERSTORE_DIR"
+            -f "$THUNDERSTORE_DIR/docker-compose.yml"
+            -f "$GITHUB_WORKSPACE/thunderpipe/ThunderPipe.Core.IntegrationTests/docker-compose.integration.yml"
+            -p thunderpipe-integration)
+          "${compose[@]}" logs --no-color --timestamps > "$ARTIFACT_DIR/docker-server.log" 2>&1 || true
+          "${compose[@]}" exec -T django python manage.py shell -c \
+            "exec(__import__('sys').stdin.read())" \
+            < thunderpipe/ThunderPipe.Core.IntegrationTests/scripts/verify_server_state.py \
+            > "$ARTIFACT_DIR/server-state.json" 2>&1 || true
+
+      - name: 'Record outcome in state branch with gh api and jq'
+        if: always()
+        shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
-          REPOSITORY: ${{ github.repository }}
-          STATE_BRANCH: thunderstore-integration-state
-        shell: bash
+          STATE_REPOSITORY: ${{ github.repository }}
         run: |
           set -euo pipefail
-          CATEGORY=environment_failure
-          if [[ -f "$INTEGRATION_ARTIFACTS/result-category" ]]; then
-            CATEGORY="$(cat "$INTEGRATION_ARTIFACTS/result-category")"
-          fi
-          python3 ThunderPipe.Core.IntegrationTests/scripts/check_thunderstore_release.py \
-            record "$THUNDERSTORE_RELEASE" "$CATEGORY"
+          status="$(cat "$ARTIFACT_DIR/result-category" 2>/dev/null || echo environment_failure)"
+          tag="$THUNDERSTORE_TAG"
 
-      - name: Upload diagnostic artifacts
+          # Create the state branch once, without checking out ThunderPipe.
+          if ! gh api "repos/$STATE_REPOSITORY/git/ref/heads/$STATE_BRANCH" >/dev/null 2>&1; then
+            default="$(gh api "repos/$STATE_REPOSITORY" --jq '.default_branch')"
+            base="$(gh api "repos/$STATE_REPOSITORY/git/ref/heads/$default" --jq '.object.sha')"
+            gh api -X POST "repos/$STATE_REPOSITORY/git/refs" \
+              -f ref="refs/heads/$STATE_BRANCH" -f sha="$base" >/dev/null || true
+          fi
+
+          for attempt in $(seq 1 6); do
+            sha=''
+            if meta="$(gh api "repos/$STATE_REPOSITORY/contents/$STATE_FILE?ref=$STATE_BRANCH" 2>/dev/null)"; then
+              sha="$(jq -r '.sha' <<< "$meta")"
+              state="$(jq -r '.content' <<< "$meta" | base64 --decode)"
+            else
+              state='{}'
+            fi
+            now="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            url="https://github.com/$STATE_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            next="$(jq -c --arg tag "$tag" --arg status "$status" --arg now "$now" --arg url "$url" --arg commit "$GITHUB_SHA" '
+              .last_checked_release = $tag
+              | .last_test_result = {release:$tag,status:$status,recorded_at:$now,run_url:$url,thunderpipe_commit:$commit}
+              | .last_check_result = {checked_at:$now,release:$tag,requires_integration_tests:true,integration_tests_executed:($status != "environment_failure"),reason:$status}
+              | if $status == "environment_failure" then
+                  .pending_test_release = $tag | .last_environment_failure = .last_test_result
+                else
+                  .pending_test_release = null
+                  | .tested_releases[$tag] = .last_test_result
+                  | if $status == "success" then .last_successful_test_release = $tag else . end
+                end
+              ' <<< "$state")"
+            encoded="$(printf '%s\n' "$next" | base64 -w 0)"
+            args=(-X PUT "repos/$STATE_REPOSITORY/contents/$STATE_FILE"
+              -f message="chore: record Thunderstore integration $status"
+              -f branch="$STATE_BRANCH" -f content="$encoded")
+            if [[ -n "$sha" ]]; then args+=(-f sha="$sha"); fi
+            if gh api "${args[@]}" >/dev/null; then break; fi
+            if [[ "$attempt" -eq 6 ]]; then exit 1; fi
+            sleep "$attempt"
+          done
+
+      - name: 'Upload diagnostic artifacts'
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: thunderstore-${{ needs.check-release.outputs.release_tag }}-integration-${{ github.run_attempt }}
+          name: thunderstore-integration-${{ github.run_id }}-${{ github.run_attempt }}
           if-no-files-found: warn
           retention-days: 14
           path: |
             ThunderPipe.Core.IntegrationTests/artifacts/*.trx
-            ThunderPipe.Core.IntegrationTests/artifacts/client-http.log
-            ThunderPipe.Core.IntegrationTests/artifacts/docker-server.log
-            ThunderPipe.Core.IntegrationTests/artifacts/server-state.json
-            ThunderPipe.Core.IntegrationTests/artifacts/setup.log
-            ThunderPipe.Core.IntegrationTests/artifacts/test.log
+            ThunderPipe.Core.IntegrationTests/artifacts/*.log
+            ThunderPipe.Core.IntegrationTests/artifacts/*.json
             ThunderPipe.Core.IntegrationTests/artifacts/result-category
 
-      - name: Stop and remove local Docker test resources
+      - name: 'Stop isolated Docker services'
         if: always()
         shell: bash
-        run: bash ThunderPipe.Core.IntegrationTests/scripts/run-integration-linux.sh cleanup || true
+        run: |
+          docker compose --project-directory "$THUNDERSTORE_DIR" \
+            -f "$THUNDERSTORE_DIR/docker-compose.yml" \
+            -f "$GITHUB_WORKSPACE/thunderpipe/ThunderPipe.Core.IntegrationTests/docker-compose.integration.yml" \
+            -p thunderpipe-integration down -v --remove-orphans || true
