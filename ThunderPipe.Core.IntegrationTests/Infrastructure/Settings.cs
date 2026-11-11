@@ -3,29 +3,37 @@ using ThunderPipe.Core.Models;
 namespace ThunderPipe.Core.IntegrationTests.Infrastructure;
 
 /// <summary>
-/// Maintainer's named test settings, adapted to the existing CI fixture JSON.
-/// Optional THUNDERSTORE_* environment overrides remain supported.
+/// Shared integration settings, following the maintainer's environment-variable
+/// convention. Extra settings are required only by publish/validation/paging tests.
 /// </summary>
 public static class Settings
 {
-    public static readonly Uri BaseUri = new(
-        Environment.GetEnvironmentVariable("THUNDERSTORE_URL")
-        ?? Environment.GetEnvironmentVariable("THUNDERPIPE_BASE_URL")
-        ?? "http://thunderstore.localhost/",
-        UriKind.Absolute);
+    private static string GetRequired(string name) =>
+        Environment.GetEnvironmentVariable(name)
+        ?? throw new InvalidOperationException($"No value was assigned to the required variable '{name}'.");
 
-    public static Community ExistingCommunity =>
-        new(Environment.GetEnvironmentVariable("THUNDERSTORE_COMMUNITY")
-            ?? ThunderstoreFixture.LoadFixture().Community);
+    public static readonly Uri BaseUri = new(GetRequired("THUNDERSTORE_URL"));
+    public static readonly Community ExistingCommunity = new(GetRequired("THUNDERSTORE_COMMUNITY"));
+    public static readonly PackageDependency ExistingPackage = new(GetRequired("THUNDERSTORE_PACKAGE"));
 
-    public static PackageDependency ExistingPackage
-    {
-        get
-        {
-            FixtureData data = ThunderstoreFixture.LoadFixture();
-            return new PackageDependency(
-                Environment.GetEnvironmentVariable("THUNDERSTORE_PACKAGE")
-                ?? $"{data.Team}-{data.SeedPackage}-{data.SeedVersion}");
-        }
-    }
+    public static FixtureData Supplemental => new(
+        GetRequired("THUNDERSTORE_TOKEN"),
+        GetRequired("THUNDERSTORE_TEAM"),
+        GetRequired("THUNDERSTORE_COMMUNITY"),
+        GetRequired("THUNDERSTORE_CATEGORY"),
+        GetRequired("THUNDERSTORE_SEED_PACKAGE"),
+        GetRequired("THUNDERSTORE_SEED_VERSION"),
+        GetRequired("THUNDERSTORE_OLD_VERSION"),
+        GetRequired("THUNDERSTORE_PAGE_COMMUNITIES")
+            .Split(',', StringSplitOptions.RemoveEmptyEntries));
 }
+
+public sealed record FixtureData(
+    string Token,
+    string Team,
+    string Community,
+    string Category,
+    string SeedPackage,
+    string SeedVersion,
+    string OldVersion,
+    string[] PageCommunities);

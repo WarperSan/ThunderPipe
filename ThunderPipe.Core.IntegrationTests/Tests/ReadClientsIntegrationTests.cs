@@ -16,12 +16,13 @@ public sealed class ReadClientsIntegrationTests
 	[Fact]
 	public async Task Community_GetMissing_ExistingAndAbsent_AcrossPages()
 	{
-		// The seed creates 105 distinct pagination fixtures. Request ALL of them,
+		// The upstream create_test_data command generates 105 communities. Request ALL of them,
 		// so a client that stops after the first 100-item page cannot pass,
 		// regardless of the server's ordering of records.
-		var existing = Enumerable.Range(0, 105)
-			.Select(i => (Community)$"tp-integration-page-{i:000}")
+		var existing = _env.Data.PageCommunities
+			.Select(identifier => (Community)identifier)
 			.ToArray();
+		Assert.Equal(105, existing.Length);
 		Community missing = "tp-integration-missing-community";
 		var requested = existing.Append(missing).ToArray();
 

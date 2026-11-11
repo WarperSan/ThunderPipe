@@ -97,8 +97,7 @@ jobs:
       THUNDERSTORE_DIR: ${{ github.workspace }}/thunderstore
       ARTIFACT_DIR: ${{ github.workspace }}/ThunderPipe.Core.IntegrationTests/artifacts
       THUNDERSTORE_TAG: ${{ needs.evaluate.outputs.tag }}
-      THUNDERPIPE_BASE_URL: http://thunderstore.localhost/
-      THUNDERPIPE_FIXTURE_PATH: ${{ github.workspace }}/ThunderPipe.Core.IntegrationTests/artifacts/thunderpipe-fixture.json
+      THUNDERSTORE_URL: http://thunderstore.localhost/
       THUNDERPIPE_HTTP_TRACE: ${{ github.workspace }}/ThunderPipe.Core.IntegrationTests/artifacts/client-http.log
     steps:
       - name: 'Clone Thunderstore release'
@@ -183,7 +182,7 @@ jobs:
           echo 'Django database did not become ready.' >&2
           exit 1
 
-      - name: 'Seed Django test data'
+      - name: 'Prepare Thunderstore with its native development commands'
         shell: bash
         run: |
           set -euo pipefail
@@ -191,14 +190,100 @@ jobs:
             -f "$THUNDERSTORE_DIR/docker-compose.yml"
             -f "$GITHUB_WORKSPACE/thunderpipe/ThunderPipe.Core.IntegrationTests/docker-compose.integration.yml"
             -p thunderpipe-integration)
-          "${compose[@]}" exec -T django python manage.py setup_dev_env --skip-test-data
+
+          # setup_dev_env creates the administrator, communities, teams, packages,
+          # versions and site mappings. Wait for storage because the bundled
+          # create_test_data command uploads package icons.
+          ready=0
+          for i in $(seq 1 30); do
+            if "${compose[@]}" exec -T django python -c \
+              "import boto3; s=boto3.client('s3',endpoint_url='http://minio:9000',aws_access_key_id='thunderstore',aws_secret_access_key='thunderstore',region_name='us-east-1'); s.head_bucket(Bucket='thunderstore')" \
+              >/dev/null 2>&1; then ready=1; break; fi
+            sleep 5
+          done
+          if [[ "$ready" -ne 1 ]]; then echo 'S3 bucket not ready for test data.' >&2; exit 1; fi
+
+          "${compose[@]}" exec -T django python manage.py setup_dev_env
+          # Native generator supplies the 105 existing communities used by the
+          # pagination test, rather than hand-creating these Django records.
+          "${compose[@]}" exec -T django python manage.py create_test_data \
+            --only community --community-count 105
+
+          # The native generator has no options for categories, inactive versions,
+          # or a publishing service-account token. Prepare ONLY those missing
+          # fixtures in an inline Django shell, not a separate Python seed script.
+          raw="$(mktemp)"
+          trap 'rm -f "$raw" "$raw.json"' EXIT
           "${compose[@]}" exec -T django python manage.py shell -c \
-            "exec(__import__('sys').stdin.read())" \
-            < thunderpipe/ThunderPipe.Core.IntegrationTests/scripts/seed_thunderstore.py \
-            > "$ARTIFACT_DIR/django-seed-raw.log"
-          tail -n 1 "$ARTIFACT_DIR/django-seed-raw.log" \
-            | jq -ce 'select(.token and .team and .community and .category and .seedPackage and .seedVersion and .oldVersion)' \
-            > "$THUNDERPIPE_FIXTURE_PATH"
+            "exec(__import__('sys').stdin.read())" > "$raw" <<'PY'
+          import json
+          from django.contrib.auth import get_user_model
+          from thunderstore.account.models import ServiceAccount
+          from thunderstore.community.models import Community, PackageCategory
+          from thunderstore.repository.models import Team
+
+          team = Team.objects.filter(name__startswith="Test_Team_").order_by("pk").first()
+          if team is None:
+              raise RuntimeError("create_test_data did not create a team")
+          package = team.owned_packages.order_by("pk").first()
+          if package is None or package.latest is None:
+              raise RuntimeError("create_test_data did not create a usable package")
+          versions = list(package.versions.order_by("pk"))
+          inactive = next((v for v in versions if v.pk != package.latest_id), None)
+          if inactive is None:
+              raise RuntimeError("Need two seeded versions for inactive-version testing")
+          type(inactive).objects.filter(pk=inactive.pk).update(is_active=False)
+
+          community = Community.objects.get(identifier="riskofrain2")
+          primary, _ = PackageCategory.objects.get_or_create(
+              community=community, slug="tp-integration-primary",
+              defaults={"name": "Integration Primary"},
+          )
+          for index in range(105):
+              PackageCategory.objects.get_or_create(
+                  community=community, slug=f"tp-integration-page-{index:03d}",
+                  defaults={"name": f"Integration Page {index:03d}"},
+              )
+          page_communities = list(
+              Community.objects.filter(identifier__startswith="test-community-")
+              .order_by("pk").values_list("identifier", flat=True)[:105]
+          )
+          if len(page_communities) != 105:
+              raise RuntimeError("Native test data did not create 105 communities")
+          admin = get_user_model().objects.get(username="admin")
+          _, token = ServiceAccount.create(team, "TPIntegrationTest", admin)
+          print(json.dumps({
+              "token": token,
+              "team": team.name,
+              "community": community.identifier,
+              "category": primary.slug,
+              "seedPackage": package.name,
+              "seedVersion": package.latest.version_number,
+              "oldVersion": inactive.version_number,
+              "pageCommunities": page_communities,
+          }))
+          PY
+
+          # Pass test settings as environment variables, matching the author's
+          # Settings class. Never upload the authentication token as an artifact.
+          tail -n 1 "$raw" | jq -ce '
+            select(.token and .team and .community and .category
+              and .seedPackage and .seedVersion and .oldVersion
+              and (.pageCommunities | length) == 105)
+          ' > "$raw.json"
+          token="$(jq -r '.token' "$raw.json")"
+          echo "::add-mask::$token"
+          jq -r '
+            "THUNDERSTORE_TOKEN=\(.token)",
+            "THUNDERSTORE_TEAM=\(.team)",
+            "THUNDERSTORE_COMMUNITY=\(.community)",
+            "THUNDERSTORE_CATEGORY=\(.category)",
+            "THUNDERSTORE_SEED_PACKAGE=\(.seedPackage)",
+            "THUNDERSTORE_SEED_VERSION=\(.seedVersion)",
+            "THUNDERSTORE_OLD_VERSION=\(.oldVersion)",
+            "THUNDERSTORE_PACKAGE=\(.team)-\(.seedPackage)-\(.seedVersion)",
+            "THUNDERSTORE_PAGE_COMMUNITIES=\(.pageCommunities | join(","))"
+          ' "$raw.json" >> "$GITHUB_ENV"
 
       - name: 'Wait for HTTP, S3, and Celery'
         shell: bash
@@ -353,7 +438,7 @@ jobs:
           path: |
             ThunderPipe.Core.IntegrationTests/artifacts/*.trx
             ThunderPipe.Core.IntegrationTests/artifacts/*.log
-            ThunderPipe.Core.IntegrationTests/artifacts/*.json
+            ThunderPipe.Core.IntegrationTests/artifacts/server-state.json
             ThunderPipe.Core.IntegrationTests/artifacts/result-category
 
       - name: 'Stop isolated Docker services'
