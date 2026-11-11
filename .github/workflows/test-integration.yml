@@ -1,4 +1,4 @@
-name: Thunderstore release compatibility integration tests
+name: 'Test Integration'
 
 on:
   schedule:
