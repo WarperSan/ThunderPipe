@@ -2,7 +2,7 @@ name: Thunderstore release compatibility integration tests
 
 on:
   schedule:
-    - cron: '17 3 * * *'
+    - cron: '0 0 1,15 * *'
   workflow_dispatch:
     inputs:
       force:
