@@ -132,12 +132,6 @@ jobs:
           # Thunderstore 0.188.0 supplies RustFS under the existing minio service name.
           # Its minio-init service creates the S3 buckets and public-read policies.
 
-          # No Remix frontend is running in CI: route package downloads to Django.
-          if ! grep -q 'location /package/download/' "$THUNDERSTORE_DIR/nginx/conf/default.conf"; then
-            sed -i '/location \/api\//a\    location /package/download/ { proxy_pass http://django:8000; }' \
-              "$THUNDERSTORE_DIR/nginx/conf/default.conf"
-          fi
-
           # Workaround for Thunderstore's historical experimental upload validator.
           sed -i 's/validate_markdown(serializer.validated_data\["readme_data"\])/validate_markdown(filename="README.md", readme_data=serializer.validated_data["readme_data"])/' \
             "$THUNDERSTORE_DIR/django/thunderstore/repository/api/experimental/views/validators.py"
