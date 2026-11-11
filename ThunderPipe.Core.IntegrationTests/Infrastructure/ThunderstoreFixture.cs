@@ -1,124 +1,75 @@
-using System.Net;
 using ThunderPipe.Core.Clients;
 using ThunderPipe.Core.Utils;
-using Xunit;
 
 namespace ThunderPipe.Core.IntegrationTests.Infrastructure;
 
 /// <summary>
-/// Only loopback/.localhost hosts are permitted. No mocked responses are used.
-/// Supplemental fixture values are passed using environment variables.
+/// Class holding information shared across all tests
 /// </summary>
+// ReSharper disable once ClassNeverInstantiated.Global
 public sealed class ThunderstoreFixture : IAsyncLifetime
 {
-	private readonly HttpClient _http;
-	private readonly string _traceFile;
-	private static readonly object TraceLock = new();
-
-	public ThunderstoreFixture()
+	private readonly HttpClient _http = new(new HttpClientHandler { AllowAutoRedirect = false, UseProxy = false })
 	{
-		BaseUri = Settings.BaseUri;
-		RequireLocal(BaseUri);
-		if (BaseUri.Scheme != Uri.UriSchemeHttp)
-			throw new InvalidOperationException(
-				"Integration tests require the local HTTP Docker endpoint."
-			);
+		Timeout = TimeSpan.FromMinutes(8),
+	};
 
-		_traceFile =
-			Environment.GetEnvironmentVariable("THUNDERPIPE_HTTP_TRACE")
-			?? Path.GetFullPath(
-				Path.Combine(
-					AppContext.BaseDirectory,
-					"..",
-					"..",
-					"..",
-					"artifacts",
-					"thunderpipe-http.log"
-				)
-			);
-		Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(_traceFile))!);
-		var handler = new LocalOnlyHandler(
-			new HttpClientHandler { AllowAutoRedirect = false, UseProxy = false },
-			Record
-		);
-		_http = new HttpClient(handler) { Timeout = TimeSpan.FromMinutes(8) };
-		Builder = new RequestBuilder().ToUri(BaseUri);
-	}
+	/// <summary>
+	/// Instance of <see cref="CategoryApiClient"/>
+	/// </summary>
+	public CategoryApiClient Categories { get; private set; } = null!;
 
-	public FixtureData Data => Settings.Supplemental;
-	public Uri BaseUri { get; }
-	public RequestBuilder Builder { get; }
+	/// <summary>
+	/// Instance of <see cref="CommunityApiClient"/>
+	/// </summary>
+	public CommunityApiClient Communities { get; private set; } = null!;
+
+	/// <summary>
+	/// Instance of <see cref="DependencyApiClient"/>
+	/// </summary>
+	public DependencyApiClient Dependencies { get; private set; } = null!;
+
+	/// <summary>
+	/// Instance of <see cref="PackageApiClient"/>
+	/// </summary>
+	public PackageApiClient Packages { get; private set; } = null!;
+
+	/// <summary>
+	/// Instance of <see cref="PublishApiClient"/>
+	/// </summary>
+	public PublishApiClient Publish { get; private set; } = null!;
+
+	/// <summary>
+	/// Instance of <see cref="ValidationApiClient"/>
+	/// </summary>
+	public ValidationApiClient Validation { get; private set; } = null!;
+
+	// Additional publishing tests need direct access to upload/download responses.
 	public HttpClient Http => _http;
-	public CommunityApiClient Communities => new(_http, Builder);
-	public CategoryApiClient Categories => new(_http, Builder);
-	public DependencyApiClient Dependencies => new(_http, Builder);
-	public PackageApiClient Packages => new(_http, Builder);
-	public ValidationApiClient Validation => new(_http, Builder);
-	public PublishApiClient Publish => new(_http, Builder);
 
-	public static void RequireLocal(Uri uri)
+	// Supplemental data is supplied by the workflow, not another seed framework.
+	public FixtureData Data => Settings.Supplemental;
+
+	/// <inheritdoc />
+	public ValueTask InitializeAsync()
 	{
-		if (
-			uri.Scheme is not ("http" or "https")
-			|| !(
-				uri.IsLoopback
-				|| uri.Host.EndsWith(".localhost", StringComparison.OrdinalIgnoreCase)
-			)
-		)
-			throw new InvalidOperationException($"Refusing request to non-local host: {uri.Host}");
-	}
+		var builder = new RequestBuilder().ToUri(Settings.BaseUri);
 
-	public void Evidence(string message) => Record($"EVIDENCE {DateTimeOffset.UtcNow:O} {message}");
+		Categories = new CategoryApiClient(_http, builder);
+		Communities = new CommunityApiClient(_http, builder);
+		Dependencies = new DependencyApiClient(_http, builder);
+		Packages = new PackageApiClient(_http, builder);
+		Publish = new PublishApiClient(_http, builder);
+		Validation = new ValidationApiClient(_http, builder);
 
-	private void Record(string message)
-	{
-		lock (TraceLock)
-			File.AppendAllText(_traceFile, message + Environment.NewLine);
-	}
-
-	public ValueTask InitializeAsync() => ValueTask.CompletedTask;
-
-	public ValueTask DisposeAsync()
-	{
-		_http.Dispose();
 		return ValueTask.CompletedTask;
 	}
 
-}
-
-internal sealed class LocalOnlyHandler : DelegatingHandler
-{
-	private readonly Action<string> _trace;
-
-	public LocalOnlyHandler(HttpMessageHandler inner, Action<string> trace)
-		: base(inner)
+	/// <inheritdoc />
+	public ValueTask DisposeAsync()
 	{
-		_trace = trace;
-	}
+		_http.Dispose();
 
-	protected override async Task<HttpResponseMessage> SendAsync(
-		HttpRequestMessage request,
-		CancellationToken ct
-	)
-	{
-		if (request.RequestUri is null)
-			throw new InvalidOperationException("Request has no URI.");
-		ThunderstoreFixture.RequireLocal(request.RequestUri);
-		var started = DateTimeOffset.UtcNow;
-		try
-		{
-			var response = await base.SendAsync(request, ct);
-			_trace(
-				$"{started:O} {request.Method} {request.RequestUri.GetLeftPart(UriPartial.Path)} -> {(int)response.StatusCode}"
-			);
-			return response;
-		}
-		catch (Exception e)
-		{
-			_trace(
-				$"{started:O} {request.Method} {request.RequestUri.GetLeftPart(UriPartial.Path)} -> {e.GetType().Name}: {e.Message}"
-			);
-			throw;
-		}
+		return ValueTask.CompletedTask;
 	}
 }

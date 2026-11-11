@@ -92,6 +92,13 @@ public sealed class PublishIntegrationTests
 		await PublishAndVerify(item, expectedParts: 2, TestContext.Current.CancellationToken);
 	}
 
+	private static void RequireLocal(Uri uri)
+	{
+		if (uri.Scheme is not ("http" or "https")
+			|| !(uri.IsLoopback || uri.Host.EndsWith(".localhost", StringComparison.OrdinalIgnoreCase)))
+			throw new InvalidOperationException($"Refusing non-local upload/download URL: {uri.Host}");
+	}
+
 	private async Task<HttpResponseMessage> DownloadLocalRedirectsAsync(
 		Uri url,
 		CancellationToken ct
@@ -102,7 +109,7 @@ public sealed class PublishIntegrationTests
 		// before following it; the HTTP handler never auto-follows redirects.
 		for (int hop = 0; hop < 6; hop++)
 		{
-			ThunderstoreFixture.RequireLocal(url);
+			RequireLocal(url);
 			var response = await _env.Http.GetAsync(
 				url,
 				HttpCompletionOption.ResponseHeadersRead,
@@ -124,7 +131,7 @@ public sealed class PublishIntegrationTests
 					);
 				Uri next = location.IsAbsoluteUri ? location : new Uri(url, location);
 				response.Dispose();
-				ThunderstoreFixture.RequireLocal(next);
+				RequireLocal(next);
 				url = next;
 				continue;
 			}
@@ -146,9 +153,6 @@ public sealed class PublishIntegrationTests
 			ct
 		);
 		Assert.True(Guid.TryParse(session.UUID, out _));
-		_env.Evidence(
-			$"Upload started package={item.Name} uuid={session.UUID} bytes={new FileInfo(item.ArchivePath).Length}"
-		);
 		var descriptors = session.Parts.OrderBy(p => p.Offset).ToArray();
 		Assert.Equal(expectedParts, descriptors.Length);
 		Assert.Equal(0L, descriptors[0].Offset);
@@ -157,7 +161,7 @@ public sealed class PublishIntegrationTests
 		{
 			Assert.Equal(offset, part.Offset);
 			Assert.True(part.Size > 0);
-			ThunderstoreFixture.RequireLocal(part.UploadURL);
+			RequireLocal(part.UploadURL);
 			offset += part.Size;
 		}
 		Assert.Equal(new FileInfo(item.ArchivePath).Length, offset);
@@ -198,7 +202,7 @@ public sealed class PublishIntegrationTests
 		Assert.Equal(item.Name, (string)published.Name);
 		Assert.Equal(item.Version, (string)published.Version);
 		Assert.True(published.DownloadURL.IsAbsoluteUri);
-		ThunderstoreFixture.RequireLocal(published.DownloadURL);
+		RequireLocal(published.DownloadURL);
 
 		// A successful upload is not enough: the published archive must contain
 		// exactly the same bytes, including every multipart segment.
@@ -209,9 +213,6 @@ public sealed class PublishIntegrationTests
 		string expectedHash = await PackageFixture.Sha256Async(sourceStream, ct);
 		string actualHash = await PackageFixture.Sha256Async(downloadedStream, ct);
 		Assert.Equal(expectedHash, actualHash);
-		_env.Evidence(
-			$"Published package={item.Name} version={item.Version} sha256={actualHash} parts={descriptors.Length} uuid={session.UUID}"
-		);
 
 		// Verify publicly visible state via another ThunderPipe client.
 		PackageVersion latest = await _env.Packages.GetVersion(_env.Data.Team, item.Name, ct);

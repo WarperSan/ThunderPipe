@@ -98,7 +98,6 @@ jobs:
       ARTIFACT_DIR: ${{ github.workspace }}/ThunderPipe.Core.IntegrationTests/artifacts
       THUNDERSTORE_TAG: ${{ needs.evaluate.outputs.tag }}
       THUNDERSTORE_URL: http://thunderstore.localhost/
-      THUNDERPIPE_HTTP_TRACE: ${{ github.workspace }}/ThunderPipe.Core.IntegrationTests/artifacts/client-http.log
     steps:
       - name: 'Clone Thunderstore release'
         uses: actions/checkout@v4
