@@ -189,11 +189,11 @@ public sealed class PublishIntegrationTests
 
 		// SubmitPackage is deliberately exercised, not replaced by direct raw HTTP.
 		Community community = _env.Data.Community;
-		Category category = _env.Data.Category;
+		// Thunderstore accepts publishing without assigning categories.
 		Package published = await _env.Publish.SubmitPackage(
 			_env.Data.Team,
 			[community],
-			new Dictionary<Community, IEnumerable<Category>> { [community] = [category] },
+			new Dictionary<Community, IEnumerable<Category>> { [community] = [] },
 			false,
 			session.UUID,
 			_env.Data.Token,

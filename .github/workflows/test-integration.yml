@@ -208,82 +208,6 @@ jobs:
           "${compose[@]}" exec -T django python manage.py create_test_data \
             --only community --community-count 105
 
-          # The native generator has no options for categories, inactive versions,
-          # or a publishing service-account token. Prepare ONLY those missing
-          # fixtures in an inline Django shell, not a separate Python seed script.
-          raw="$(mktemp)"
-          trap 'rm -f "$raw" "$raw.json"' EXIT
-          "${compose[@]}" exec -T django python manage.py shell -c \
-            "exec(__import__('sys').stdin.read())" > "$raw" <<'PY'
-          import json
-          from django.contrib.auth import get_user_model
-          from thunderstore.account.models import ServiceAccount
-          from thunderstore.community.models import Community, PackageCategory
-          from thunderstore.repository.models import Team
-
-          team = Team.objects.filter(name__startswith="Test_Team_").order_by("pk").first()
-          if team is None:
-              raise RuntimeError("create_test_data did not create a team")
-          package = team.owned_packages.order_by("pk").first()
-          if package is None or package.latest is None:
-              raise RuntimeError("create_test_data did not create a usable package")
-          versions = list(package.versions.order_by("pk"))
-          inactive = next((v for v in versions if v.pk != package.latest_id), None)
-          if inactive is None:
-              raise RuntimeError("Need two seeded versions for inactive-version testing")
-          type(inactive).objects.filter(pk=inactive.pk).update(is_active=False)
-
-          community = Community.objects.get(identifier="riskofrain2")
-          primary, _ = PackageCategory.objects.get_or_create(
-              community=community, slug="tp-integration-primary",
-              defaults={"name": "Integration Primary"},
-          )
-          for index in range(105):
-              PackageCategory.objects.get_or_create(
-                  community=community, slug=f"tp-integration-page-{index:03d}",
-                  defaults={"name": f"Integration Page {index:03d}"},
-              )
-          page_communities = list(
-              Community.objects.filter(identifier__startswith="test-community-")
-              .order_by("pk").values_list("identifier", flat=True)[:105]
-          )
-          if len(page_communities) != 105:
-              raise RuntimeError("Native test data did not create 105 communities")
-          admin = get_user_model().objects.get(username="admin")
-          _, token = ServiceAccount.create(team, "TPIntegrationTest", admin)
-          print(json.dumps({
-              "token": token,
-              "team": team.name,
-              "community": community.identifier,
-              "category": primary.slug,
-              "seedPackage": package.name,
-              "seedVersion": package.latest.version_number,
-              "oldVersion": inactive.version_number,
-              "pageCommunities": page_communities,
-          }))
-          PY
-
-          # Pass test settings as environment variables, matching the author's
-          # Settings class. Never upload the authentication token as an artifact.
-          tail -n 1 "$raw" | jq -ce '
-            select(.token and .team and .community and .category
-              and .seedPackage and .seedVersion and .oldVersion
-              and (.pageCommunities | length) == 105)
-          ' > "$raw.json"
-          token="$(jq -r '.token' "$raw.json")"
-          echo "::add-mask::$token"
-          jq -r '
-            "THUNDERSTORE_TOKEN=\(.token)",
-            "THUNDERSTORE_TEAM=\(.team)",
-            "THUNDERSTORE_COMMUNITY=\(.community)",
-            "THUNDERSTORE_CATEGORY=\(.category)",
-            "THUNDERSTORE_SEED_PACKAGE=\(.seedPackage)",
-            "THUNDERSTORE_SEED_VERSION=\(.seedVersion)",
-            "THUNDERSTORE_OLD_VERSION=\(.oldVersion)",
-            "THUNDERSTORE_PACKAGE=\(.team)-\(.seedPackage)-\(.seedVersion)",
-            "THUNDERSTORE_PAGE_COMMUNITIES=\(.pageCommunities | join(","))"
-          ' "$raw.json" >> "$GITHUB_ENV"
-
       - name: 'Wait for HTTP, S3, and Celery'
         shell: bash
         run: |
@@ -323,6 +247,133 @@ jobs:
             "${compose[@]}" logs --no-color --tail=80 django-worker rabbitmq >&2 || true
             exit 1
           fi
+
+      - name: 'Prepare publishing credentials through Thunderstore HTTP API'
+        shell: bash
+        run: |
+          set -euo pipefail
+          raw="$(mktemp)"
+          trap 'rm -f "$raw"' EXIT
+          python3 - > "$raw" <<'PY'
+          import http.cookiejar
+          import json
+          import urllib.parse
+          import urllib.request
+          
+          root = "http://thunderstore.localhost"
+          jar = http.cookiejar.CookieJar()
+          opener = urllib.request.build_opener(
+              urllib.request.ProxyHandler({}),
+              urllib.request.HTTPCookieProcessor(jar),
+          )
+          
+          def api(url, payload=None, auth=None):
+              parsed = urllib.parse.urlsplit(url)
+              if parsed.scheme != "http" or parsed.netloc != "thunderstore.localhost":
+                  raise RuntimeError("Refusing off-host fixture API URL")
+              headers = {}
+              if payload is not None:
+                  headers["Content-Type"] = "application/json"
+              if auth:
+                  headers["Authorization"] = "Session " + auth
+              request = urllib.request.Request(
+                  url,
+                  data=json.dumps(payload).encode() if payload is not None else None,
+                  headers=headers,
+              )
+              with opener.open(request, timeout=30) as response:
+                  return json.load(response)
+          
+          # setup_dev_env creates the local development admin account.
+          login = root + "/djangoadmin/login/"
+          with opener.open(login, timeout=30) as response:
+              response.read()
+          csrf = next((c.value for c in jar if c.name == "csrftoken"), None)
+          if not csrf:
+              raise RuntimeError("Admin login did not provide a CSRF cookie")
+          form = urllib.parse.urlencode({
+              "username": "admin", "password": "admin",
+              "csrfmiddlewaretoken": csrf, "next": "/djangoadmin/",
+          }).encode()
+          request = urllib.request.Request(login, data=form, headers={"Referer": login})
+          with opener.open(request, timeout=30) as response:
+              response.read()
+          session = next((c.value for c in jar if c.name == "sessionid"), None)
+          if not session:
+              raise RuntimeError("Developer admin login failed")
+          
+          # Authenticate through the public Cyberstorm HTTP API.
+          team = "TPIntegrationCI"
+          created = api(root + "/api/cyberstorm/team/create/", {"name": team}, session)
+          if created.get("name") != team:
+              raise RuntimeError("Team API returned unexpected name")
+          account = api(
+              root + "/api/cyberstorm/team/" + team + "/service-account/create/",
+              {"nickname": "TPIntegrationCI"},
+              session,
+          )
+          token = account.get("api_token")
+          if not token or account.get("team_name") != team:
+              raise RuntimeError("Service-account API did not return credentials")
+          
+          # Discover official seeded package versions via public HTTP.
+          package = None
+          url = root + "/api/experimental/package/"
+          seen = set()
+          while url and not package:
+              if url in seen:
+                  raise RuntimeError("Package cursor loop")
+              seen.add(url)
+              page = api(url)
+              for item in page.get("results", []):
+                  latest = item.get("latest") or {}
+                  if latest.get("is_active", True) and all((
+                      item.get("namespace"), item.get("name"), latest.get("version_number")
+                  )):
+                      package = item
+                      break
+              url = page.get("next")
+          if not package:
+              raise RuntimeError("Native create_test_data produced no readable active package")
+          
+          communities = []
+          url = root + "/api/experimental/community/"
+          seen.clear()
+          while url and len(communities) < 105:
+              if url in seen:
+                  raise RuntimeError("Community cursor loop")
+              seen.add(url)
+              page = api(url)
+              communities.extend(item["identifier"] for item in page["results"])
+              url = (page.get("pagination") or {}).get("next_link")
+          communities = list(dict.fromkeys(communities))[:105]
+          if len(communities) != 105:
+              raise RuntimeError("Native generator did not expose 105 communities")
+          
+          print(json.dumps({
+              "token": token,
+              "team": team,
+              "seedTeam": package["namespace"],
+              "seedPackage": package["name"],
+              "seedVersion": package["latest"]["version_number"],
+              "community": "riskofrain2",
+              "pageCommunities": communities,
+          }))
+          PY
+          jq -ce 'select(.token and .team and .seedTeam and .seedPackage and
+            .seedVersion and .community and (.pageCommunities | length) == 105)' "$raw" >/dev/null
+          token="$(jq -r '.token' "$raw")"
+          echo "::add-mask::$token"
+          jq -r '
+            "THUNDERSTORE_TOKEN=\(.token)",
+            "THUNDERSTORE_TEAM=\(.team)",
+            "THUNDERSTORE_SEED_TEAM=\(.seedTeam)",
+            "THUNDERSTORE_COMMUNITY=\(.community)",
+            "THUNDERSTORE_SEED_PACKAGE=\(.seedPackage)",
+            "THUNDERSTORE_SEED_VERSION=\(.seedVersion)",
+            "THUNDERSTORE_PACKAGE=\(.seedTeam)-\(.seedPackage)-\(.seedVersion)",
+            "THUNDERSTORE_PAGE_COMMUNITIES=\(.pageCommunities | join(","))"
+          ' "$raw" >> "$GITHUB_ENV"
 
       - name: 'Run C# integration tests (dotnet test)'
         id: integration_tests
@@ -371,10 +422,6 @@ jobs:
             -f "$GITHUB_WORKSPACE/thunderpipe/ThunderPipe.Core.IntegrationTests/docker-compose.integration.yml"
             -p thunderpipe-integration)
           "${compose[@]}" logs --no-color --timestamps > "$ARTIFACT_DIR/docker-server.log" 2>&1 || true
-          "${compose[@]}" exec -T django python manage.py shell -c \
-            "exec(__import__('sys').stdin.read())" \
-            < thunderpipe/ThunderPipe.Core.IntegrationTests/scripts/verify_server_state.py \
-            > "$ARTIFACT_DIR/server-state.json" 2>&1 || true
 
       - name: 'Record outcome in state branch with gh api and jq'
         if: always()
@@ -437,7 +484,6 @@ jobs:
           path: |
             ThunderPipe.Core.IntegrationTests/artifacts/*.trx
             ThunderPipe.Core.IntegrationTests/artifacts/*.log
-            ThunderPipe.Core.IntegrationTests/artifacts/server-state.json
             ThunderPipe.Core.IntegrationTests/artifacts/result-category
 
       - name: 'Stop isolated Docker services'

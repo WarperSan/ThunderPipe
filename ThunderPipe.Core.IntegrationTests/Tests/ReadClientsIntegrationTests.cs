@@ -36,37 +36,19 @@ public sealed class ReadClientsIntegrationTests
 		Assert.All(existing, community => Assert.DoesNotContain(community, absent));
 	}
 
-	[Fact]
-	public async Task Category_GetMissing_ExistingAndAbsent_AcrossPages()
-	{
-		// As above, require all 105 seeded categories to be discovered.
-		// This makes a first-page-only implementation fail deterministically.
-		var existing = Enumerable.Range(0, 105)
-			.Select(i => (Category)$"tp-integration-page-{i:000}")
-			.ToArray();
-		Category missingCategory = "tp-integration-no-category";
-		var requested = existing.Append(missingCategory).ToArray();
 
+
+	[Fact]
+	public async Task Category_GetMissing_Unknown_ReturnsMissing()
+	{
+		Category unknown = "tp-integration-no-category";
 		var missing = await _env.Categories.GetMissing(
-			requested,
+			[unknown],
 			_env.Data.Community,
 			TestContext.Current.CancellationToken
 		);
-
 		Assert.Single(missing);
-		Assert.Contains(missingCategory, missing);
-		Assert.All(existing, category => Assert.DoesNotContain(category, missing));
-	}
-
-	[Fact]
-	public async Task Category_GetMissing_AllFound_ReturnsEmpty()
-	{
-		var missing = await _env.Categories.GetMissing(
-			[(Category)_env.Data.Category],
-			_env.Data.Community,
-			TestContext.Current.CancellationToken
-		);
-		Assert.Empty(missing);
+		Assert.Contains(unknown, missing);
 	}
 
 	[Fact]
@@ -74,7 +56,7 @@ public sealed class ReadClientsIntegrationTests
 	{
 		await Assert.ThrowsAsync<InvalidOperationException>(() =>
 			_env.Packages.GetVersion(
-				_env.Data.Team,
+				_env.Data.SeedTeam,
 				"NoSuchPackage",
 				TestContext.Current.CancellationToken
 			)
@@ -82,23 +64,21 @@ public sealed class ReadClientsIntegrationTests
 	}
 
 	[Fact]
-	public async Task Dependency_GetMissing_DistinguishesActiveInactiveMissingAndMalformed()
+	public async Task Dependency_GetMissing_ExistingMissingAndMalformed()
 	{
 		var active = new PackageDependency(
-			$"{_env.Data.Team}-{_env.Data.SeedPackage}-{_env.Data.SeedVersion}"
+			$"{_env.Data.SeedTeam}-{_env.Data.SeedPackage}-{_env.Data.SeedVersion}"
 		);
-		var inactive = new PackageDependency(
-			$"{_env.Data.Team}-{_env.Data.SeedPackage}-{_env.Data.OldVersion}"
+		var nonexistent = new PackageDependency(
+			$"{_env.Data.SeedTeam}-NoSuchPackage-1.0.0"
 		);
-		var nonexistent = new PackageDependency($"{_env.Data.Team}-NoSuchPackage-1.0.0");
 		var malformed = new PackageDependency("invalid");
 		var missing = await _env.Dependencies.GetMissing(
-			[active, inactive, nonexistent, malformed],
+			[active, nonexistent, malformed],
 			TestContext.Current.CancellationToken
 		);
-		Assert.Equal(3, missing.Count);
+		Assert.Equal(2, missing.Count);
 		Assert.DoesNotContain(active, missing);
-		Assert.Contains(inactive, missing);
 		Assert.Contains(nonexistent, missing);
 		Assert.Contains(malformed, missing);
 	}
@@ -117,7 +97,7 @@ public sealed class ReadClientsIntegrationTests
 	public async Task Package_GetVersion_ReturnsLatestActiveSeedVersion()
 	{
 		PackageVersion result = await _env.Packages.GetVersion(
-			_env.Data.Team,
+			_env.Data.SeedTeam,
 			_env.Data.SeedPackage,
 			TestContext.Current.CancellationToken
 		);

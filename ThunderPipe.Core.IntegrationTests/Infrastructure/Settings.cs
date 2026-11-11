@@ -19,11 +19,10 @@ public static class Settings
     public static FixtureData Supplemental => new(
         GetRequired("THUNDERSTORE_TOKEN"),
         GetRequired("THUNDERSTORE_TEAM"),
+        GetRequired("THUNDERSTORE_SEED_TEAM"),
         GetRequired("THUNDERSTORE_COMMUNITY"),
-        GetRequired("THUNDERSTORE_CATEGORY"),
         GetRequired("THUNDERSTORE_SEED_PACKAGE"),
         GetRequired("THUNDERSTORE_SEED_VERSION"),
-        GetRequired("THUNDERSTORE_OLD_VERSION"),
         GetRequired("THUNDERSTORE_PAGE_COMMUNITIES")
             .Split(',', StringSplitOptions.RemoveEmptyEntries));
 }
@@ -31,9 +30,8 @@ public static class Settings
 public sealed record FixtureData(
     string Token,
     string Team,
+    string SeedTeam,
     string Community,
-    string Category,
     string SeedPackage,
     string SeedVersion,
-    string OldVersion,
     string[] PageCommunities);
