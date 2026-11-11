@@ -226,12 +226,19 @@ jobs:
           if [[ "$ready" -ne 1 ]]; then echo 'S3 bucket not ready.' >&2; exit 1; fi
 
           ready=0
+          ping_output=''
           for i in $(seq 1 30); do
-            if "${compose[@]}" exec -T django-worker celery -A thunderstore.core inspect ping --timeout=10 \
-              2>&1 | grep -q pong; then ready=1; break; fi
+            ping_output="$("${compose[@]}" exec -T django-worker celery -A thunderstore.core inspect ping --timeout=10 2>&1)" || true
+            if grep -q pong <<< "$ping_output"; then ready=1; break; fi
             sleep 5
           done
-          if [[ "$ready" -ne 1 ]]; then echo 'Celery worker not ready.' >&2; exit 1; fi
+          if [[ "$ready" -ne 1 ]]; then
+            echo 'Celery worker not ready. Last inspect ping output:' >&2
+            printf '%s\n' "$ping_output" >&2
+            "${compose[@]}" ps django-worker rabbitmq >&2 || true
+            "${compose[@]}" logs --no-color --tail=80 django-worker rabbitmq >&2 || true
+            exit 1
+          fi
 
       - name: 'Run C# integration tests (dotnet test)'
         id: integration_tests
