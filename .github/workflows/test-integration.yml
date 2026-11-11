@@ -131,8 +131,9 @@ jobs:
           cp "$THUNDERSTORE_DIR/.env.template" "$THUNDERSTORE_DIR/.env"
           mkdir -p "$THUNDERSTORE_DIR/python-packages"
 
-          # Replace the legacy MinIO build only in the temporary Thunderstore checkout.
-          # Mirror images and mc avoid unavailable upstream image and dl.min.io download.
+          # Recreate the legacy MinIO build from mirror images in the temporary checkout.
+          # Thunderstore 0.188.0 may not contain minio/; create it before writing.
+          mkdir -p "$THUNDERSTORE_DIR/minio"
           cat > "$THUNDERSTORE_DIR/minio/Dockerfile" <<'MINIO_DOCKERFILE'
           FROM swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/minio/mc:RELEASE.2021-06-13T17-48-22Z AS mc
           FROM swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/minio/minio:RELEASE.2021-06-17T00-10-46Z
