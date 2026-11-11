@@ -1,15 +1,18 @@
 using ThunderPipe.Core.Services.Implementations;
 using Xunit;
+using ThunderPipe.Core.IntegrationTests.Infrastructure;
 
 namespace ThunderPipe.Core.IntegrationTests;
 
 /// <summary>Exercise authentication, successful validation and rejected content over HTTP.</summary>
-public sealed class ValidationIntegrationTests : IClassFixture<IntegrationEnvironment>
+[Collection(ThunderstoreCollection.NAME)]
+[Trait("Category", "Integration")]
+public sealed class ValidationIntegrationTests
 {
-	private readonly IntegrationEnvironment _env;
+	private readonly ThunderstoreFixture _env;
 	private readonly FileSystem _fs = new();
 
-	public ValidationIntegrationTests(IntegrationEnvironment env) => _env = env;
+	public ValidationIntegrationTests(ThunderstoreFixture env) => _env = env;
 
 	[Fact]
 	public async Task Icon_ValidPng_Accepted()

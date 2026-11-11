@@ -4,6 +4,7 @@ using ThunderPipe.Core.DTOs.MultipartUpload;
 using ThunderPipe.Core.Models;
 using ThunderPipe.Core.Services.Implementations;
 using Xunit;
+using ThunderPipe.Core.IntegrationTests.Infrastructure;
 
 namespace ThunderPipe.Core.IntegrationTests;
 
@@ -11,12 +12,14 @@ namespace ThunderPipe.Core.IntegrationTests;
 /// Full upload/submit/download round trips, not response-schema snapshots or mocked HTTP.
 /// Multipart tests deliberately use PublishApiClient.UploadParts to detect shared-stream races.
 /// </summary>
-public sealed class PublishIntegrationTests : IClassFixture<IntegrationEnvironment>
+[Collection(ThunderstoreCollection.NAME)]
+[Trait("Category", "Integration")]
+public sealed class PublishIntegrationTests
 {
-	private readonly IntegrationEnvironment _env;
+	private readonly ThunderstoreFixture _env;
 	private readonly FileSystem _fs = new();
 
-	public PublishIntegrationTests(IntegrationEnvironment env) => _env = env;
+	public PublishIntegrationTests(ThunderstoreFixture env) => _env = env;
 
 	[Fact]
 	public async Task Initiate_ThenAbort_InvalidatesPresignedPart()
@@ -99,7 +102,7 @@ public sealed class PublishIntegrationTests : IClassFixture<IntegrationEnvironme
 		// before following it; the HTTP handler never auto-follows redirects.
 		for (int hop = 0; hop < 6; hop++)
 		{
-			IntegrationEnvironment.RequireLocal(url);
+			ThunderstoreFixture.RequireLocal(url);
 			var response = await _env.Http.GetAsync(
 				url,
 				HttpCompletionOption.ResponseHeadersRead,
@@ -121,7 +124,7 @@ public sealed class PublishIntegrationTests : IClassFixture<IntegrationEnvironme
 					);
 				Uri next = location.IsAbsoluteUri ? location : new Uri(url, location);
 				response.Dispose();
-				IntegrationEnvironment.RequireLocal(next);
+				ThunderstoreFixture.RequireLocal(next);
 				url = next;
 				continue;
 			}
@@ -154,7 +157,7 @@ public sealed class PublishIntegrationTests : IClassFixture<IntegrationEnvironme
 		{
 			Assert.Equal(offset, part.Offset);
 			Assert.True(part.Size > 0);
-			IntegrationEnvironment.RequireLocal(part.UploadURL);
+			ThunderstoreFixture.RequireLocal(part.UploadURL);
 			offset += part.Size;
 		}
 		Assert.Equal(new FileInfo(item.ArchivePath).Length, offset);
@@ -195,7 +198,7 @@ public sealed class PublishIntegrationTests : IClassFixture<IntegrationEnvironme
 		Assert.Equal(item.Name, (string)published.Name);
 		Assert.Equal(item.Version, (string)published.Version);
 		Assert.True(published.DownloadURL.IsAbsoluteUri);
-		IntegrationEnvironment.RequireLocal(published.DownloadURL);
+		ThunderstoreFixture.RequireLocal(published.DownloadURL);
 
 		// A successful upload is not enough: the published archive must contain
 		// exactly the same bytes, including every multipart segment.

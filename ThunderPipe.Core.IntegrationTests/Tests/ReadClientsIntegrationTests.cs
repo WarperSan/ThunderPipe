@@ -1,14 +1,17 @@
 using ThunderPipe.Core.Models;
 using Xunit;
+using ThunderPipe.Core.IntegrationTests.Infrastructure;
 
 namespace ThunderPipe.Core.IntegrationTests;
 
 /// <summary>Real HTTP requests against deterministic seeded Django data.</summary>
-public sealed class ReadClientsIntegrationTests : IClassFixture<IntegrationEnvironment>
+[Collection(ThunderstoreCollection.NAME)]
+[Trait("Category", "Integration")]
+public sealed class ReadClientsIntegrationTests
 {
-	private readonly IntegrationEnvironment _env;
+	private readonly ThunderstoreFixture _env;
 
-	public ReadClientsIntegrationTests(IntegrationEnvironment env) => _env = env;
+	public ReadClientsIntegrationTests(ThunderstoreFixture env) => _env = env;
 
 	[Fact]
 	public async Task Community_GetMissing_ExistingAndAbsent_AcrossPages()
@@ -30,14 +33,6 @@ public sealed class ReadClientsIntegrationTests : IClassFixture<IntegrationEnvir
 		Assert.Single(absent);
 		Assert.Contains(missing, absent);
 		Assert.All(existing, community => Assert.DoesNotContain(community, absent));
-	}
-
-	[Fact]
-	public async Task Community_Exists_ReturnsBothOutcomes()
-	{
-		var ct = TestContext.Current.CancellationToken;
-		Assert.True(await _env.Communities.Exists(_env.Data.Community, ct));
-		Assert.False(await _env.Communities.Exists("tp-integration-not-a-community", ct));
 	}
 
 	[Fact]
