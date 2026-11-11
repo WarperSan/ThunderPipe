@@ -91,6 +91,9 @@ jobs:
     if: needs.evaluate.outputs.should_run == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 120
+    defaults:
+      run:
+        shell: bash
     permissions:
       contents: write
     env:
@@ -98,6 +101,9 @@ jobs:
       ARTIFACT_DIR: ${{ github.workspace }}/ThunderPipe.Core.IntegrationTests/artifacts
       THUNDERSTORE_TAG: ${{ needs.evaluate.outputs.tag }}
       THUNDERSTORE_URL: http://thunderstore.localhost/
+      # Compose resolves relative paths from Thunderstore's directory as before.
+      COMPOSE_FILE: ${{ github.workspace }}/thunderstore/docker-compose.yml:${{ github.workspace }}/thunderpipe/ThunderPipe.Core.IntegrationTests/docker-compose.integration.yml
+      COMPOSE_PROJECT_NAME: thunderpipe-integration
     steps:
       - name: 'Clone Thunderstore release'
         uses: actions/checkout@v4
@@ -121,7 +127,6 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: 'Configure isolated Thunderstore'
-        shell: bash
         run: |
           set -euo pipefail
           mkdir -p "$ARTIFACT_DIR"
@@ -141,32 +146,21 @@ jobs:
 
       - name: 'Build C# integration test project'
         working-directory: thunderpipe
-        shell: bash
         run: |
           set -euo pipefail
           HUSKY=0 dotnet restore ThunderPipe.Core.IntegrationTests/ThunderPipe.Core.IntegrationTests.csproj
           HUSKY=0 dotnet build ThunderPipe.Core.IntegrationTests/ThunderPipe.Core.IntegrationTests.csproj -c Release --no-restore
 
       - name: 'Start Thunderstore services'
-        shell: bash
         run: |
           set -euo pipefail
-          compose=(docker compose --project-directory "$THUNDERSTORE_DIR"
-            -f "$THUNDERSTORE_DIR/docker-compose.yml"
-            -f "$GITHUB_WORKSPACE/thunderpipe/ThunderPipe.Core.IntegrationTests/docker-compose.integration.yml"
-            -p thunderpipe-integration)
-          "${compose[@]}" up -d --build db dbpool redis rabbitmq minio minio-init builder django nginx django-worker
+          docker compose --project-directory "$THUNDERSTORE_DIR" up -d --build db dbpool redis rabbitmq minio minio-init builder django nginx django-worker
 
       - name: 'Wait for Django database'
-        shell: bash
         run: |
           set -euo pipefail
-          compose=(docker compose --project-directory "$THUNDERSTORE_DIR"
-            -f "$THUNDERSTORE_DIR/docker-compose.yml"
-            -f "$GITHUB_WORKSPACE/thunderpipe/ThunderPipe.Core.IntegrationTests/docker-compose.integration.yml"
-            -p thunderpipe-integration)
           for i in $(seq 1 45); do
-            if "${compose[@]}" exec -T django python manage.py shell -c \
+            if docker compose --project-directory "$THUNDERSTORE_DIR" exec -T django python manage.py shell -c \
               'from django.db import connection; connection.ensure_connection()' >/dev/null 2>&1; then
               exit 0
             fi
@@ -176,40 +170,34 @@ jobs:
           exit 1
 
       - name: 'Prepare Thunderstore with its native development commands'
-        shell: bash
         run: |
           set -euo pipefail
-          compose=(docker compose --project-directory "$THUNDERSTORE_DIR"
-            -f "$THUNDERSTORE_DIR/docker-compose.yml"
-            -f "$GITHUB_WORKSPACE/thunderpipe/ThunderPipe.Core.IntegrationTests/docker-compose.integration.yml"
-            -p thunderpipe-integration)
 
           # setup_dev_env creates the administrator, communities, teams, packages,
           # versions and site mappings. Wait for storage because the bundled
           # create_test_data command uploads package icons.
-          ready=0
-          for i in $(seq 1 30); do
-            if "${compose[@]}" exec -T django python -c \
-              "import boto3; s=boto3.client('s3',endpoint_url='http://minio:9000',aws_access_key_id='thunderstore',aws_secret_access_key='thunderstore',region_name='us-east-1'); s.head_bucket(Bucket='thunderstore')" \
-              >/dev/null 2>&1; then ready=1; break; fi
-            sleep 5
-          done
-          if [[ "$ready" -ne 1 ]]; then echo 'S3 bucket not ready for test data.' >&2; exit 1; fi
+          wait_for_storage() {
+            for i in $(seq 1 30); do
+              if docker compose --project-directory "$THUNDERSTORE_DIR" exec -T django python -c \
+                "import boto3; s=boto3.client('s3',endpoint_url='http://minio:9000',aws_access_key_id='thunderstore',aws_secret_access_key='thunderstore',region_name='us-east-1'); s.head_bucket(Bucket='thunderstore')" \
+                >/dev/null 2>&1; then return 0; fi
+              sleep 5
+            done
+            echo "S3 bucket not ready ($1)." >&2
+            return 1
+          }
+          wait_for_storage 'before initialization'
 
-          "${compose[@]}" exec -T django python manage.py setup_dev_env
+          docker compose --project-directory "$THUNDERSTORE_DIR" exec -T django python manage.py setup_dev_env
           # Native generator supplies the 105 existing communities used by the
           # pagination test, rather than hand-creating these Django records.
-          "${compose[@]}" exec -T django python manage.py create_test_data \
+          docker compose --project-directory "$THUNDERSTORE_DIR" exec -T django python manage.py create_test_data \
             --only community --community-count 105
+          wait_for_storage 'after initialization'
 
-      - name: 'Wait for HTTP, S3, and Celery'
-        shell: bash
+      - name: 'Wait for HTTP and Celery'
         run: |
           set -euo pipefail
-          compose=(docker compose --project-directory "$THUNDERSTORE_DIR"
-            -f "$THUNDERSTORE_DIR/docker-compose.yml"
-            -f "$GITHUB_WORKSPACE/thunderpipe/ThunderPipe.Core.IntegrationTests/docker-compose.integration.yml"
-            -p thunderpipe-integration)
           ready=0
           for i in $(seq 1 30); do
             if curl -fsS --max-time 5 -H 'Host: thunderstore.localhost' \
@@ -219,160 +207,119 @@ jobs:
           if [[ "$ready" -ne 1 ]]; then echo 'HTTP API not ready.' >&2; exit 1; fi
 
           ready=0
-          for i in $(seq 1 30); do
-            if "${compose[@]}" exec -T django python -c \
-              "import boto3; s=boto3.client('s3',endpoint_url='http://minio:9000',aws_access_key_id='thunderstore',aws_secret_access_key='thunderstore',region_name='us-east-1'); s.head_bucket(Bucket='thunderstore')" \
-              >/dev/null 2>&1; then ready=1; break; fi
-            sleep 5
-          done
-          if [[ "$ready" -ne 1 ]]; then echo 'S3 bucket not ready.' >&2; exit 1; fi
-
-          ready=0
           ping_output=''
           for i in $(seq 1 30); do
-            ping_output="$("${compose[@]}" exec -T django-worker celery -A thunderstore.core inspect ping --timeout=10 2>&1)" || true
+            ping_output="$(docker compose --project-directory "$THUNDERSTORE_DIR" exec -T django-worker celery -A thunderstore.core inspect ping --timeout=10 2>&1)" || true
             if grep -q pong <<< "$ping_output"; then ready=1; break; fi
             sleep 5
           done
           if [[ "$ready" -ne 1 ]]; then
             echo 'Celery worker not ready. Last inspect ping output:' >&2
             printf '%s\n' "$ping_output" >&2
-            "${compose[@]}" ps django-worker rabbitmq >&2 || true
-            "${compose[@]}" logs --no-color --tail=80 django-worker rabbitmq >&2 || true
+            docker compose --project-directory "$THUNDERSTORE_DIR" ps django-worker rabbitmq >&2 || true
+            docker compose --project-directory "$THUNDERSTORE_DIR" logs --no-color --tail=80 django-worker rabbitmq >&2 || true
             exit 1
           fi
 
       - name: 'Prepare publishing credentials through Thunderstore HTTP API'
-        shell: bash
         run: |
           set -euo pipefail
-          raw="$(mktemp)"
-          trap 'rm -f "$raw"' EXIT
-          python3 - > "$raw" <<'PY'
-          import http.cookiejar
-          import json
-          import urllib.parse
-          import urllib.request
-          
-          root = "http://thunderstore.localhost"
-          jar = http.cookiejar.CookieJar()
-          opener = urllib.request.build_opener(
-              urllib.request.ProxyHandler({}),
-              urllib.request.HTTPCookieProcessor(jar),
-          )
-          
-          def api(url, payload=None, auth=None):
-              parsed = urllib.parse.urlsplit(url)
-              if parsed.scheme != "http" or parsed.netloc != "thunderstore.localhost":
-                  raise RuntimeError("Refusing off-host fixture API URL")
-              headers = {}
-              if payload is not None:
-                  headers["Content-Type"] = "application/json"
-              if auth:
-                  headers["Authorization"] = "Session " + auth
-              request = urllib.request.Request(
-                  url,
-                  data=json.dumps(payload).encode() if payload is not None else None,
-                  headers=headers,
-              )
-              with opener.open(request, timeout=30) as response:
-                  return json.load(response)
-          
-          # setup_dev_env creates the local development admin account.
-          login = root + "/djangoadmin/login/"
-          with opener.open(login, timeout=30) as response:
-              response.read()
-          csrf = next((c.value for c in jar if c.name == "csrftoken"), None)
-          if not csrf:
-              raise RuntimeError("Admin login did not provide a CSRF cookie")
-          form = urllib.parse.urlencode({
-              "username": "admin", "password": "admin",
-              "csrfmiddlewaretoken": csrf, "next": "/djangoadmin/",
-          }).encode()
-          request = urllib.request.Request(login, data=form, headers={"Referer": login})
-          with opener.open(request, timeout=30) as response:
-              response.read()
-          session = next((c.value for c in jar if c.name == "sessionid"), None)
-          if not session:
-              raise RuntimeError("Developer admin login failed")
-          
-          # Authenticate through the public Cyberstorm HTTP API.
-          team = "TPIntegrationCI"
-          created = api(root + "/api/cyberstorm/team/create/", {"name": team}, session)
-          if created.get("name") != team:
-              raise RuntimeError("Team API returned unexpected name")
-          account = api(
-              root + "/api/cyberstorm/team/" + team + "/service-account/create/",
-              {"nickname": "TPIntegrationCI"},
-              session,
-          )
-          token = account.get("api_token")
-          if not token or account.get("team_name") != team:
-              raise RuntimeError("Service-account API did not return credentials")
-          
-          # Discover official seeded package versions via public HTTP.
-          package = None
-          url = root + "/api/experimental/package/"
-          seen = set()
-          while url and not package:
-              if url in seen:
-                  raise RuntimeError("Package cursor loop")
-              seen.add(url)
-              page = api(url)
-              for item in page.get("results", []):
-                  latest = item.get("latest") or {}
-                  if latest.get("is_active", True) and all((
-                      item.get("namespace"), item.get("name"), latest.get("version_number")
-                  )):
-                      package = item
-                      break
-              url = page.get("next")
-          if not package:
-              raise RuntimeError("Native create_test_data produced no readable active package")
-          
-          communities = []
-          url = root + "/api/experimental/community/"
-          seen.clear()
-          while url and len(communities) < 105:
-              if url in seen:
-                  raise RuntimeError("Community cursor loop")
-              seen.add(url)
-              page = api(url)
-              communities.extend(item["identifier"] for item in page["results"])
-              url = (page.get("pagination") or {}).get("next_link")
-          communities = list(dict.fromkeys(communities))[:105]
-          if len(communities) != 105:
-              raise RuntimeError("Native generator did not expose 105 communities")
-          
-          print(json.dumps({
-              "token": token,
-              "team": team,
-              "seedTeam": package["namespace"],
-              "seedPackage": package["name"],
-              "seedVersion": package["latest"]["version_number"],
-              "community": "riskofrain2",
-              "pageCommunities": communities,
-          }))
-          PY
-          jq -ce 'select(.token and .team and .seedTeam and .seedPackage and
-            .seedVersion and .community and (.pageCommunities | length) == 105)' "$raw" >/dev/null
-          token="$(jq -r '.token' "$raw")"
+          root='http://thunderstore.localhost'
+          cookies="$(mktemp)"
+          trap 'rm -f "$cookies"' EXIT
+
+          # Only allow the local Thunderstore host, including pagination links.
+          api_get() {
+            local url="$1"
+            [[ "$url" == "$root/"* ]] || { echo "Unexpected API URL: $url" >&2; return 1; }
+            curl --noproxy '*' --fail --silent --show-error --max-time 30 "$url"
+          }
+
+          # Authenticate with the administrator created by setup_dev_env.
+          curl --noproxy '*' --fail --silent --show-error --max-time 30 \
+            -c "$cookies" "$root/djangoadmin/login/" >/dev/null
+          csrf="$(awk '$6 == "csrftoken" {print $7}' "$cookies" | tail -n 1)"
+          [[ -n "$csrf" ]] || { echo 'Admin login did not provide CSRF cookie.' >&2; exit 1; }
+
+          curl --noproxy '*' --fail --silent --show-error --max-time 30 \
+            -b "$cookies" -c "$cookies" \
+            -e "$root/djangoadmin/login/" \
+            --data-urlencode 'username=admin' --data-urlencode 'password=admin' \
+            --data-urlencode "csrfmiddlewaretoken=$csrf" \
+            --data-urlencode 'next=/djangoadmin/' \
+            "$root/djangoadmin/login/" >/dev/null
+          session="$(awk '$6 == "sessionid" {print $7}' "$cookies" | tail -n 1)"
+          [[ -n "$session" ]] || { echo 'Developer admin login failed.' >&2; exit 1; }
+
+          # Use the public Cyberstorm API; do not modify Django database records.
+          api_post() {
+            local path="$1" payload="$2"
+            curl --noproxy '*' --fail --silent --show-error --max-time 30 \
+              -H "Authorization: Session $session" -H 'Content-Type: application/json' \
+              --data "$payload" "$root$path"
+          }
+          team='TPIntegrationCI'
+          created="$(api_post '/api/cyberstorm/team/create/' "$(jq -nc --arg name "$team" '{name:$name}')")"
+          [[ "$(jq -r '.name // empty' <<< "$created")" == "$team" ]] || {
+            echo 'Team API returned unexpected name.' >&2; exit 1;
+          }
+          account="$(api_post "/api/cyberstorm/team/$team/service-account/create/" \
+            "$(jq -nc --arg nickname "$team" '{nickname:$nickname}')")"
+          token="$(jq -r '.api_token // empty' <<< "$account")"
+          [[ -n "$token" && "$(jq -r '.team_name // empty' <<< "$account")" == "$team" ]] || {
+            echo 'Service-account API did not return credentials.' >&2; exit 1;
+          }
           echo "::add-mask::$token"
-          jq -r '
-            "THUNDERSTORE_TOKEN=\(.token)",
-            "THUNDERSTORE_TEAM=\(.team)",
-            "THUNDERSTORE_SEED_TEAM=\(.seedTeam)",
-            "THUNDERSTORE_COMMUNITY=\(.community)",
-            "THUNDERSTORE_SEED_PACKAGE=\(.seedPackage)",
-            "THUNDERSTORE_SEED_VERSION=\(.seedVersion)",
-            "THUNDERSTORE_PACKAGE=\(.seedTeam)-\(.seedPackage)-\(.seedVersion)",
-            "THUNDERSTORE_PAGE_COMMUNITIES=\(.pageCommunities | join(","))"
-          ' "$raw" >> "$GITHUB_ENV"
+
+          # Discover a usable package generated by the native setup commands.
+          package=''
+          url="$root/api/experimental/package/"
+          declare -A visited=()
+          while [[ -n "$url" && -z "$package" ]]; do
+            [[ ! -v 'visited[$url]' ]] || { echo 'Package cursor loop.' >&2; exit 1; }
+            visited["$url"]=1
+            page="$(api_get "$url")"
+            package="$(jq -c '[.results[] | select(
+              (.latest.version_number // "") != "" and
+              (.namespace // "") != "" and (.name // "") != "" and
+              (.latest.is_active // true) == true
+            )] | first // empty' <<< "$page")"
+            url="$(jq -r '.next // empty' <<< "$page")"
+          done
+          [[ -n "$package" ]] || { echo 'No readable active seeded package.' >&2; exit 1; }
+
+          # Collect 105 distinct community identifiers for the pagination test.
+          communities='[]'
+          url="$root/api/experimental/community/"
+          visited=()
+          while [[ -n "$url" && "$(jq 'length' <<< "$communities")" -lt 105 ]]; do
+            [[ ! -v 'visited[$url]' ]] || { echo 'Community cursor loop.' >&2; exit 1; }
+            visited["$url"]=1
+            page="$(api_get "$url")"
+            communities="$(jq -cn --argjson existing "$communities" --argjson page "$page" \
+              '($existing + [$page.results[].identifier]) | unique | .[:105]')"
+            url="$(jq -r '.pagination.next_link // empty' <<< "$page")"
+          done
+          [[ "$(jq 'length' <<< "$communities")" -eq 105 ]] || {
+            echo 'Native generator did not expose 105 communities.' >&2; exit 1;
+          }
+
+          # Export the same variables expected by the existing C# tests.
+          jq -nr --arg token "$token" --arg team "$team" \
+            --argjson package "$package" --argjson communities "$communities" '
+            "THUNDERSTORE_TOKEN=\($token)",
+            "THUNDERSTORE_TEAM=\($team)",
+            "THUNDERSTORE_SEED_TEAM=\($package.namespace)",
+            "THUNDERSTORE_COMMUNITY=riskofrain2",
+            "THUNDERSTORE_SEED_PACKAGE=\($package.name)",
+            "THUNDERSTORE_SEED_VERSION=\($package.latest.version_number)",
+            "THUNDERSTORE_PACKAGE=\($package.namespace)-\($package.name)-\($package.latest.version_number)",
+            "THUNDERSTORE_PAGE_COMMUNITIES=\($communities | join(","))"
+          ' >> "$GITHUB_ENV"
 
       - name: 'Run C# integration tests (dotnet test)'
         id: integration_tests
         working-directory: thunderpipe
-        shell: bash
         run: |
           set -euo pipefail
           dotnet test ThunderPipe.Core.IntegrationTests/ThunderPipe.Core.IntegrationTests.csproj \
@@ -383,7 +330,6 @@ jobs:
 
       - name: 'Classify test outcome from TRX'
         if: always()
-        shell: bash
         env:
           TEST_STEP_OUTCOME: ${{ steps.integration_tests.outcome }}
         run: |
@@ -408,18 +354,12 @@ jobs:
 
       - name: 'Collect server diagnostics'
         if: always()
-        shell: bash
         run: |
           mkdir -p "$ARTIFACT_DIR"
-          compose=(docker compose --project-directory "$THUNDERSTORE_DIR"
-            -f "$THUNDERSTORE_DIR/docker-compose.yml"
-            -f "$GITHUB_WORKSPACE/thunderpipe/ThunderPipe.Core.IntegrationTests/docker-compose.integration.yml"
-            -p thunderpipe-integration)
-          "${compose[@]}" logs --no-color --timestamps > "$ARTIFACT_DIR/docker-server.log" 2>&1 || true
+          docker compose --project-directory "$THUNDERSTORE_DIR" logs --no-color --timestamps > "$ARTIFACT_DIR/docker-server.log" 2>&1 || true
 
       - name: 'Record outcome in state branch with gh api and jq'
         if: always()
-        shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
           STATE_REPOSITORY: ${{ github.repository }}
@@ -482,9 +422,5 @@ jobs:
 
       - name: 'Stop isolated Docker services'
         if: always()
-        shell: bash
         run: |
-          docker compose --project-directory "$THUNDERSTORE_DIR" \
-            -f "$THUNDERSTORE_DIR/docker-compose.yml" \
-            -f "$GITHUB_WORKSPACE/thunderpipe/ThunderPipe.Core.IntegrationTests/docker-compose.integration.yml" \
-            -p thunderpipe-integration down -v --remove-orphans || true
+          docker compose --project-directory "$THUNDERSTORE_DIR" down -v --remove-orphans || true
