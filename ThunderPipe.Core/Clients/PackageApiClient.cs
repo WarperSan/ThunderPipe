@@ -23,7 +23,7 @@ public sealed class PackageApiClient
 	/// <summary>
 	/// Gets the latest version of the package by the given team by the given name
 	/// </summary>
-	public async Task<PackageVersion> GetVersion(
+	public async Task<PackageVersion?> GetVersion(
 		Team team,
 		PackageName name,
 		CancellationToken ct = default
@@ -31,13 +31,17 @@ public sealed class PackageApiClient
 	{
 		var package = await GetPackage(team, name, ct);
 
+		// ReSharper disable once UseNullPropagation
+		if (package == null)
+			return null;
+
 		return package.LatestPackage.Version;
 	}
 
 	/// <summary>
 	/// Gets the package by the given team by the given name
 	/// </summary>
-	private async Task<DTOs.GetPackage.Response> GetPackage(
+	private async Task<DTOs.GetPackage.Response?> GetPackage(
 		Team team,
 		PackageName name,
 		CancellationToken ct
@@ -51,6 +55,10 @@ public sealed class PackageApiClient
 		var response = await _client.SendRequest<DTOs.GetPackage.Response>(request, ct);
 
 		response.LogErrors(_logger);
+
+		if (!response.IsSuccess)
+			return null;
+
 		response.EnsureSuccess(out var data);
 
 		return data;
