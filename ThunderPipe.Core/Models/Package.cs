@@ -1,5 +1,7 @@
 namespace ThunderPipe.Core.Models;
 
+// TODO: Rework this model to move it into DTOs/
+
 /// <summary>
 /// Object that represents a released package
 /// </summary>

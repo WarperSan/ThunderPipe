@@ -1,0 +1,45 @@
+using System.Diagnostics.CodeAnalysis;
+using Microsoft.Extensions.Logging;
+using Spectre.Console.Cli;
+using ThunderPipe.Cli.Settings.Validate;
+using ThunderPipe.Core.Clients;
+using ThunderPipe.Core.Utils;
+
+namespace ThunderPipe.Cli.Commands.Validate;
+
+[SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
+internal sealed class DependenciesCommand : AsyncCommand<DependenciesSettings>
+{
+	private readonly HttpClient _client;
+	private readonly ILogger _logger;
+
+	public DependenciesCommand(HttpClient client, ILogger logger)
+	{
+		_client = client;
+		_logger = logger;
+	}
+
+	/// <inheritdoc />
+	protected override async Task<int> ExecuteAsync(
+		CommandContext context,
+		DependenciesSettings settings,
+		CancellationToken cancellationToken
+	)
+	{
+		var builder = new RequestBuilder().ToUri(settings.Host!);
+		var client = new DependencyApiClient(_client, builder, _logger);
+
+		var missingDependencies = await client.GetMissing(settings.Dependencies, cancellationToken);
+
+		if (missingDependencies.Count > 0)
+		{
+			var listString = "- " + string.Join("\n- ", missingDependencies);
+			throw new KeyNotFoundException(
+				$"Could not find a package for the following dependency strings:\n{listString}"
+			);
+		}
+
+		_logger.LogInformation("All dependencies have been found!");
+		return 0;
+	}
+}

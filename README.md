@@ -10,7 +10,7 @@ ThunderPipe is a collection of tools that aims to simplify the publishing workfl
 
 ## Projects
 
-For an easy-to-use CLI tool, take a look at [ThunderPipe](https://github.com/WarperSan/ThunderPipe/tree/master/ThunderPipe).
+For an easy-to-use CLI tool, take a look at [ThunderPipe.Cli](https://github.com/WarperSan/ThunderPipe/tree/master/ThunderPipe.Cli).
 
 For built-in integration with C# projects, take a look at [ThunderPipe.Sdk](https://github.com/WarperSan/ThunderPipe/tree/master/ThunderPipe.Sdk).
 
