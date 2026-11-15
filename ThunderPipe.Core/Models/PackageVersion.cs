@@ -13,19 +13,11 @@ namespace ThunderPipe.Core.Models;
 [JsonConverter(typeof(StringCastJsonConverter<PackageVersion>))]
 public sealed partial record PackageVersion
 {
-	private static readonly PackageVersion Invalid = new(0, 0, 0) { IsPlaceholder = true };
-
-	/// <summary>
-	/// Defines if the fields are placeholders or not
-	/// </summary>
-	private bool IsPlaceholder { get; init; }
-
 	public PackageVersion(int major, int minor, int patch)
 	{
 		Major = major;
 		Minor = minor;
 		Patch = patch;
-		IsPlaceholder = false;
 	}
 
 	/// <summary>
@@ -79,9 +71,6 @@ public sealed partial record PackageVersion
 	/// </summary>
 	public bool IsValid()
 	{
-		if (IsPlaceholder)
-			return false;
-
 		return VersionRegex().IsMatch(this);
 	}
 
@@ -95,7 +84,7 @@ public sealed partial record PackageVersion
 		if (TryParse(version, out var packageVersion))
 			return packageVersion;
 
-		return Invalid;
+		return new PackageVersion(int.MinValue, int.MinValue, int.MinValue);
 	}
 
 	[GeneratedRegex("^[0-9]+.[0-9]+.[0-9]+$")]

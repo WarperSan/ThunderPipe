@@ -110,4 +110,16 @@ public class PackageVersionTests
 		Assert.NotNull(packageVersion);
 		Assert.False(packageVersion.IsValid());
 	}
+
+	[Theory]
+	[InlineData("-1.0.0")]
+	[InlineData("1.-124678.0")]
+	[InlineData("1.0.-621")]
+	public void implicit_WhenInvalid_ReturnInvalid(string version)
+	{
+		PackageVersion packageVersion = version;
+
+		Assert.NotNull(packageVersion);
+		Assert.False(packageVersion.IsValid());
+	}
 }
