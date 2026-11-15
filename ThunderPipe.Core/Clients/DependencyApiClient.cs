@@ -66,6 +66,6 @@ public sealed class DependencyApiClient
 
 		await Task.WhenAll(tasks);
 
-		return dependencies.Except(dependenciesFound).ToArray();
+		return [.. dependencies.Where(d => !dependenciesFound.Contains(d))];
 	}
 }
