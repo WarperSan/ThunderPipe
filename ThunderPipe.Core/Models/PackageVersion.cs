@@ -32,7 +32,7 @@ public sealed partial record PackageVersion
 		[NotNullWhen(true)] out PackageVersion? packageVersion
 	)
 	{
-		var components = version.Split('.', 3);
+		var components = version.Split('.');
 
 		if (components.Length != 3)
 		{
