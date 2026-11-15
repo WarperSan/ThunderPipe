@@ -29,6 +29,18 @@ internal sealed class LatestVersionCommand : AsyncCommand<Settings.Fetch.LatestV
 		var client = new PackageApiClient(_client, builder, _logger);
 
 		var version = await client.GetVersion(settings.Team, settings.Name, cancellationToken);
+
+		if (version == null)
+		{
+			_logger.LogError(
+				"Could not find the version of a package from '{Team}' named '{Name}'.",
+				settings.Team,
+				settings.Name
+			);
+
+			return 1;
+		}
+
 		Console.WriteLine(version);
 
 		return 0;

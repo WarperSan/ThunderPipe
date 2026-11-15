@@ -76,6 +76,7 @@ public class PackageApiClientTests
 
 		var version = await client.GetVersion(TEAM, NAME, TestContext.Current.CancellationToken);
 
+		Assert.NotNull(version);
 		PackageVersion rawVersion = VERSION;
 		Assert.Equal(rawVersion, version);
 	}
