@@ -69,10 +69,7 @@ public sealed partial record PackageVersion
 	/// <summary>
 	/// Checks if the underlying value is valid
 	/// </summary>
-	public bool IsValid()
-	{
-		return VersionRegex().IsMatch(this);
-	}
+	public bool IsValid() => VersionRegex().IsMatch(this);
 
 	/// <inheritdoc />
 	public override string ToString() => $"{Major}.{Minor}.{Patch}";

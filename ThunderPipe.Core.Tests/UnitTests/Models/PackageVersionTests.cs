@@ -112,10 +112,9 @@ public class PackageVersionTests
 	}
 
 	[Theory]
-	[InlineData("-1.0.0")]
-	[InlineData("1.-124678.0")]
-	[InlineData("1.0.-621")]
-	public void implicit_WhenInvalid_ReturnInvalid(string version)
+	[InlineData("1.0")]
+	[InlineData("1.0.0.0")]
+	public void implicit_WhenFailedParsing_ReturnInvalid(string version)
 	{
 		PackageVersion packageVersion = version;
 
