@@ -11,26 +11,11 @@ namespace ThunderPipe.Core.Models;
 [JsonConverter(typeof(StringCastJsonConverter<PackageDependency>))]
 public sealed record PackageDependency
 {
-	private readonly string _dependencyString;
-
-	public PackageDependency(string dependencyString)
+	public PackageDependency(Team team, PackageName name, PackageVersion version)
 	{
-		_dependencyString = dependencyString;
-
-		var components = _dependencyString.Split("-", 3, StringSplitOptions.RemoveEmptyEntries);
-
-		if (components.Length == 3)
-		{
-			Team = components[0];
-			Name = components[1];
-			Version = components[2];
-		}
-		else
-		{
-			Team = string.Empty;
-			Name = string.Empty;
-			Version = string.Empty;
-		}
+		Team = team;
+		Name = name;
+		Version = version;
 	}
 
 	public Team Team { get; }
@@ -43,7 +28,7 @@ public sealed record PackageDependency
 	public bool IsValid() => Team.IsValid() && Name.IsValid() && Version.IsValid();
 
 	/// <inheritdoc />
-	public override string ToString() => _dependencyString;
+	public override string ToString() => $"{Team}-{Name}-{Version}";
 
 	public static implicit operator string(PackageDependency p) => p.ToString();
 
