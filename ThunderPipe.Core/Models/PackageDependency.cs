@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json;
 using ThunderPipe.Core.Converters;
 
@@ -18,6 +19,52 @@ public sealed record PackageDependency
 		Version = version;
 	}
 
+	/// <summary>
+	/// Attempts to parse the given dependency string into a <see cref="PackageDependency"/>
+	/// </summary>
+	/// <remarks>
+	/// Correctly parsing a <see cref="PackageDependency"/> does not guarantee it passes <see cref="IsValid"/>
+	/// </remarks>
+	[SuppressMessage("ReSharper", "DuplicatedSequentialIfBodies")]
+	public static bool TryParse(
+		string dependencyString,
+		[NotNullWhen(true)] out PackageDependency? packageDependency
+	)
+	{
+		var components = dependencyString.Split('-');
+
+		if (components.Length != 3)
+		{
+			packageDependency = null;
+			return false;
+		}
+
+		var rawTeam = components[0];
+		var rawName = components[1];
+		var rawVersion = components[2];
+
+		if (rawTeam.Length == 0)
+		{
+			packageDependency = null;
+			return false;
+		}
+
+		if (rawName.Length == 0)
+		{
+			packageDependency = null;
+			return false;
+		}
+
+		if (rawVersion.Length == 0)
+		{
+			packageDependency = null;
+			return false;
+		}
+
+		packageDependency = new PackageDependency(rawTeam, rawName, rawVersion);
+		return true;
+	}
+
 	public Team Team { get; }
 	public PackageName Name { get; }
 	public PackageVersion Version { get; }
@@ -32,5 +79,11 @@ public sealed record PackageDependency
 
 	public static implicit operator string(PackageDependency p) => p.ToString();
 
-	public static implicit operator PackageDependency(string dependency) => new(dependency);
+	public static implicit operator PackageDependency(string dependency)
+	{
+		if (TryParse(dependency, out var packageDependency))
+			return packageDependency;
+
+		return new PackageDependency("???", "???", "???");
+	}
 }
