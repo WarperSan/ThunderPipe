@@ -180,4 +180,31 @@ public class DependencyApiClientTests
 		foreach (var slug in expected)
 			Assert.Contains(slug, missing);
 	}
+
+	[Fact]
+	public async Task GetMissing_WhenValidDuplicates_ShouldRequestOnce()
+	{
+		// Arrange
+		const string URL = "http://localhost:5050";
+
+		const string SLUG_1 = "bcs4313-Lethal_Gorilla-1.0.3";
+		const string SLUG_2 = "TheCaptainToaster-618_Eventide-1.1.12";
+
+		var mockHttp = new MockHttpMessageHandler();
+
+		mockHttp.Expect(URL + "/*").RespondJSON(new Response { IsActive = true });
+
+		mockHttp.Expect(URL + "/*").RespondJSON(new Response { IsActive = true });
+
+		var builder = new RequestBuilder().ToUri(new Uri(URL));
+
+		var client = new DependencyApiClient(mockHttp.ToHttpClient(), builder);
+
+		// Act
+		var requested = new PackageDependency[] { SLUG_1, SLUG_1, SLUG_2 };
+		var missing = await client.GetMissing(requested, TestContext.Current.CancellationToken);
+
+		// Assert
+		Assert.Empty(missing);
+	}
 }
