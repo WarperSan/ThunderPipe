@@ -32,12 +32,7 @@ public class DependencyApiClientTests
 		var client = new DependencyApiClient(mockHttp.ToHttpClient(), builder);
 
 		// Act
-		var requested = new[]
-		{
-			new PackageDependency(SLUG_1),
-			new PackageDependency(SLUG_2),
-			new PackageDependency(SLUG_3),
-		};
+		var requested = new PackageDependency[] { SLUG_1, SLUG_2, SLUG_3 };
 		var missing = await client.GetMissing(requested, TestContext.Current.CancellationToken);
 
 		// Assert
@@ -67,12 +62,7 @@ public class DependencyApiClientTests
 		var client = new DependencyApiClient(mockHttp.ToHttpClient(), builder);
 
 		// Act
-		var requested = new[]
-		{
-			new PackageDependency(SLUG_1),
-			new PackageDependency(SLUG_2),
-			new PackageDependency(SLUG_3),
-		};
+		var requested = new PackageDependency[] { SLUG_1, SLUG_2, SLUG_3 };
 		var missing = await client.GetMissing(requested, TestContext.Current.CancellationToken);
 
 		// Assert
@@ -116,16 +106,11 @@ public class DependencyApiClientTests
 		var client = new DependencyApiClient(mockHttp.ToHttpClient(), builder);
 
 		// Act
-		var requested = new[]
-		{
-			new PackageDependency(SLUG_1),
-			new PackageDependency(SLUG_2),
-			new PackageDependency(SLUG_3),
-		};
+		var requested = new PackageDependency[] { SLUG_1, SLUG_2, SLUG_3 };
 		var missing = await client.GetMissing(requested, TestContext.Current.CancellationToken);
 
 		// Assert
-		var expected = new[] { new PackageDependency(SLUG_1), new PackageDependency(SLUG_2) };
+		var expected = new PackageDependency[] { SLUG_1, SLUG_2 };
 
 		Assert.Equal(missing.Count, expected.Length);
 
@@ -153,15 +138,73 @@ public class DependencyApiClientTests
 		var client = new DependencyApiClient(mockHttp.ToHttpClient(), builder);
 
 		// Act
-		var requested = new[] { new PackageDependency(SLUG_1), new PackageDependency(SLUG_2) };
+		var requested = new PackageDependency[] { SLUG_1, SLUG_2 };
 		var missing = await client.GetMissing(requested, TestContext.Current.CancellationToken);
 
 		// Assert
-		var expected = new[] { new PackageDependency(SLUG_1), new PackageDependency(SLUG_2) };
+		var expected = new PackageDependency[] { SLUG_1, SLUG_2 };
 
 		Assert.Equal(missing.Count, expected.Length);
 
 		foreach (var slug in expected)
 			Assert.Contains(slug, missing);
+	}
+
+	[Fact]
+	public async Task GetMissing_WhenMultipleInvalidFormat_ShouldReturnAllInvalid()
+	{
+		// Arrange
+		const string URL = "http://localhost:5050";
+
+		const string SLUG_1 = "ItsEmul-1.2.0";
+		const string SLUG_2 = "BetterScoutReport-0.1.6";
+		const string SLUG_3 = "SavageCore-PEAK_BritishEnglish_Translation-0.2.1";
+
+		var mockHttp = new MockHttpMessageHandler();
+
+		mockHttp.Expect(URL + "/*").RespondJSON(new Response { IsActive = true });
+
+		var builder = new RequestBuilder().ToUri(new Uri(URL));
+
+		var client = new DependencyApiClient(mockHttp.ToHttpClient(), builder);
+
+		// Act
+		var requested = new PackageDependency[] { SLUG_1, SLUG_2, SLUG_3 };
+		var missing = await client.GetMissing(requested, TestContext.Current.CancellationToken);
+
+		// Assert
+		var expected = new PackageDependency[] { SLUG_1, SLUG_2 };
+
+		Assert.Equal(missing.Count, expected.Length);
+
+		foreach (var slug in expected)
+			Assert.Contains(slug, missing);
+	}
+
+	[Fact]
+	public async Task GetMissing_WhenValidDuplicates_ShouldRequestOnce()
+	{
+		// Arrange
+		const string URL = "http://localhost:5050";
+
+		const string SLUG_1 = "bcs4313-Lethal_Gorilla-1.0.3";
+		const string SLUG_2 = "TheCaptainToaster-618_Eventide-1.1.12";
+
+		var mockHttp = new MockHttpMessageHandler();
+
+		mockHttp.Expect(URL + "/*").RespondJSON(new Response { IsActive = true });
+
+		mockHttp.Expect(URL + "/*").RespondJSON(new Response { IsActive = true });
+
+		var builder = new RequestBuilder().ToUri(new Uri(URL));
+
+		var client = new DependencyApiClient(mockHttp.ToHttpClient(), builder);
+
+		// Act
+		var requested = new PackageDependency[] { SLUG_1, SLUG_1, SLUG_2 };
+		var missing = await client.GetMissing(requested, TestContext.Current.CancellationToken);
+
+		// Assert
+		Assert.Empty(missing);
 	}
 }

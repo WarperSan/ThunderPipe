@@ -38,9 +38,10 @@ public sealed class DependencyApiClient
 			.Get()
 			.ToEndpoint($"api/experimental/package/{{{NAMESPACE}}}/{{{NAME}}}/{{{VERSION}}}/");
 
+		var uniqueDependencies = dependencies.ToHashSet();
 		var dependenciesFound = new ConcurrentBag<PackageDependency>();
 
-		var tasks = dependencies.Select(async dependency =>
+		var tasks = uniqueDependencies.Select(async dependency =>
 		{
 			if (!dependency.IsValid())
 				return;
@@ -66,6 +67,6 @@ public sealed class DependencyApiClient
 
 		await Task.WhenAll(tasks);
 
-		return dependencies.Except(dependenciesFound).ToArray();
+		return [.. dependencies.Where(d => !dependenciesFound.Contains(d))];
 	}
 }

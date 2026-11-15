@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using ThunderPipe.Core.Converters;
@@ -12,24 +13,76 @@ namespace ThunderPipe.Core.Models;
 [JsonConverter(typeof(StringCastJsonConverter<PackageVersion>))]
 public sealed partial record PackageVersion
 {
-	private readonly string _version;
-
-	public PackageVersion(string version)
+	public PackageVersion(int major, int minor, int patch)
 	{
-		_version = version;
+		Major = major;
+		Minor = minor;
+		Patch = patch;
 	}
+
+	/// <summary>
+	/// Attempts to parse the given version into a <see cref="PackageVersion"/>
+	/// </summary>
+	/// <remarks>
+	/// Correctly parsing a <see cref="PackageVersion"/> does not guarantee it passes <see cref="IsValid"/>
+	/// </remarks>
+	[SuppressMessage("ReSharper", "DuplicatedSequentialIfBodies")]
+	public static bool TryParse(
+		string version,
+		[NotNullWhen(true)] out PackageVersion? packageVersion
+	)
+	{
+		var components = version.Split('.');
+
+		if (components.Length != 3)
+		{
+			packageVersion = null;
+			return false;
+		}
+
+		if (!int.TryParse(components[0], out var major))
+		{
+			packageVersion = null;
+			return false;
+		}
+
+		if (!int.TryParse(components[1], out var minor))
+		{
+			packageVersion = null;
+			return false;
+		}
+
+		if (!int.TryParse(components[2], out var patch))
+		{
+			packageVersion = null;
+			return false;
+		}
+
+		packageVersion = new PackageVersion(major, minor, patch);
+		return true;
+	}
+
+	public int Major { get; }
+	public int Minor { get; }
+	public int Patch { get; }
 
 	/// <summary>
 	/// Checks if the underlying value is valid
 	/// </summary>
-	public bool IsValid() => VersionRegex().IsMatch(_version);
+	public bool IsValid() => VersionRegex().IsMatch(this);
 
 	/// <inheritdoc />
-	public override string ToString() => _version;
+	public override string ToString() => $"{Major}.{Minor}.{Patch}";
 
 	public static implicit operator string(PackageVersion p) => p.ToString();
 
-	public static implicit operator PackageVersion(string version) => new(version);
+	public static implicit operator PackageVersion(string version)
+	{
+		if (TryParse(version, out var packageVersion))
+			return packageVersion;
+
+		return new PackageVersion(int.MinValue, int.MinValue, int.MinValue);
+	}
 
 	[GeneratedRegex("^[0-9]+.[0-9]+.[0-9]+$")]
 	private static partial Regex VersionRegex();

@@ -1,5 +1,6 @@
 using ThunderPipe.Core.Clients;
 using ThunderPipe.Core.DTOs.GetPackage;
+using ThunderPipe.Core.Models;
 using ThunderPipe.Core.Utils;
 
 namespace ThunderPipe.Core.Tests.UnitTests.Clients;
@@ -53,6 +54,7 @@ public class PackageApiClientTests
 
 		var version = await client.GetVersion(TEAM, NAME, TestContext.Current.CancellationToken);
 
-		Assert.Equal(VERSION, version);
+		PackageVersion rawVersion = VERSION;
+		Assert.Equal(rawVersion, version);
 	}
 }
