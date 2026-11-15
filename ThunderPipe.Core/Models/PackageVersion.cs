@@ -32,7 +32,7 @@ public sealed partial record PackageVersion
 	/// Attempts to parse the given version into a <see cref="PackageVersion"/>
 	/// </summary>
 	/// <remarks>
-	///	Even if the version is parsed successfully, it doesn't mean it is a valid version
+	/// Correctly parsing a <see cref="PackageVersion"/> does not guarantee it passes <see cref="IsValid"/>
 	/// </remarks>
 	[SuppressMessage("ReSharper", "DuplicatedSequentialIfBodies")]
 	public static bool TryParse(
