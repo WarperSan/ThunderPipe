@@ -13,7 +13,7 @@ on:
             - 'ThunderPipe.Core/*.csproj'
             - 'ThunderPipe.Core.Tests/**/*.cs'
             - 'ThunderPipe.Core.Tests/*.csproj'
-            - 'coverlet.runsettings'
+            - 'ThunderPipe.Core.Tests/testconfig.json'
             - '.github/workflows/test-core.yml'
     push:
         branches: [ master ]
@@ -53,7 +53,7 @@ jobs:
                         --project "$FILE_PATH" \
                         --configuration "$CONFIGURATION" \
                         --coverlet \
-                        --results-directory '$RESULTS_PATH'
+                        --results-directory "$RESULTS_PATH"
                 env:
                     FILE_PATH: ${{ env.TEST_PROJECT_FILE }}
                     CONFIGURATION: ${{ env.DOTNET_CONFIGURATION }}
