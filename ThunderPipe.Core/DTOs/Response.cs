@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Text;
 using Microsoft.Extensions.Logging;
@@ -38,7 +39,8 @@ internal sealed class Response<T>
 	/// <summary>
 	/// Determines if the response has been a success
 	/// </summary>
-	public readonly bool IsSuccess;
+	[MemberNotNullWhen(true, nameof(Data))]
+	public bool IsSuccess { get; }
 
 	/// <summary>
 	/// JSON content of the response if success
