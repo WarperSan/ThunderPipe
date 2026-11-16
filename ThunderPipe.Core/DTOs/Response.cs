@@ -86,21 +86,6 @@ internal sealed class Response<T>
 	}
 
 	/// <summary>
-	/// Throws an exception if this response is not a success
-	/// </summary>
-	public void EnsureSuccess(out T data)
-	{
-		if (!IsSuccess)
-			throw new InvalidOperationException("Expected a successful response.");
-
-		data =
-			Data
-			?? throw new NullReferenceException(
-				"The response was a success, but the data did not load properly."
-			);
-	}
-
-	/// <summary>
 	/// Creates a new instance of <see cref="Response{T}"/> from the given response
 	/// </summary>
 	public static Response<T> CreateResponse(HttpResponseMessage response, string content)

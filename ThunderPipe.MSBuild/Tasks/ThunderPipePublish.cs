@@ -88,6 +88,12 @@ public class ThunderPipePublish : Task
 			.GetAwaiter()
 			.GetResult();
 
+		if (package == null)
+		{
+			logger.LogError("Could not successfully publish '{File}'.", File);
+			return false;
+		}
+
 		logger.LogInformation(
 			"Successfully published '{VersionName}' v{VersionVersion}",
 			package.Name,

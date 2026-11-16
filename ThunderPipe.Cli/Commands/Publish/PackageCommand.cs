@@ -52,6 +52,12 @@ internal sealed class PackageCommand : AsyncCommand<Settings.Publish.PackageSett
 			cancellationToken
 		);
 
+		if (package == null)
+		{
+			_logger.LogError("Could not successfully publish '{File}'.", file);
+			return 1;
+		}
+
 		_logger.LogInformation(
 			"Successfully published '{VersionName}' v{VersionVersion}",
 			package.Name,
