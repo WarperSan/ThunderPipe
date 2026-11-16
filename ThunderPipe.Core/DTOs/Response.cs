@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Text;
 using Microsoft.Extensions.Logging;
@@ -38,7 +39,8 @@ internal sealed class Response<T>
 	/// <summary>
 	/// Determines if the response has been a success
 	/// </summary>
-	public readonly bool IsSuccess;
+	[MemberNotNullWhen(true, nameof(Data))]
+	public bool IsSuccess { get; }
 
 	/// <summary>
 	/// JSON content of the response if success
@@ -81,21 +83,6 @@ internal sealed class Response<T>
 		}
 
 		logger.LogError("{Errors}", output.ToString());
-	}
-
-	/// <summary>
-	/// Throws an exception if this response is not a success
-	/// </summary>
-	public void EnsureSuccess(out T data)
-	{
-		if (!IsSuccess)
-			throw new InvalidOperationException("Expected a successful response.");
-
-		data =
-			Data
-			?? throw new NullReferenceException(
-				"The response was a success, but the data did not load properly."
-			);
 	}
 
 	/// <summary>

@@ -49,8 +49,14 @@ public sealed class CategoryApiClient
 
 			var response = await _client.SendRequest<DTOs.GetCategory.Response>(request, ct);
 
-			response.LogErrors(_logger);
-			response.EnsureSuccess(out var data);
+			if (!response.IsSuccess)
+			{
+				_logger?.LogError("Failed to continue, as the response was not successful.");
+				response.LogErrors(_logger);
+				break;
+			}
+
+			var data = response.Data;
 
 			foreach (var category in data.Items)
 				categoriesToFind.Remove(category.Slug);

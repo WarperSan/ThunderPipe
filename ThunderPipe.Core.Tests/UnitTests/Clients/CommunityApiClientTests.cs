@@ -1,5 +1,7 @@
+using System.Net;
 using ThunderPipe.Core.Clients;
 using ThunderPipe.Core.DTOs.GetCommunity;
+using ThunderPipe.Core.Models;
 using ThunderPipe.Core.Utils;
 
 namespace ThunderPipe.Core.Tests.UnitTests.Clients;
@@ -179,5 +181,48 @@ public class CommunityApiClientTests
 
 		// Assert
 		Assert.False(wasCommunityFound);
+	}
+
+	[Fact]
+	public async Task GetMissing_WhenNetworkError_ShouldStop()
+	{
+		// Arrange
+		const string URL_1 = "http://localhost:5050";
+		const string URL_2 = "http://localhost:8080/?cursor=abc";
+
+		const string SLUG_1 = "gorebox";
+		const string SLUG_2 = "rv-there-yet";
+		const string SLUG_3 = "inscryption";
+
+		var mockHttp = new MockHttpMessageHandler();
+
+		mockHttp
+			.Expect(URL_1 + "/*")
+			.RespondJSON(
+				new Response
+				{
+					Pagination = new Response.PaginationModel { NextPage = URL_2 },
+					Items =
+					[
+						new Response.PageItemModel { Slug = SLUG_1 },
+						new Response.PageItemModel { Slug = SLUG_2 },
+					],
+				}
+			);
+
+		mockHttp.Expect(URL_2).RespondError(HttpStatusCode.BadRequest, "bad request");
+
+		var builder = new RequestBuilder().ToUri(new Uri(URL_1));
+
+		var client = new CommunityApiClient(mockHttp.ToHttpClient(), builder);
+
+		// Act
+		var missing = await client.GetMissing(
+			[SLUG_1, SLUG_2, SLUG_3],
+			TestContext.Current.CancellationToken
+		);
+
+		// Assert
+		Assert.Single(missing, (Community)SLUG_3);
 	}
 }

@@ -27,7 +27,7 @@ public sealed class PublicationService : IPublicationService
 	}
 
 	/// <inheritdoc />
-	public async Task<Package> PublishPackage(
+	public async Task<Package?> PublishPackage(
 		string file,
 		Team team,
 		IEnumerable<Community> communities,
@@ -43,6 +43,12 @@ public sealed class PublicationService : IPublicationService
 			token,
 			cancellationToken
 		);
+
+		if (uploadSession == null)
+		{
+			_logger.LogError("Failed to initiate upload.");
+			return null;
+		}
 
 		_logger.LogInformation(
 			"Uploading '{File}' ({GetSizeString}) in {ChunkCount} chunks.",
@@ -81,7 +87,7 @@ public sealed class PublicationService : IPublicationService
 
 		_logger.LogDebug("Successfully finalized the upload.");
 
-		return await _client.SubmitPackage(
+		var package = await _client.SubmitPackage(
 			team,
 			communities,
 			categories,
@@ -90,6 +96,14 @@ public sealed class PublicationService : IPublicationService
 			token,
 			cancellationToken
 		);
+
+		if (package == null)
+		{
+			_logger.LogError("Failed to submit the package.");
+			return null;
+		}
+
+		return package;
 	}
 
 	/// <summary>

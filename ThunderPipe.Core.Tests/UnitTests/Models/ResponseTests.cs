@@ -272,4 +272,26 @@ public class ResponseTests
 			Response<Product>.CreateResponse(rawResponse, content);
 		});
 	}
+
+	[Fact]
+	public async Task IsSuccess_WhenFalse_EnsureNullData()
+	{
+		var expectedProduct = new Product
+		{
+			Id = 10,
+			Name = "ABC",
+			Price = 9.99m,
+		};
+
+		var rawResponse = CreateMessage(HttpStatusCode.BadRequest, expectedProduct);
+
+		var content = await rawResponse.Content.ReadAsStringAsync(
+			TestContext.Current.CancellationToken
+		);
+
+		var response = Response<Product>.CreateResponse(rawResponse, content);
+
+		Assert.False(response.IsSuccess);
+		Assert.Null(response.Data);
+	}
 }

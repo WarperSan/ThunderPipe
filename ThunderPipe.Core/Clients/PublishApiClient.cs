@@ -32,7 +32,7 @@ public sealed class PublishApiClient
 	/// <remarks>
 	/// Internally, this calls the <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateMultipartUpload.html">Multipart upload initiation</a> step
 	/// </remarks>
-	public async Task<UploadSession> InitiateMultipartUpload(
+	public async Task<UploadSession?> InitiateMultipartUpload(
 		string path,
 		IFileSystem fileSystem,
 		string token,
@@ -57,8 +57,13 @@ public sealed class PublishApiClient
 			ct
 		);
 
-		response.LogErrors(_logger);
-		response.EnsureSuccess(out var data);
+		if (!response.IsSuccess)
+		{
+			response.LogErrors(_logger);
+			return null;
+		}
+
+		var data = response.Data;
 
 		var parts = data.UploadParts.Select(p => new UploadPartDescriptor
 		{
@@ -220,7 +225,7 @@ public sealed class PublishApiClient
 	/// <summary>
 	/// Submits the package
 	/// </summary>
-	public async Task<Package> SubmitPackage(
+	public async Task<Package?> SubmitPackage(
 		Team team,
 		IEnumerable<Community> communities,
 		IDictionary<Community, IEnumerable<Category>> categories,
@@ -253,8 +258,13 @@ public sealed class PublishApiClient
 
 		var response = await _client.SendRequest<DTOs.SubmitPackage.Response>(request, ct);
 
-		response.LogErrors(_logger);
-		response.EnsureSuccess(out var data);
+		if (!response.IsSuccess)
+		{
+			response.LogErrors(_logger);
+			return null;
+		}
+
+		var data = response.Data;
 
 		return new Package(data.Version.Name, data.Version.Version, data.Version.DownloadURL);
 	}
