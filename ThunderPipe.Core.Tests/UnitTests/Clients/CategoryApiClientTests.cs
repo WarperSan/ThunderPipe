@@ -1,3 +1,4 @@
+using System.Net;
 using ThunderPipe.Core.Clients;
 using ThunderPipe.Core.DTOs.GetCategory;
 using ThunderPipe.Core.Models;
@@ -227,5 +228,50 @@ public class CategoryApiClientTests
 
 		foreach (var slug in requested)
 			Assert.Contains(slug, missing);
+	}
+
+	[Fact]
+	public async Task GetMissing_WhenNetworkError_ShouldStop()
+	{
+		// Arrange
+		const string URL_1 = "http://localhost:5050";
+		const string URL_2 = "http://localhost:8080/?cursor=abc";
+
+		const string SLUG_1 = "mixtapes";
+		const string SLUG_2 = "asset-replacements";
+		const string SLUG_3 = "afflictions";
+
+		var mockHttp = new MockHttpMessageHandler();
+
+		mockHttp
+			.Expect(URL_1 + "/*")
+			.RespondJSON(
+				new Response
+				{
+					Pagination = new Response.PaginationModel { NextPage = URL_2 },
+					Items =
+					[
+						new Response.PageItemModel { Slug = SLUG_1 },
+						new Response.PageItemModel { Slug = SLUG_2 },
+					],
+				}
+			);
+
+		mockHttp.Expect(URL_2).RespondError(HttpStatusCode.BadRequest, "bad request");
+
+		var builder = new RequestBuilder().ToUri(new Uri(URL_1));
+
+		var client = new CategoryApiClient(mockHttp.ToHttpClient(), builder);
+
+		// Act
+		var requested = new Category[] { SLUG_1, SLUG_2, SLUG_3 };
+		var missing = await client.GetMissing(
+			requested,
+			"test",
+			TestContext.Current.CancellationToken
+		);
+
+		// Assert
+		Assert.Single(missing, (Category)SLUG_3);
 	}
 }
