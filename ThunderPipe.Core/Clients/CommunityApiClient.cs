@@ -48,8 +48,14 @@ public sealed class CommunityApiClient
 
 			var response = await _client.SendRequest<DTOs.GetCommunity.Response>(request, ct);
 
-			response.LogErrors(_logger);
-			response.EnsureSuccess(out var data);
+			if (!response.IsSuccess)
+			{
+				_logger?.LogError("Failed to continue, as the response was not successful.");
+				response.LogErrors(_logger);
+				break;
+			}
+
+			var data = response.Data;
 
 			foreach (var community in data.Items)
 				communitiesToFind.Remove(community.Slug);
