@@ -1,9 +1,12 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Mime;
 using Newtonsoft.Json;
 
 namespace ThunderPipe.Core.Tests;
 
+[SuppressMessage("ReSharper", "ConvertToExtensionBlock")]
+[SuppressMessage("ReSharper", "UnusedMethodReturnValue.Global")]
 internal static class MockedRequestExtensions
 {
 	/// <summary>
