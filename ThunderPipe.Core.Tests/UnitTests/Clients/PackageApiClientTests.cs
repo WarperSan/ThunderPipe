@@ -37,7 +37,7 @@ public class PackageApiClientTests : IClassFixture<HttpFixture>
 		var version = await client.GetVersion(TEAM, NAME, TestContext.Current.CancellationToken);
 
 		Assert.NotNull(version);
-		Assert.Equal(VERSION, version);
+		Assert.Equal<PackageVersion>(VERSION, version!);
 	}
 
 	[Fact]
@@ -77,7 +77,6 @@ public class PackageApiClientTests : IClassFixture<HttpFixture>
 		var version = await client.GetVersion(TEAM, NAME, TestContext.Current.CancellationToken);
 
 		Assert.NotNull(version);
-		PackageVersion rawVersion = VERSION;
-		Assert.Equal(rawVersion, version);
+		Assert.Equal<PackageVersion>(VERSION, version!);
 	}
 }

@@ -201,6 +201,6 @@ public class CommunityApiClientTests : IClassFixture<HttpFixture>
 			TestContext.Current.CancellationToken
 		);
 
-		Assert.Single(missing, (Community)SLUG_3);
+		Assert.Single<Community>(missing, SLUG_3);
 	}
 }

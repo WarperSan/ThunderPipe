@@ -1,3 +1,5 @@
+using System.Collections;
+
 namespace Xunit;
 
 // ReSharper disable once ConvertToStaticClass
@@ -20,5 +22,11 @@ public partial class Assert
 	{
 		foreach (var item in expected)
 			Contains(item, actual);
+	}
+
+	/// <inheritdoc cref="Assert.Single(IEnumerable, object)"/>
+	public static void Single<T>(IEnumerable<T> collection, T expected)
+	{
+		Single((IEnumerable)collection, expected);
 	}
 }

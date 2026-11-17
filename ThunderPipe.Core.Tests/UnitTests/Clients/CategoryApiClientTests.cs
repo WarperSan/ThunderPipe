@@ -235,6 +235,6 @@ public class CategoryApiClientTests : IClassFixture<HttpFixture>
 			TestContext.Current.CancellationToken
 		);
 
-		Assert.Single(missing, (Category)SLUG_3);
+		Assert.Single<Category>(missing, SLUG_3);
 	}
 }
