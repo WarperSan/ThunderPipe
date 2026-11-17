@@ -1,7 +1,9 @@
 using ThunderPipe.Core.Models;
+using ThunderPipe.Core.Tests.Infrastructure;
 
 namespace ThunderPipe.Core.Tests.UnitTests.Models;
 
+[Trait(TestTraits.CATEGORY_NAME, TestTraits.CATEGORY_MODEL)]
 public class PackageNameTests
 {
 	[Theory]

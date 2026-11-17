@@ -2,9 +2,11 @@ using System.Net;
 using System.Text;
 using Newtonsoft.Json;
 using ThunderPipe.Core.DTOs;
+using ThunderPipe.Core.Tests.Infrastructure;
 
 namespace ThunderPipe.Core.Tests.UnitTests.Models;
 
+[Trait(TestTraits.CATEGORY_NAME, TestTraits.CATEGORY_MODEL)]
 public class ResponseTests
 {
 	private static HttpResponseMessage CreateMessage(HttpStatusCode status, object content)

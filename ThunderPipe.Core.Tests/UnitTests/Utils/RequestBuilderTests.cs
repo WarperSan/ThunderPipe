@@ -1,6 +1,7 @@
 using System.Web;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using ThunderPipe.Core.Tests.Infrastructure;
 using ThunderPipe.Core.Utils;
 
 // ReSharper disable InconsistentNaming
@@ -9,6 +10,7 @@ namespace ThunderPipe.Core.Tests.UnitTests.Utils;
 
 // TODO: Redo all tests to match proper syntax
 // TODO: Get 100% coverage on RequestBuilder
+[Trait(TestTraits.CATEGORY_NAME, TestTraits.CATEGORY_UTILS)]
 public class RequestBuilderTests
 {
 	public static IEnumerable<object[]> SetMethodData =>

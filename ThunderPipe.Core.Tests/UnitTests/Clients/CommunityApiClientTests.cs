@@ -2,11 +2,13 @@ using System.Net;
 using ThunderPipe.Core.Clients;
 using ThunderPipe.Core.DTOs.GetCommunity;
 using ThunderPipe.Core.Models;
+using ThunderPipe.Core.Tests.Infrastructure;
 using ThunderPipe.Core.Utils;
 
 namespace ThunderPipe.Core.Tests.UnitTests.Clients;
 
 public class CommunityApiClientTests
+[Trait(TestTraits.CATEGORY_NAME, TestTraits.CATEGORY_CLIENT)]
 {
 	[Fact]
 	public async Task Exists_WhenFound_ReturnTrue()

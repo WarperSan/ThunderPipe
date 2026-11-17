@@ -2,12 +2,14 @@ using System.Net;
 using ThunderPipe.Core.Clients;
 using ThunderPipe.Core.DTOs.GetDependency;
 using ThunderPipe.Core.Models;
+using ThunderPipe.Core.Tests.Infrastructure;
 using ThunderPipe.Core.Utils;
 
 namespace ThunderPipe.Core.Tests.UnitTests.Clients;
 
 // TODO: Get 100% coverage on DependencyApiClient
 public class DependencyApiClientTests
+[Trait(TestTraits.CATEGORY_NAME, TestTraits.CATEGORY_CLIENT)]
 {
 	[Fact]
 	public async Task GetMissing_WhenAllFound_ShouldReturnEmpty()

@@ -3,10 +3,12 @@ using ThunderPipe.Core.Clients;
 using ThunderPipe.Core.DTOs.GetPackage;
 using ThunderPipe.Core.Models;
 using ThunderPipe.Core.Utils;
+using ThunderPipe.Core.Tests.Infrastructure;
 
 namespace ThunderPipe.Core.Tests.UnitTests.Clients;
 
 public class PackageApiClientTests
+[Trait(TestTraits.CATEGORY_NAME, TestTraits.CATEGORY_CLIENT)]
 {
 	[Fact]
 	public async Task GetVersion_WhenFound_ReturnVersion()

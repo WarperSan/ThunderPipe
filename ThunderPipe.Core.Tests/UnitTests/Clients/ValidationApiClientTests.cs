@@ -1,4 +1,5 @@
 using ThunderPipe.Core.Clients;
+using ThunderPipe.Core.Tests.Infrastructure;
 using ThunderPipe.Core.Tests.MockedObjects;
 using ThunderPipe.Core.Utils;
 using ValidateIcon = ThunderPipe.Core.DTOs.ValidateIcon;
@@ -8,6 +9,7 @@ using ValidateReadme = ThunderPipe.Core.DTOs.ValidateReadme;
 namespace ThunderPipe.Core.Tests.UnitTests.Clients;
 
 public class ValidationApiClientTests
+[Trait(TestTraits.CATEGORY_NAME, TestTraits.CATEGORY_CLIENT)]
 {
 	[Fact]
 	public async Task IsIconValid_WhenDataErrorReceived_ReturnError()
