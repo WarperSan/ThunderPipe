@@ -7,7 +7,8 @@ namespace ThunderPipe.Core.Tests.Infrastructure.Fixtures;
 /// <summary>
 /// Fixture providing access to HTTP related object creators
 /// </summary>
-public class HttpFixture : IAsyncLifetime
+// ReSharper disable once ClassNeverInstantiated.Global
+public sealed class HttpFixture : IAsyncLifetime
 {
 	private const string URL = "http://localhost:5050";
 
@@ -31,7 +32,6 @@ public class HttpFixture : IAsyncLifetime
 	/// <inheritdoc/>
 	public ValueTask DisposeAsync()
 	{
-		GC.SuppressFinalize(this);
 		return ValueTask.CompletedTask;
 	}
 }
