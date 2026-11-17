@@ -12,7 +12,6 @@ public class DependencyApiClientTests
 	[Fact]
 	public async Task GetMissing_WhenAllFound_ShouldReturnEmpty()
 	{
-		// Arrange
 		const string URL = "http://localhost:5050";
 
 		const string SLUG_1 = "ItsEmul-PEAKValuables-1.2.0";
@@ -31,18 +30,15 @@ public class DependencyApiClientTests
 
 		var client = new DependencyApiClient(mockHttp.ToHttpClient(), builder);
 
-		// Act
 		var requested = new PackageDependency[] { SLUG_1, SLUG_2, SLUG_3 };
 		var missing = await client.GetMissing(requested, TestContext.Current.CancellationToken);
 
-		// Assert
 		Assert.Empty(missing);
 	}
 
 	[Fact]
 	public async Task GetMissing_WhenSomeFound_ShouldReturnRemaining()
 	{
-		// Arrange
 		const string URL = "http://localhost:5050";
 
 		const string SLUG_1 = "ItsEmul-PEAKValuables-1.2.0";
@@ -61,18 +57,15 @@ public class DependencyApiClientTests
 
 		var client = new DependencyApiClient(mockHttp.ToHttpClient(), builder);
 
-		// Act
 		var requested = new PackageDependency[] { SLUG_1, SLUG_2, SLUG_3 };
 		var missing = await client.GetMissing(requested, TestContext.Current.CancellationToken);
 
-		// Assert
 		Assert.Equal(2, missing.Count);
 	}
 
 	[Fact]
 	public async Task GetMissing_WhenEmpty_ShouldSkipRequest()
 	{
-		// Arrange
 		const string URL = "https://google.com";
 
 		var mockHttp = new MockHttpMessageHandler();
@@ -80,17 +73,14 @@ public class DependencyApiClientTests
 
 		var client = new DependencyApiClient(mockHttp.ToHttpClient(), builder);
 
-		// Act
 		var missing = await client.GetMissing([], TestContext.Current.CancellationToken);
 
-		// Assert
 		Assert.Empty(missing);
 	}
 
 	[Fact]
 	public async Task GetMissing_WhenInvalidFormat_ShouldSkipInvalids()
 	{
-		// Arrange
 		const string URL = "http://localhost:5050";
 
 		const string SLUG_1 = "ItsEmul-1.2.0";
@@ -105,11 +95,9 @@ public class DependencyApiClientTests
 
 		var client = new DependencyApiClient(mockHttp.ToHttpClient(), builder);
 
-		// Act
 		var requested = new PackageDependency[] { SLUG_1, SLUG_2, SLUG_3 };
 		var missing = await client.GetMissing(requested, TestContext.Current.CancellationToken);
 
-		// Assert
 		var expected = new PackageDependency[] { SLUG_1, SLUG_2 };
 
 		Assert.Equal(missing.Count, expected.Length);
@@ -121,7 +109,6 @@ public class DependencyApiClientTests
 	[Fact]
 	public async Task GetMissing_WhenErrorReturned_ShouldReturnRemaining()
 	{
-		// Arrange
 		const string URL = "http://localhost:5050";
 
 		const string SLUG_1 = "ItsEmul-PEAKValuables-1.2.0";
@@ -137,11 +124,9 @@ public class DependencyApiClientTests
 
 		var client = new DependencyApiClient(mockHttp.ToHttpClient(), builder);
 
-		// Act
 		var requested = new PackageDependency[] { SLUG_1, SLUG_2 };
 		var missing = await client.GetMissing(requested, TestContext.Current.CancellationToken);
 
-		// Assert
 		var expected = new PackageDependency[] { SLUG_1, SLUG_2 };
 
 		Assert.Equal(missing.Count, expected.Length);
@@ -153,7 +138,6 @@ public class DependencyApiClientTests
 	[Fact]
 	public async Task GetMissing_WhenMultipleInvalidFormat_ShouldReturnAllInvalid()
 	{
-		// Arrange
 		const string URL = "http://localhost:5050";
 
 		const string SLUG_1 = "ItsEmul-1.2.0";
@@ -168,11 +152,9 @@ public class DependencyApiClientTests
 
 		var client = new DependencyApiClient(mockHttp.ToHttpClient(), builder);
 
-		// Act
 		var requested = new PackageDependency[] { SLUG_1, SLUG_2, SLUG_3 };
 		var missing = await client.GetMissing(requested, TestContext.Current.CancellationToken);
 
-		// Assert
 		var expected = new PackageDependency[] { SLUG_1, SLUG_2 };
 
 		Assert.Equal(missing.Count, expected.Length);
@@ -184,7 +166,6 @@ public class DependencyApiClientTests
 	[Fact]
 	public async Task GetMissing_WhenValidDuplicates_ShouldRequestOnce()
 	{
-		// Arrange
 		const string URL = "http://localhost:5050";
 
 		const string SLUG_1 = "bcs4313-Lethal_Gorilla-1.0.3";
@@ -200,11 +181,9 @@ public class DependencyApiClientTests
 
 		var client = new DependencyApiClient(mockHttp.ToHttpClient(), builder);
 
-		// Act
 		var requested = new PackageDependency[] { SLUG_1, SLUG_1, SLUG_2 };
 		var missing = await client.GetMissing(requested, TestContext.Current.CancellationToken);
 
-		// Assert
 		Assert.Empty(missing);
 	}
 }

@@ -286,7 +286,6 @@ public class RequestBuilderTests
 	[Fact]
 	public async Task Copy_WhenCopiedWithContent_ReturnNewInstanceWithContent()
 	{
-		// Arrange
 		var payload = new
 		{
 			test = 1,
@@ -298,11 +297,9 @@ public class RequestBuilderTests
 		var originalBuilder = new RequestBuilder().WithJSON(payload);
 		var copiedBuilder = new RequestBuilder(originalBuilder);
 
-		// Act
 		var originalRequest = originalBuilder.Build();
 		var copiedRequest = copiedBuilder.Build();
 
-		// Assert
 		Assert.NotNull(originalRequest.Content);
 		var originalPayload = await originalRequest.Content.ReadAsStringAsync(
 			TestContext.Current.CancellationToken

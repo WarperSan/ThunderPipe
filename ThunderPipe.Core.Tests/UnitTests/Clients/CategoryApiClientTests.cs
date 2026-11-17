@@ -11,7 +11,6 @@ public class CategoryApiClientTests
 	[Fact]
 	public async Task GetMissing_WhenAllFound_ShouldReturnEmpty()
 	{
-		// Arrange
 		const string URL_1 = "http://localhost:5050";
 		const string URL_2 = "http://localhost:8080/?cursor=abc";
 		const string URL_3 = "http://localhost:8080/?cursor=def";
@@ -56,7 +55,6 @@ public class CategoryApiClientTests
 
 		var client = new CategoryApiClient(mockHttp.ToHttpClient(), builder);
 
-		// Act
 		var requested = new Category[] { SLUG_1, SLUG_2, SLUG_3 };
 		var missing = await client.GetMissing(
 			requested,
@@ -64,14 +62,12 @@ public class CategoryApiClientTests
 			TestContext.Current.CancellationToken
 		);
 
-		// Assert
 		Assert.Empty(missing);
 	}
 
 	[Fact]
 	public async Task GetMissing_WhenEmpty_ShouldSkipRequest()
 	{
-		// Arrange
 		const string URL_1 = "https://google.com";
 
 		var mockHttp = new MockHttpMessageHandler();
@@ -79,17 +75,14 @@ public class CategoryApiClientTests
 
 		var client = new CategoryApiClient(mockHttp.ToHttpClient(), builder);
 
-		// Act
 		var missing = await client.GetMissing([], "test", TestContext.Current.CancellationToken);
 
-		// Assert
 		Assert.Empty(missing);
 	}
 
 	[Fact]
 	public async Task GetMissing_WhenNextPageIsNull_ShouldStop()
 	{
-		// Arrange
 		const string URL_1 = "https://google.com";
 		const string URL_2 = "localhost:8080/?cursor=abc";
 
@@ -119,7 +112,6 @@ public class CategoryApiClientTests
 
 		var client = new CategoryApiClient(mockHttp.ToHttpClient(), builder);
 
-		// Act
 		var requested = new Category[] { "test" };
 		var missing = await client.GetMissing(
 			requested,
@@ -127,7 +119,6 @@ public class CategoryApiClientTests
 			TestContext.Current.CancellationToken
 		);
 
-		// Assert
 		Assert.Equal(missing.Count, requested.Length);
 
 		foreach (var slug in requested)
@@ -137,7 +128,6 @@ public class CategoryApiClientTests
 	[Fact]
 	public async Task GetMissing_WhenNextPageWasVisited_ShouldStop()
 	{
-		// Arrange
 		const string URL_1 = "http://localhost:5050";
 		const string URL_2 = "http://localhost:8080/?cursor=abc";
 		const string URL_3 = "http://localhost:8080/?cursor=def";
@@ -178,7 +168,6 @@ public class CategoryApiClientTests
 
 		var client = new CategoryApiClient(mockHttp.ToHttpClient(), builder);
 
-		// Act
 		var requested = new Category[] { "temp" };
 		var missing = await client.GetMissing(
 			requested,
@@ -186,7 +175,6 @@ public class CategoryApiClientTests
 			TestContext.Current.CancellationToken
 		);
 
-		// Assert
 		Assert.Equal(missing.Count, requested.Length);
 
 		foreach (var slug in requested)
@@ -196,7 +184,6 @@ public class CategoryApiClientTests
 	[Fact]
 	public async Task GetMissing_WhenInvalidNextPage_ShouldStop()
 	{
-		// Arrange
 		const string URL_1 = "http://localhost:5050";
 
 		var mockHttp = new MockHttpMessageHandler();
@@ -215,7 +202,6 @@ public class CategoryApiClientTests
 
 		var client = new CategoryApiClient(mockHttp.ToHttpClient(), builder);
 
-		// Act
 		var requested = new Category[] { "temp", "test2" };
 		var missing = await client.GetMissing(
 			requested,
@@ -223,7 +209,6 @@ public class CategoryApiClientTests
 			TestContext.Current.CancellationToken
 		);
 
-		// Assert
 		Assert.Equal(missing.Count, requested.Length);
 
 		foreach (var slug in requested)
@@ -233,7 +218,6 @@ public class CategoryApiClientTests
 	[Fact]
 	public async Task GetMissing_WhenNetworkError_ShouldStop()
 	{
-		// Arrange
 		const string URL_1 = "http://localhost:5050";
 		const string URL_2 = "http://localhost:8080/?cursor=abc";
 
@@ -263,7 +247,6 @@ public class CategoryApiClientTests
 
 		var client = new CategoryApiClient(mockHttp.ToHttpClient(), builder);
 
-		// Act
 		var requested = new Category[] { SLUG_1, SLUG_2, SLUG_3 };
 		var missing = await client.GetMissing(
 			requested,
@@ -271,7 +254,6 @@ public class CategoryApiClientTests
 			TestContext.Current.CancellationToken
 		);
 
-		// Assert
 		Assert.Single(missing, (Category)SLUG_3);
 	}
 }

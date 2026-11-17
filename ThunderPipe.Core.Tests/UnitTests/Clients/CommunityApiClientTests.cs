@@ -11,7 +11,6 @@ public class CommunityApiClientTests
 	[Fact]
 	public async Task Exists_WhenFound_ReturnTrue()
 	{
-		// Arrange
 		const string URL_1 = "http://localhost:5050";
 		const string URL_2 = "http://localhost:8080/?cursor=abc";
 		const string URL_3 = "http://localhost:8080/?cursor=def";
@@ -56,17 +55,14 @@ public class CommunityApiClientTests
 
 		var client = new CommunityApiClient(mockHttp.ToHttpClient(), builder);
 
-		// Act
 		var doesCommunityExist = await client.Exists(SLUG_3, TestContext.Current.CancellationToken);
 
-		// Assert
 		Assert.True(doesCommunityExist);
 	}
 
 	[Fact]
 	public async Task Exists_WhenNextPageIsNull_ShouldStop()
 	{
-		// Arrange
 		const string URL_1 = "https://google.com";
 		const string URL_2 = "localhost:8080/?cursor=abc";
 
@@ -96,17 +92,14 @@ public class CommunityApiClientTests
 
 		var client = new CommunityApiClient(mockHttp.ToHttpClient(), builder);
 
-		// Act
 		var wasCommunityFound = await client.Exists("test", TestContext.Current.CancellationToken);
 
-		// Assert
 		Assert.False(wasCommunityFound);
 	}
 
 	[Fact]
 	public async Task Exists_WhenNextPageWasVisited_ShouldStop()
 	{
-		// Arrange
 		const string URL_1 = "http://localhost:5050";
 		const string URL_2 = "http://localhost:8080/?cursor=abc";
 		const string URL_3 = "http://localhost:8080/?cursor=def";
@@ -147,17 +140,14 @@ public class CommunityApiClientTests
 
 		var client = new CommunityApiClient(mockHttp.ToHttpClient(), builder);
 
-		// Act
 		var wasCommunityFound = await client.Exists("test", TestContext.Current.CancellationToken);
 
-		// Assert
 		Assert.False(wasCommunityFound);
 	}
 
 	[Fact]
 	public async Task Exists_WhenInvalidNextPage_ShouldStop()
 	{
-		// Arrange
 		const string URL_1 = "http://localhost:5050";
 
 		var mockHttp = new MockHttpMessageHandler();
@@ -176,17 +166,14 @@ public class CommunityApiClientTests
 
 		var client = new CommunityApiClient(mockHttp.ToHttpClient(), builder);
 
-		// Act
 		var wasCommunityFound = await client.Exists("test2", TestContext.Current.CancellationToken);
 
-		// Assert
 		Assert.False(wasCommunityFound);
 	}
 
 	[Fact]
 	public async Task GetMissing_WhenNetworkError_ShouldStop()
 	{
-		// Arrange
 		const string URL_1 = "http://localhost:5050";
 		const string URL_2 = "http://localhost:8080/?cursor=abc";
 
@@ -216,13 +203,11 @@ public class CommunityApiClientTests
 
 		var client = new CommunityApiClient(mockHttp.ToHttpClient(), builder);
 
-		// Act
 		var missing = await client.GetMissing(
 			[SLUG_1, SLUG_2, SLUG_3],
 			TestContext.Current.CancellationToken
 		);
 
-		// Assert
 		Assert.Single(missing, (Community)SLUG_3);
 	}
 }
