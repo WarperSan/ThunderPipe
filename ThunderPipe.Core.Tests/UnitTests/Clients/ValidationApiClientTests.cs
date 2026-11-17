@@ -1,4 +1,5 @@
 using ThunderPipe.Core.Clients;
+using ThunderPipe.Core.Services.Interfaces;
 using ThunderPipe.Core.Tests.Infrastructure;
 using ThunderPipe.Core.Tests.Infrastructure.Fixtures;
 using ThunderPipe.Core.Tests.MockedObjects;
@@ -12,7 +13,7 @@ namespace ThunderPipe.Core.Tests.UnitTests.Clients;
 public class ValidationApiClientTests : IClassFixture<HttpFixture>
 {
 	private readonly HttpFixture _fixture;
-	private readonly TestFileSystem _fileSystem;
+	private readonly IFileSystem _fileSystem;
 
 	public ValidationApiClientTests(HttpFixture fixture)
 	{
