@@ -104,10 +104,7 @@ public class ValidationApiClientTests
 
 		string[] expectedErrors = [ERROR_1, ERROR_2, ERROR_3, ERROR_4];
 
-		Assert.Equal(expectedErrors.Length, errors.Count);
-
-		foreach (var error in expectedErrors)
-			Assert.Contains(error, errors);
+		Assert.Missing(expectedErrors, errors);
 	}
 
 	[Fact]
@@ -289,10 +286,7 @@ public class ValidationApiClientTests
 
 		string[] expectedErrors = [ERROR_1, ERROR_2, ERROR_3, ERROR_4, ERROR_5, ERROR_6];
 
-		Assert.Equal(expectedErrors.Length, errors.Count);
-
-		foreach (var error in expectedErrors)
-			Assert.Contains(error, errors);
+		Assert.Missing(expectedErrors, errors);
 	}
 
 	[Fact]
@@ -442,10 +436,7 @@ public class ValidationApiClientTests
 
 		string[] expectedErrors = [ERROR_1, ERROR_2, ERROR_3, ERROR_4];
 
-		Assert.Equal(expectedErrors.Length, errors.Count);
-
-		foreach (var error in expectedErrors)
-			Assert.Contains(error, errors);
+		Assert.Missing(expectedErrors, errors);
 	}
 
 	[Fact]

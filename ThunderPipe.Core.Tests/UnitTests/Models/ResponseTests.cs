@@ -106,8 +106,7 @@ public class ResponseTests
 		Assert.NotEmpty(response.Errors);
 		Assert.Contains(Response<Product>.GLOBAL_ERRORS, response.Errors);
 
-		foreach (var error in errors)
-			Assert.Contains(error, response.Errors[Response<Product>.GLOBAL_ERRORS]);
+		Assert.Contains(errors, response.Errors[Response<Product>.GLOBAL_ERRORS]);
 	}
 
 	[Fact]

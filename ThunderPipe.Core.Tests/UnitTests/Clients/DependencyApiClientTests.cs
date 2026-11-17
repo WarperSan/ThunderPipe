@@ -100,10 +100,7 @@ public class DependencyApiClientTests
 
 		var expected = new PackageDependency[] { SLUG_1, SLUG_2 };
 
-		Assert.Equal(missing.Count, expected.Length);
-
-		foreach (var slug in expected)
-			Assert.Contains(slug, missing);
+		Assert.Missing(expected, missing);
 	}
 
 	[Fact]
@@ -129,10 +126,7 @@ public class DependencyApiClientTests
 
 		var expected = new PackageDependency[] { SLUG_1, SLUG_2 };
 
-		Assert.Equal(missing.Count, expected.Length);
-
-		foreach (var slug in expected)
-			Assert.Contains(slug, missing);
+		Assert.Missing(expected, missing);
 	}
 
 	[Fact]
@@ -157,10 +151,7 @@ public class DependencyApiClientTests
 
 		var expected = new PackageDependency[] { SLUG_1, SLUG_2 };
 
-		Assert.Equal(missing.Count, expected.Length);
-
-		foreach (var slug in expected)
-			Assert.Contains(slug, missing);
+		Assert.Missing(expected, missing);
 	}
 
 	[Fact]

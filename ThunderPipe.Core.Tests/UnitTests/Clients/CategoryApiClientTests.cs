@@ -119,10 +119,7 @@ public class CategoryApiClientTests
 			TestContext.Current.CancellationToken
 		);
 
-		Assert.Equal(missing.Count, requested.Length);
-
-		foreach (var slug in requested)
-			Assert.Contains(slug, missing);
+		Assert.Missing(requested, missing);
 	}
 
 	[Fact]
@@ -175,10 +172,7 @@ public class CategoryApiClientTests
 			TestContext.Current.CancellationToken
 		);
 
-		Assert.Equal(missing.Count, requested.Length);
-
-		foreach (var slug in requested)
-			Assert.Contains(slug, missing);
+		Assert.Missing(requested, missing);
 	}
 
 	[Fact]
@@ -209,10 +203,7 @@ public class CategoryApiClientTests
 			TestContext.Current.CancellationToken
 		);
 
-		Assert.Equal(missing.Count, requested.Length);
-
-		foreach (var slug in requested)
-			Assert.Contains(slug, missing);
+		Assert.Missing(requested, missing);
 	}
 
 	[Fact]
