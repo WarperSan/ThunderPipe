@@ -1,4 +1,5 @@
 using ThunderPipe.Core.Models;
+using ThunderPipe.Core.Tests.Data;
 using ThunderPipe.Core.Tests.Infrastructure;
 
 namespace ThunderPipe.Core.Tests.UnitTests.Models;
@@ -7,11 +8,7 @@ namespace ThunderPipe.Core.Tests.UnitTests.Models;
 public class PackageNameTests
 {
 	[Theory]
-	[InlineData("Belmont")]
-	[InlineData("Starstorm2")]
-	[InlineData("Cyto_Commando")]
-	[InlineData("ExponentialItemStacks")]
-	[InlineData("Some_Mod")]
+	[MemberData(nameof(PackageNameTestData.ValidNames), MemberType = typeof(PackageNameTestData))]
 	public void IsValid_WhenValid_ReturnTrue(string name)
 	{
 		var packageName = new PackageName(name);
@@ -19,10 +16,7 @@ public class PackageNameTests
 	}
 
 	[Theory]
-	[InlineData("Some Mod")]
-	[InlineData("HAND_OVERCLOCKED!")]
-	[InlineData("Supply-Drop")]
-	[InlineData("")]
+	[MemberData(nameof(PackageNameTestData.InvalidNames), MemberType = typeof(PackageNameTestData))]
 	public void IsValid_WhenInvalid_ReturnFalse(string name)
 	{
 		var packageName = new PackageName(name);
