@@ -18,7 +18,7 @@ public class ValidationApiClientTests : IClassFixture<HttpFixture>
 	public ValidationApiClientTests(HttpFixture fixture)
 	{
 		_fixture = fixture;
-		_fileSystem = new TestFileSystem();
+		_fileSystem = new MemoryFileSystem();
 	}
 
 	[Fact]

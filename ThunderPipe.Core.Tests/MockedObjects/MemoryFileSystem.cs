@@ -4,9 +4,9 @@ using ThunderPipe.Core.Services.Interfaces;
 namespace ThunderPipe.Core.Tests.MockedObjects;
 
 /// <summary>
-/// Version of <see cref="IFileSystem"/> used for tests
+/// Implementation of <see cref="IFileSystem"/> that stores files into memory only
 /// </summary>
-public class TestFileSystem : IFileSystem
+public sealed class MemoryFileSystem : IFileSystem
 {
 	private readonly Dictionary<string, byte[]> _files = new();
 
