@@ -3,7 +3,7 @@
    "tasks": [
        {
            "name": "Run CSharpier",
-           "group": "pre-commit",
+           "group": "format",
            "command": "dotnet",
            "args": ["tool", "run", "csharpier", "format", "${staged}"],
            "include": [

@@ -4,7 +4,7 @@
 #dotnet husky run
 
 ### run all tasks with group: 'group-name'
-dotnet husky run --group pre-commit
+dotnet husky run --group format
 
 ## run task with name: 'task-name'
 #dotnet husky run --name task-name
