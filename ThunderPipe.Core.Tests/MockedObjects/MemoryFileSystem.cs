@@ -4,10 +4,12 @@ using ThunderPipe.Core.Services.Interfaces;
 namespace ThunderPipe.Core.Tests.MockedObjects;
 
 /// <summary>
-/// Version of <see cref="IFileSystem"/> used for tests
+/// Implementation of <see cref="IFileSystem"/> that stores files into memory only
 /// </summary>
-public class TestFileSystem : IFileSystem
+public sealed class MemoryFileSystem : IFileSystem
 {
+	private readonly Dictionary<string, byte[]> _files = new();
+
 	#region IFileSystem
 
 	/// <inheritdoc />
@@ -26,11 +28,13 @@ public class TestFileSystem : IFileSystem
 	}
 
 	/// <inheritdoc />
-	public Task WriteAllTextAsync(
-		string path,
-		string? contents,
-		CancellationToken cancellationToken
-	) => throw new FileNotFoundException();
+	public Task WriteAllTextAsync(string path, string content, CancellationToken cancellationToken)
+	{
+		var rawContent = Encoding.Default.GetBytes(content);
+		_files[path] = rawContent;
+
+		return Task.CompletedTask;
+	}
 
 	/// <inheritdoc />
 	public string GetName(string path) => throw new FileNotFoundException();
@@ -39,23 +43,4 @@ public class TestFileSystem : IFileSystem
 	public long GetSize(string path) => throw new FileNotFoundException();
 
 	#endregion
-
-	private readonly Dictionary<string, byte[]> _files = new();
-
-	/// <summary>
-	/// Sets the raw content to the given file
-	/// </summary>
-	public void SetContent(string path, byte[] content)
-	{
-		_files[path] = content;
-	}
-
-	/// <summary>
-	/// Sets the text content to the given file
-	/// </summary>
-	public void SetContent(string path, string content)
-	{
-		var rawContent = Encoding.Default.GetBytes(content);
-		SetContent(path, rawContent);
-	}
 }

@@ -1,13 +1,17 @@
 using ThunderPipe.Core.Models;
+using ThunderPipe.Core.Tests.Data;
+using ThunderPipe.Core.Tests.Infrastructure;
 
 namespace ThunderPipe.Core.Tests.UnitTests.Models;
 
+[Trait(TestTraits.CATEGORY_NAME, TestTraits.CATEGORY_MODEL)]
 public class PackageDependencyTests
 {
 	[Theory]
-	[InlineData("tristanmcpherson", "R2API", "5.0.5")]
-	[InlineData("rob", "Belmont", "1.0.8")]
-	[InlineData("Rune580", "Risk_Of_Options", "2.8.5")]
+	[MemberData(
+		nameof(PackageDependencyTestData.ValidDependencies),
+		MemberType = typeof(PackageDependencyTestData)
+	)]
 	public void IsValid_WhenValid_ReturnTrue(Team team, PackageName name, PackageVersion version)
 	{
 		var packageDependency = new PackageDependency(team, name, version);
@@ -16,10 +20,10 @@ public class PackageDependencyTests
 	}
 
 	[Theory]
-	[InlineData("???", "???", "???")]
-	[InlineData("JKLeckr?", "CupheadArchipelago", "0.2.100301101")]
-	[InlineData("MrKixcat", "Altered-Moons", "2.0.1")]
-	[InlineData("rob", "Belmont", "2.0.1#beta")]
+	[MemberData(
+		nameof(PackageDependencyTestData.InvalidDependencies),
+		MemberType = typeof(PackageDependencyTestData)
+	)]
 	public void IsValid_WhenInvalid_ReturnFalse(Team team, PackageName name, PackageVersion version)
 	{
 		var packageDependency = new PackageDependency(team, name, version);
@@ -27,9 +31,10 @@ public class PackageDependencyTests
 	}
 
 	[Theory]
-	[InlineData("")]
-	[InlineData("RugbugRedfern-5.0.0")]
-	[InlineData("sunnobunnoYippeeMod1.2.4")]
+	[MemberData(
+		nameof(PackageDependencyTestData.TooFewParts),
+		MemberType = typeof(PackageDependencyTestData)
+	)]
 	public void TryParse_WhenTooFewParts_ReturnFalse(string dependencyString)
 	{
 		var success = PackageDependency.TryParse(dependencyString, out var packageDependency);
@@ -39,9 +44,10 @@ public class PackageDependencyTests
 	}
 
 	[Theory]
-	[InlineData("???-???-???-???")]
-	[InlineData("Codaaaaaa-RemoveSlapCooldown-1.0.0-beta")]
-	[InlineData("Codaaaaaa-RemoveSlapCooldown-1.0.0-ThunderStore-beta")]
+	[MemberData(
+		nameof(PackageDependencyTestData.TooManyParts),
+		MemberType = typeof(PackageDependencyTestData)
+	)]
 	public void TryParse_WhenTooManyParts_ReturnFalse(string dependencyString)
 	{
 		var success = PackageDependency.TryParse(dependencyString, out var packageDependency);

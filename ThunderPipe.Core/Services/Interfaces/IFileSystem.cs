@@ -18,11 +18,7 @@ public interface IFileSystem
 	/// <summary>
 	/// Asynchronously creates a new file, writes the specified string to the file, and then closes the file. If the target file already exists, it is overwritten
 	/// </summary>
-	public Task WriteAllTextAsync(
-		string path,
-		string? contents,
-		CancellationToken cancellationToken
-	);
+	public Task WriteAllTextAsync(string path, string content, CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Gets the name of the file

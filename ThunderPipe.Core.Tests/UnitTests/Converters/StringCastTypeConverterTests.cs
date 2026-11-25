@@ -1,7 +1,9 @@
 using ThunderPipe.Core.Converters;
+using ThunderPipe.Core.Tests.Infrastructure;
 
 namespace ThunderPipe.Core.Tests.UnitTests.Converters;
 
+[Trait(TestTraits.CATEGORY_NAME, TestTraits.CATEGORY_CONVERTER)]
 public class StringCastTypeConverterTests
 {
 	private sealed record TypeWithImplicitCast

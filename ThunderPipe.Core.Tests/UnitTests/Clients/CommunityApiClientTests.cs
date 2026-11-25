@@ -2,17 +2,24 @@ using System.Net;
 using ThunderPipe.Core.Clients;
 using ThunderPipe.Core.DTOs.GetCommunity;
 using ThunderPipe.Core.Models;
-using ThunderPipe.Core.Utils;
+using ThunderPipe.Core.Tests.Infrastructure;
+using ThunderPipe.Core.Tests.Infrastructure.Fixtures;
 
 namespace ThunderPipe.Core.Tests.UnitTests.Clients;
 
-public class CommunityApiClientTests
+[Trait(TestTraits.CATEGORY_NAME, TestTraits.CATEGORY_CLIENT)]
+public class CommunityApiClientTests : IClassFixture<HttpFixture>
 {
+	private readonly HttpFixture _fixture;
+
+	public CommunityApiClientTests(HttpFixture fixture)
+	{
+		_fixture = fixture;
+	}
+
 	[Fact]
 	public async Task Exists_WhenFound_ReturnTrue()
 	{
-		// Arrange
-		const string URL_1 = "http://localhost:5050";
 		const string URL_2 = "http://localhost:8080/?cursor=abc";
 		const string URL_3 = "http://localhost:8080/?cursor=def";
 
@@ -20,10 +27,10 @@ public class CommunityApiClientTests
 		const string SLUG_2 = "rv-there-yet";
 		const string SLUG_3 = "inscryption";
 
-		var mockHttp = new MockHttpMessageHandler();
+		var mockHttp = _fixture.MockHttp();
 
 		mockHttp
-			.Expect(URL_1 + "/*")
+			.Expect("*")
 			.RespondJSON(
 				new Response
 				{
@@ -33,7 +40,7 @@ public class CommunityApiClientTests
 			);
 
 		mockHttp
-			.Expect(URL_2)
+			.When(URL_2)
 			.RespondJSON(
 				new Response
 				{
@@ -43,7 +50,7 @@ public class CommunityApiClientTests
 			);
 
 		mockHttp
-			.Expect(URL_3)
+			.When(URL_3)
 			.RespondJSON(
 				new Response
 				{
@@ -52,28 +59,22 @@ public class CommunityApiClientTests
 				}
 			);
 
-		var builder = new RequestBuilder().ToUri(new Uri(URL_1));
+		var client = new CommunityApiClient(mockHttp.ToHttpClient(), _fixture.Builder());
 
-		var client = new CommunityApiClient(mockHttp.ToHttpClient(), builder);
-
-		// Act
 		var doesCommunityExist = await client.Exists(SLUG_3, TestContext.Current.CancellationToken);
 
-		// Assert
 		Assert.True(doesCommunityExist);
 	}
 
 	[Fact]
 	public async Task Exists_WhenNextPageIsNull_ShouldStop()
 	{
-		// Arrange
-		const string URL_1 = "https://google.com";
 		const string URL_2 = "localhost:8080/?cursor=abc";
 
-		var mockHttp = new MockHttpMessageHandler();
+		var mockHttp = _fixture.MockHttp();
 
 		mockHttp
-			.Expect(URL_1 + "/*")
+			.Expect("*")
 			.RespondJSON(
 				new Response
 				{
@@ -83,7 +84,7 @@ public class CommunityApiClientTests
 			);
 
 		mockHttp
-			.Expect(URL_2)
+			.When(URL_2)
 			.RespondJSON(
 				new Response
 				{
@@ -92,29 +93,23 @@ public class CommunityApiClientTests
 				}
 			);
 
-		var builder = new RequestBuilder().ToUri(new Uri(URL_1));
+		var client = new CommunityApiClient(mockHttp.ToHttpClient(), _fixture.Builder());
 
-		var client = new CommunityApiClient(mockHttp.ToHttpClient(), builder);
-
-		// Act
 		var wasCommunityFound = await client.Exists("test", TestContext.Current.CancellationToken);
 
-		// Assert
 		Assert.False(wasCommunityFound);
 	}
 
 	[Fact]
 	public async Task Exists_WhenNextPageWasVisited_ShouldStop()
 	{
-		// Arrange
-		const string URL_1 = "http://localhost:5050";
 		const string URL_2 = "http://localhost:8080/?cursor=abc";
 		const string URL_3 = "http://localhost:8080/?cursor=def";
 
-		var mockHttp = new MockHttpMessageHandler();
+		var mockHttp = _fixture.MockHttp();
 
 		mockHttp
-			.Expect(URL_1 + "/*")
+			.Expect("*")
 			.RespondJSON(
 				new Response
 				{
@@ -124,7 +119,7 @@ public class CommunityApiClientTests
 			);
 
 		mockHttp
-			.Expect(URL_2)
+			.When(URL_2)
 			.RespondJSON(
 				new Response
 				{
@@ -134,7 +129,7 @@ public class CommunityApiClientTests
 			);
 
 		mockHttp
-			.Expect(URL_3)
+			.When(URL_3)
 			.RespondJSON(
 				new Response
 				{
@@ -143,27 +138,20 @@ public class CommunityApiClientTests
 				}
 			);
 
-		var builder = new RequestBuilder().ToUri(new Uri(URL_1));
+		var client = new CommunityApiClient(mockHttp.ToHttpClient(), _fixture.Builder());
 
-		var client = new CommunityApiClient(mockHttp.ToHttpClient(), builder);
-
-		// Act
 		var wasCommunityFound = await client.Exists("test", TestContext.Current.CancellationToken);
 
-		// Assert
 		Assert.False(wasCommunityFound);
 	}
 
 	[Fact]
 	public async Task Exists_WhenInvalidNextPage_ShouldStop()
 	{
-		// Arrange
-		const string URL_1 = "http://localhost:5050";
-
-		var mockHttp = new MockHttpMessageHandler();
+		var mockHttp = _fixture.MockHttp();
 
 		mockHttp
-			.Expect(URL_1 + "/*")
+			.Expect("*")
 			.RespondJSON(
 				new Response
 				{
@@ -172,32 +160,26 @@ public class CommunityApiClientTests
 				}
 			);
 
-		var builder = new RequestBuilder().ToUri(new Uri(URL_1));
+		var client = new CommunityApiClient(mockHttp.ToHttpClient(), _fixture.Builder());
 
-		var client = new CommunityApiClient(mockHttp.ToHttpClient(), builder);
-
-		// Act
 		var wasCommunityFound = await client.Exists("test2", TestContext.Current.CancellationToken);
 
-		// Assert
 		Assert.False(wasCommunityFound);
 	}
 
 	[Fact]
 	public async Task GetMissing_WhenNetworkError_ShouldStop()
 	{
-		// Arrange
-		const string URL_1 = "http://localhost:5050";
 		const string URL_2 = "http://localhost:8080/?cursor=abc";
 
 		const string SLUG_1 = "gorebox";
 		const string SLUG_2 = "rv-there-yet";
 		const string SLUG_3 = "inscryption";
 
-		var mockHttp = new MockHttpMessageHandler();
+		var mockHttp = _fixture.MockHttp();
 
 		mockHttp
-			.Expect(URL_1 + "/*")
+			.Expect("*")
 			.RespondJSON(
 				new Response
 				{
@@ -210,19 +192,15 @@ public class CommunityApiClientTests
 				}
 			);
 
-		mockHttp.Expect(URL_2).RespondError(HttpStatusCode.BadRequest, "bad request");
+		mockHttp.When(URL_2).RespondError(HttpStatusCode.BadRequest, "bad request");
 
-		var builder = new RequestBuilder().ToUri(new Uri(URL_1));
+		var client = new CommunityApiClient(mockHttp.ToHttpClient(), _fixture.Builder());
 
-		var client = new CommunityApiClient(mockHttp.ToHttpClient(), builder);
-
-		// Act
 		var missing = await client.GetMissing(
 			[SLUG_1, SLUG_2, SLUG_3],
 			TestContext.Current.CancellationToken
 		);
 
-		// Assert
-		Assert.Single(missing, (Community)SLUG_3);
+		Assert.Single<Community>(missing, SLUG_3);
 	}
 }

@@ -1,6 +1,8 @@
 using System.Web;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using ThunderPipe.Core.Tests.Data;
+using ThunderPipe.Core.Tests.Infrastructure;
 using ThunderPipe.Core.Utils;
 
 // ReSharper disable InconsistentNaming
@@ -9,18 +11,14 @@ namespace ThunderPipe.Core.Tests.UnitTests.Utils;
 
 // TODO: Redo all tests to match proper syntax
 // TODO: Get 100% coverage on RequestBuilder
+[Trait(TestTraits.CATEGORY_NAME, TestTraits.CATEGORY_UTILS)]
 public class RequestBuilderTests
 {
-	public static IEnumerable<object[]> SetMethodData =>
-		new List<object[]>
-		{
-			new object[] { HttpMethod.Get },
-			new object[] { HttpMethod.Post },
-			new object[] { HttpMethod.Put },
-		};
-
 	[Theory]
-	[MemberData(nameof(SetMethodData))]
+	[MemberData(
+		nameof(RequestBuilderTestData.ValidMethods),
+		MemberType = typeof(RequestBuilderTestData)
+	)]
 	public void SetMethod(HttpMethod method)
 	{
 		var builder = new RequestBuilder();
@@ -45,9 +43,10 @@ public class RequestBuilderTests
 	}
 
 	[Theory]
-	[InlineData("https://www.google.com")]
-	[InlineData("https://www.google.com/?a=1")]
-	[InlineData("https://google.com")]
+	[MemberData(
+		nameof(RequestBuilderTestData.ValidUris),
+		MemberType = typeof(RequestBuilderTestData)
+	)]
 	public void ToUri_WhenSet_AssignUri(string url)
 	{
 		var uri = new Uri(url);
@@ -58,9 +57,10 @@ public class RequestBuilderTests
 	}
 
 	[Theory]
-	[InlineData("/apple/com")]
-	[InlineData("/https/www/google/com")]
-	[InlineData("/api/experimental/submission/package/")]
+	[MemberData(
+		nameof(RequestBuilderTestData.ValidEndpoints),
+		MemberType = typeof(RequestBuilderTestData)
+	)]
 	public void ToEndpoint_WhenSet_AssignEndpoint(string endpoint)
 	{
 		var uri = new Uri("https://www.google.com");
@@ -71,10 +71,10 @@ public class RequestBuilderTests
 	}
 
 	[Theory]
-	[InlineData("vcgbcfhjhgfcxv")]
-	[InlineData("vcgfrytahdusbgysahusjdhuagshudjahusdou2 betg2")]
-	[InlineData("tss_ nbvcgfhtyjgbgf7asdfgkubeg17y8")]
-	[InlineData("uwu this is a very secure password")]
+	[MemberData(
+		nameof(RequestBuilderTestData.ValidTokens),
+		MemberType = typeof(RequestBuilderTestData)
+	)]
 	public void WithAuth_WhenSet_AssignAuthToken(string token)
 	{
 		var request = new RequestBuilder().WithAuth(token).Build();
@@ -83,15 +83,11 @@ public class RequestBuilderTests
 		Assert.Equal(token, request.Headers.Authorization.Parameter);
 	}
 
-	public static IEnumerable<object[]> WithJSON_WhenSet_AssignJsonContent_Data =>
-		new List<object[]>
-		{
-			new object[] { new { baba = 2 } },
-			new object[] { new { ababa = (string[])["1", "2"] } },
-		};
-
 	[Theory]
-	[MemberData(nameof(WithJSON_WhenSet_AssignJsonContent_Data))]
+	[MemberData(
+		nameof(RequestBuilderTestData.ValidPayloads),
+		MemberType = typeof(RequestBuilderTestData)
+	)]
 	public async Task WithJSON_WhenSet_AssignJsonContent(object payload)
 	{
 		var request = new RequestBuilder().WithJSON(payload).Build();
@@ -108,23 +104,11 @@ public class RequestBuilderTests
 		Assert.Equal(expectedJson, actualJson);
 	}
 
-	public static IEnumerable<object[]> SetParameter_WhenSet_AssignQueryValues_Data =>
-		new List<object[]>
-		{
-			new object[] { new Dictionary<string, string> { ["test"] = "1" } },
-			new object[]
-			{
-				new Dictionary<string, string>
-				{
-					["test2"] = "1",
-					["test3"] = "2",
-					["uwu"] = "OwO",
-				},
-			},
-		};
-
 	[Theory]
-	[MemberData(nameof(SetParameter_WhenSet_AssignQueryValues_Data))]
+	[MemberData(
+		nameof(RequestBuilderTestData.ValidQueryParameters),
+		MemberType = typeof(RequestBuilderTestData)
+	)]
 	public void SetParameter_WhenSet_AssignQueryValues(Dictionary<string, string> parameters)
 	{
 		var builder = new RequestBuilder();
@@ -168,23 +152,11 @@ public class RequestBuilderTests
 		Assert.Equal(string.Empty, query[KEY]);
 	}
 
-	public static IEnumerable<object[]> SetPathParameter_WhenSet_ReplacePathParams_Data =>
-		new List<object[]>
-		{
-			new object[]
-			{
-				"/test/{UUID}/foo",
-				new Dictionary<string, string> { ["UUID"] = "123-321" },
-			},
-			new object[]
-			{
-				"/foo/{BAR}/foo/{ID}/foo",
-				new Dictionary<string, string> { ["BAR"] = "123", ["ID"] = "321" },
-			},
-		};
-
 	[Theory]
-	[MemberData(nameof(SetPathParameter_WhenSet_ReplacePathParams_Data))]
+	[MemberData(
+		nameof(RequestBuilderTestData.ValidPathParameters),
+		MemberType = typeof(RequestBuilderTestData)
+	)]
 	public void SetPathParameter_WhenSet_ReplacePathParams(
 		string endpoint,
 		Dictionary<string, string> pathParameters
@@ -286,7 +258,6 @@ public class RequestBuilderTests
 	[Fact]
 	public async Task Copy_WhenCopiedWithContent_ReturnNewInstanceWithContent()
 	{
-		// Arrange
 		var payload = new
 		{
 			test = 1,
@@ -298,11 +269,9 @@ public class RequestBuilderTests
 		var originalBuilder = new RequestBuilder().WithJSON(payload);
 		var copiedBuilder = new RequestBuilder(originalBuilder);
 
-		// Act
 		var originalRequest = originalBuilder.Build();
 		var copiedRequest = copiedBuilder.Build();
 
-		// Assert
 		Assert.NotNull(originalRequest.Content);
 		var originalPayload = await originalRequest.Content.ReadAsStringAsync(
 			TestContext.Current.CancellationToken

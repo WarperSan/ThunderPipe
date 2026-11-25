@@ -1,8 +1,10 @@
 using Newtonsoft.Json;
+using ThunderPipe.Core.Tests.Infrastructure;
 using ThunderPipe.Core.Utils;
 
 namespace ThunderPipe.Core.Tests.UnitTests.Utils;
 
+[Trait(TestTraits.CATEGORY_NAME, TestTraits.CATEGORY_UTILS)]
 public class HttpApiClientTests
 {
 	private class Person
